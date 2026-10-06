@@ -111,3 +111,9 @@ Dev-only inputs stay outside the repo: BO2 dumps in `C:\Users\alexi\bo2-dump`, t
 Roadmap from the user's list (not done yet): bigger original map with zones + bought doors + bounds, power switch + perks + power-ups,
 BO2 models/textures/animations (zombie bodies c_zom_zombie1_body01 etc. are extractable with OpenAssetTools), 3D guns, Mystery Box model.
 Done: real BO2 weapon stats incl. Ray Gun (sheets/weapons.json via tools/gen_weapons.py), projectiles, barricade repair from anywhere inside.
+
+## Stable checkpoint (2026-10-06): scripted self-test 27/27 PASS
+round start, shoot+headshot points, wall-buy gun+ammo, Mystery Box x7 incl. teddy + move, Pack-a-Punch (Mnesia 16/192), window repair, real zombie
+through a window, round end -> round 2, game over -> restart. Bugs fixed on the way: starting gear was skipped on the very first join (race with
+level.players()), first spawn outside the map. Run it: `cd mod && ./gradlew runClient -Pbench` (results in mod/run/zc-bench.txt, screenshots in mod/run/screenshots).
+Dev tip: set `pauseOnLostFocus:false` in mod/run/options.txt or the integrated server pauses whenever the window is not focused.

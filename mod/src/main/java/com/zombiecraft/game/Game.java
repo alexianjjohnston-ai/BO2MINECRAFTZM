@@ -109,7 +109,8 @@ public final class Game {
 
 	public void onJoin(ServerPlayer p) {
 		if (phase == Payloads.PHASE_IDLE) start();
-		else resetPlayer(p);
+		// the joining player may not be in level.players() yet when start() runs: always make sure they are set up
+		if (!players.containsKey(p.getUUID()) || players.get(p.getUUID()).guns[0] == null) resetPlayer(p);
 	}
 
 	/** (Re)start the whole game: rebuild the map, reset every player, count down to round 1. */
