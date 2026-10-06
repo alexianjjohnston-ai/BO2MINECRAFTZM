@@ -8,7 +8,7 @@ import com.zombiecraft.sheet.Rows.WeaponDef;
 import com.zombiecraft.sheet.Sheets;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
+import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ClipContext;
@@ -37,7 +37,7 @@ public final class WeaponSystem {
 		pg.guns[slot] = new Gun(weaponId, pap);
 		p.getInventory().setItem(slot, ModItems.stack(weaponId, pap));
 		p.getInventory().selected = slot;
-		p.connection.send(new ClientboundSetCarriedItemPacket(slot));
+		p.connection.send(new ClientboundSetHeldSlotPacket(slot));
 	}
 
 	/** Slot a newly bought gun goes into: an empty slot, else the one in hand. */

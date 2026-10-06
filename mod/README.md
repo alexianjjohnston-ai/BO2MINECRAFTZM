@@ -1,9 +1,4 @@
-# Example Mod
+# Zombiecraft mod
 
-## Setup
-
-For setup instructions, please see the [Fabric Documentation page](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) related to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+Fabric 1.21.4 mod source. See the top-level README.
+`./gradlew build` / `runClient` (JDK 25); `-Pbench` runs the scripted self-test.

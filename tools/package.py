@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Builds the Melty release zip: a portable Prism Launcher with a ready Zombiecraft instance (Minecraft 1.21.4 + Fabric + our mod).
+"""Builds the release zip: a portable Prism Launcher with a ready Zombiecraft instance (Minecraft 1.21.4 + Fabric + our mod).
 
   python tools/package.py            # uses mod/build/libs/zombiecraft-<version>.jar (run gradle build first)
-Output: dist/Zombiecraft-<version>.zip, dist/package.json (size, sha256, entries for Melty's tools)
+Output: dist/Zombiecraft-<version>.zip, dist/package.json (size, sha256, entries)
 
 Everything third-party comes from its official release page and is listed in the credits folder inside the zip.
 No Minecraft files, no Black Ops II files, no secrets are included.

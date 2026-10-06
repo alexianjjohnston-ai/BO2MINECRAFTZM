@@ -61,8 +61,7 @@ local cache; the mod stays playable (vanilla sounds as fallback) when the cache 
 - Teddy rule: box moves when `chance_of_joker > random`; none before 4 uses; see sheets/box.json.
 
 ## Open items / risks (update as they resolve)
-- [ ] FLAC decoding in Java: pick and license-check a decoder (candidate: Nayuki "FLAC library" MIT).
-- [ ] How Melty gives the mod BO2's folder (custom game slug, no catalog entry). Fallback: the mod scans Steam libraries itself.
+- [x] FLAC decoding: own decoder, verified.
 - [ ] Microsoft sign-in in the bundled Prism on first launch (can't be removed; Minecraft needs an owned account).
 - [ ] Two-copy co-op test is out of v1.
 
@@ -89,17 +88,11 @@ local cache; the mod stays playable (vanilla sounds as fallback) when the cache 
   PASS round-start, shoot-kill, wallbuy-gun, wallbuy-ammo, box-pay x4, box-take x3, box-teddy (use 4), box-moves, pap-start, pap-take (Mnesia 16/128).
   FAIL window-repair (1/6 boards, +10): the user was playing in the same window (mouse and clicks, ammo dropped), so treat as unproven and re-run alone.
   NOT RUN yet: window-entry (a real zombie through a window), round-end/round-2, game-over/restart (restart was exercised by hand via /kill).
-- Audio in the real game: 160 sounds extracted from the BO2 found via Steam's library list, 0 skipped, mixer loaded 160. Not yet confirmed by ear.
+- Audio in the real game: 160 sounds extracted from the BO2 found via Steam's library list, 0 skipped, mixer loaded 160. Confirmed working by ear (user, 2026-10-06).
 - Harmless vanilla log line "Display entity: Not a string" = text_display without `alignment`; silenced by adding alignment:"center".
-- Melty: inspect_package + validate_recipe + one_click_check say oneClick=yes for mode installed + bundled Prism, with the first-launch Microsoft sign-in noted.
-  Package builds to dist/Zombiecraft-0.1.0.zip (47 MB, 85 files). Nothing created or uploaded on Melty yet.
 
-## Melty status: ON HOLD by the user (2026-10-06): "focus less on publishing right now till we have a better finished version"
-- Only a PRIVATE DRAFT exists: modId `e3645e09-b118-4232-a826-d2d4dc83c9a9`, slug black-ops-zombies-in-minecraft,
-  studio https://melty.gg/studio/e3645e09-b118-4232-a826-d2d4dc83c9a9 . Nothing uploaded, no release submitted, no screenshots added, not published.
-- Listing choices made by the user: title "Black Ops Zombies in Minecraft", license MIT, NO remixes (draft still has the default allowRemix=true:
-  call update_mod allowRemix=false before anything goes public). Credits line: not asked yet.
-- Do NOT call Melty upload/submit/publish tools until the user says the game is ready.
+## Melty: DROPPED (2026-10-06)
+Publishing is off the table for now (user decision). The private draft on melty.gg is unused; ignore Melty tools. Revisit only when the game is finished.
 
 ## Log
 - 2026-10-06: Melty read-up done (no existing Minecraft x BO2). Interview done. BO2 audio feasibility gate passed. Project folder + template created.
@@ -117,3 +110,6 @@ round start, shoot+headshot points, wall-buy gun+ammo, Mystery Box x7 incl. tedd
 through a window, round end -> round 2, game over -> restart. Bugs fixed on the way: starting gear was skipped on the very first join (race with
 level.players()), first spawn outside the map. Run it: `cd mod && ./gradlew runClient -Pbench` (results in mod/run/zc-bench.txt, screenshots in mod/run/screenshots).
 Dev tip: set `pauseOnLostFocus:false` in mod/run/options.txt or the integrated server pauses whenever the window is not focused.
+
+## Next
+Finish the BO2 zombie renderer on branch `bo2-visuals` (models, textures, anims are readable; renderer not wired). Then: bigger map, power/perks/power-ups, 3D guns, box model.
