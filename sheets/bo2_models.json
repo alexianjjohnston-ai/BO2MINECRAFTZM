@@ -1,0 +1,296 @@
+[
+ {
+  "id": "m1911",
+  "group": "gun",
+  "xmodel": "t6_wpn_pistol_m1911_view",
+  "world": "t6_wpn_pistol_m1911_world",
+  "note": ""
+ },
+ {
+  "id": "rottweil72",
+  "group": "gun",
+  "xmodel": "t6_wpn_shotty_olympia_view",
+  "world": "t6_wpn_shotty_olympia_world",
+  "note": ""
+ },
+ {
+  "id": "mp5k",
+  "group": "gun",
+  "xmodel": "t6_wpn_smg_mp5_view",
+  "world": "t6_wpn_smg_mp5_world",
+  "note": ""
+ },
+ {
+  "id": "ak74u",
+  "group": "gun",
+  "xmodel": "t6_wpn_smg_ak74u_view",
+  "world": "t6_wpn_smg_ak74u_world",
+  "note": ""
+ },
+ {
+  "id": "m14",
+  "group": "gun",
+  "xmodel": "t6_wpn_ar_m14_view",
+  "world": "t6_wpn_ar_m14_world",
+  "note": ""
+ },
+ {
+  "id": "m16",
+  "group": "gun",
+  "xmodel": "t6_wpn_ar_m16a2_view",
+  "world": "t6_wpn_ar_m16a2_world",
+  "note": ""
+ },
+ {
+  "id": "galil",
+  "group": "gun",
+  "xmodel": "t6_wpn_ar_galil_view",
+  "world": "t6_wpn_ar_galil_world",
+  "note": ""
+ },
+ {
+  "id": "python",
+  "group": "gun",
+  "xmodel": "t6_wpn_pistol_python_view",
+  "world": "t6_wpn_pistol_python_world",
+  "note": ""
+ },
+ {
+  "id": "ray_gun",
+  "group": "gun",
+  "xmodel": "t6_wpn_zmb_raygun2_view",
+  "world": "t6_wpn_zmb_raygun2_world",
+  "note": ""
+ },
+ {
+  "id": "ray_gun_pap",
+  "group": "gun",
+  "xmodel": "t6_wpn_zmb_raygun2_upg_view",
+  "world": "t6_wpn_zmb_raygun2_upg_world",
+  "note": ""
+ },
+ {
+  "id": "zombie_a",
+  "group": "zombie",
+  "xmodel": "c_zom_zombie1_body01",
+  "world": "",
+  "note": "clothed zombie, straitjacket"
+ },
+ {
+  "id": "zombie_b",
+  "group": "zombie",
+  "xmodel": "c_zom_zombie1_body02",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "zombie_c",
+  "group": "zombie",
+  "xmodel": "c_zom_zombie2_body01",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "zombie_d",
+  "group": "zombie",
+  "xmodel": "c_zom_zombie3_body01",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "zombie_e",
+  "group": "zombie",
+  "xmodel": "c_zom_zombie3_body02",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "head_a",
+  "group": "head",
+  "xmodel": "c_zom_zombie_head_a",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "head_k",
+  "group": "head",
+  "xmodel": "c_zom_zombie_head_k",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "head_n",
+  "group": "head",
+  "xmodel": "c_zom_zombie_head_n",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "head_l",
+  "group": "head",
+  "xmodel": "c_zom_zombie_head_l",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "mystery_box",
+  "group": "machine",
+  "xmodel": "p6_anim_zm_magic_box",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "mystery_box_fake",
+  "group": "machine",
+  "xmodel": "p6_anim_zm_magic_box_fake",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "pack_a_punch",
+  "group": "machine",
+  "xmodel": "p6_anim_zm_buildable_pap",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "pack_a_punch_on",
+  "group": "machine",
+  "xmodel": "p6_anim_zm_buildable_pap_on",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "power_switch_body",
+  "group": "machine",
+  "xmodel": "p6_zm_buildable_pswitch_body",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "power_switch_lever",
+  "group": "machine",
+  "xmodel": "p6_zm_buildable_pswitch_lever",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "power_switch_hand",
+  "group": "machine",
+  "xmodel": "p6_zm_buildable_pswitch_hand",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "perk_jugg",
+  "group": "machine",
+  "xmodel": "zombie_vending_jugg",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "perk_jugg_on",
+  "group": "machine",
+  "xmodel": "zombie_vending_jugg_on",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "perk_speed",
+  "group": "machine",
+  "xmodel": "zombie_vending_sleight",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "perk_speed_on",
+  "group": "machine",
+  "xmodel": "zombie_vending_sleight_on",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "perk_doubletap",
+  "group": "machine",
+  "xmodel": "zombie_vending_doubletap2",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "perk_doubletap_on",
+  "group": "machine",
+  "xmodel": "zombie_vending_doubletap2_on",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "perk_revive",
+  "group": "machine",
+  "xmodel": "zombie_vending_revive",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "perk_revive_on",
+  "group": "machine",
+  "xmodel": "zombie_vending_revive_on",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "bottle_jugg",
+  "group": "perkbottle",
+  "xmodel": "t6_wpn_zmb_perk_bottle_jugg_view",
+  "world": "t6_wpn_zmb_perk_bottle_jugg_world",
+  "note": ""
+ },
+ {
+  "id": "bottle_speed",
+  "group": "perkbottle",
+  "xmodel": "t6_wpn_zmb_perk_bottle_sleight_view",
+  "world": "t6_wpn_zmb_perk_bottle_sleight_world",
+  "note": ""
+ },
+ {
+  "id": "bottle_doubletap",
+  "group": "perkbottle",
+  "xmodel": "t6_wpn_zmb_perk_bottle_doubletap_view",
+  "world": "t6_wpn_zmb_perk_bottle_doubletap_world",
+  "note": ""
+ },
+ {
+  "id": "bottle_revive",
+  "group": "perkbottle",
+  "xmodel": "t6_wpn_zmb_perk_bottle_revive_view",
+  "world": "t6_wpn_zmb_perk_bottle_revive_world",
+  "note": ""
+ },
+ {
+  "id": "player_engineer",
+  "group": "player",
+  "xmodel": "c_zom_player_engineer_fb",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "player_farmgirl",
+  "group": "player",
+  "xmodel": "c_zom_player_farmgirl_fb",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "player_oldman",
+  "group": "player",
+  "xmodel": "c_zom_player_oldman_fb",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "player_reporter",
+  "group": "player",
+  "xmodel": "c_zom_player_reporter_fb",
+  "world": "",
+  "note": ""
+ }
+]
