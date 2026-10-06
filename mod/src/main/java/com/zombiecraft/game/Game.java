@@ -228,6 +228,7 @@ public final class Game {
 		p.setHealth(p.getMaxHealth());
 		p.setInvulnerable(true);
 		Cue.ui("evt_player_death", p);
+		Cue.ui("mus_zombie_game_over", p);
 		cmd("kill @e[type=zombiecraft:zombie]");
 		alive.clear();
 	}

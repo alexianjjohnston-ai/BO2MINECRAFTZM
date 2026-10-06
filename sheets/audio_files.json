@@ -1,5 +1,27 @@
 [
  {
+  "id": "cac_cmn_deny#0",
+  "cue": "cac_cmn_deny",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 1121924877,
+  "size": 65755,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 30458
+ },
+ {
+  "id": "chr_heart_beat_ingame#0",
+  "cue": "chr_heart_beat_ingame",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 4113099536,
+  "size": 83392,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 20848
+ },
+ {
   "id": "evt_player_death#0",
   "cue": "evt_player_death",
   "bank": "cmn_root.all.sabs",
@@ -297,6 +319,17 @@
   "frames": 426585
  },
  {
+  "id": "mus_zombie_game_over#0",
+  "cue": "mus_zombie_game_over",
+  "bank": "zmb_patch.all.sabs",
+  "entryId": 3040705210,
+  "size": 2422298,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 1008000
+ },
+ {
   "id": "mus_zombie_round_over#0",
   "cue": "mus_zombie_round_over",
   "bank": "zmb_common.all.sabs",
@@ -317,6 +350,61 @@
   "channels": 2,
   "rateHz": 48000,
   "frames": 672769
+ },
+ {
+  "id": "mus_zombie_splash_screen#0",
+  "cue": "mus_zombie_splash_screen",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 2344514994,
+  "size": 972348,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 531116
+ },
+ {
+  "id": "uin_cmn_backout#0",
+  "cue": "uin_cmn_backout",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 2967047988,
+  "size": 96290,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 69660
+ },
+ {
+  "id": "uin_lobby_join#0",
+  "cue": "uin_lobby_join",
+  "bank": "cmn_root.all.sabs",
+  "entryId": 2222442539,
+  "size": 80448,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 35400
+ },
+ {
+  "id": "uin_main_nav#0",
+  "cue": "uin_main_nav",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 3404576042,
+  "size": 69766,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 39730
+ },
+ {
+  "id": "uin_main_pause#0",
+  "cue": "uin_main_pause",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 2544432473,
+  "size": 18905,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 15768
  },
  {
   "id": "wpn_1911_dryfire_plr#0",
@@ -1120,6 +1208,39 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 165753
+ },
+ {
+  "id": "zmb_ui_globe_spin_start#0",
+  "cue": "zmb_ui_globe_spin_start",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 383268445,
+  "size": 90743,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 68763
+ },
+ {
+  "id": "zmb_ui_map_level_select#0",
+  "cue": "zmb_ui_map_level_select",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 3333093054,
+  "size": 148334,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 74400
+ },
+ {
+  "id": "zmb_ui_map_level_switch#0",
+  "cue": "zmb_ui_map_level_switch",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 467310653,
+  "size": 110851,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 53054
  },
  {
   "id": "zmb_vocals_zombie_ambience#0",

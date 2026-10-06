@@ -1,5 +1,25 @@
 [
  {
+  "cue": "cac_cmn_deny",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.note_block.bass"
+ },
+ {
+  "cue": "chr_heart_beat_ingame",
+  "category": "ui",
+  "soundSource": "PLAYERS",
+  "volume": 0.7,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.note_block.basedrum"
+ },
+ {
   "cue": "evt_player_death",
   "category": "ui",
   "soundSource": "PLAYERS",
@@ -250,6 +270,16 @@
   "fallback": "minecraft:block.beacon.activate"
  },
  {
+  "cue": "mus_zombie_game_over",
+  "category": "music",
+  "soundSource": "MASTER",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.bell.resonate"
+ },
+ {
   "cue": "mus_zombie_round_over",
   "category": "music",
   "soundSource": "MASTER",
@@ -268,6 +298,56 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:block.bell.use"
+ },
+ {
+  "cue": "mus_zombie_splash_screen",
+  "category": "music",
+  "soundSource": "MUSIC",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:music_disc.chirp"
+ },
+ {
+  "cue": "uin_cmn_backout",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "uin_lobby_join",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.experience_orb.pickup"
+ },
+ {
+  "cue": "uin_main_nav",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "uin_main_pause",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
  },
  {
   "cue": "wpn_1911_dryfire_plr",
@@ -768,6 +848,36 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:block.wood.place"
+ },
+ {
+  "cue": "zmb_ui_globe_spin_start",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.ambient"
+ },
+ {
+  "cue": "zmb_ui_map_level_select",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.power_select"
+ },
+ {
+  "cue": "zmb_ui_map_level_switch",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.7,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
  },
  {
   "cue": "zmb_vocals_zombie_ambience",

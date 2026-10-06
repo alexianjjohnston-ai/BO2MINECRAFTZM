@@ -155,6 +155,72 @@
    "soundSource": "HOSTILE",
    "volume": 1.0,
    "fallback": "minecraft:entity.zombie.ambient"
+  },
+  "uin_main_nav": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "uin_cmn_backout": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "cac_cmn_deny": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:block.note_block.bass"
+  },
+  "uin_lobby_join": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:entity.experience_orb.pickup"
+  },
+  "uin_main_pause": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "zmb_ui_map_level_select": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.beacon.power_select"
+  },
+  "zmb_ui_map_level_switch": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.7,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "zmb_ui_globe_spin_start": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:block.beacon.ambient"
+  },
+  "mus_zombie_splash_screen": {
+   "category": "music",
+   "soundSource": "MUSIC",
+   "volume": 0.8,
+   "fallback": "minecraft:music_disc.chirp"
+  },
+  "mus_zombie_game_over": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 1.0,
+   "fallback": "minecraft:block.bell.resonate"
+  },
+  "chr_heart_beat_ingame": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.7,
+   "fallback": "minecraft:block.note_block.basedrum"
   }
  },
  "roles": {

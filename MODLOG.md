@@ -124,3 +124,7 @@ Dev: put `oat.dir=<OAT folder>` in mod/run/config/zombiecraft.properties so the 
 User-facing name is now "Block Ops 2" (UI, lang, mod name, README, licence). Internal ids, packages, folders (`zombiecraft/`), env vars and system properties are unchanged on purpose (saves, caches, config keep working).
 HUD now follows the BO2 Zombies layout: chalkmarks tallies bottom left, points + cyan +N popup + ammo bottom right over the BO2 blood splat (hud_dpad_blood), grenade icon, BO2 low-health overlay, small crosshair. Only Green Run is selectable; it starts the Diner and shows the diner postcard.
 Real BO2 images worth reusing later: chalkmarks_0-5, hud_dpad_blood, overlay_low_health, grenadeicon_32, damage_feedback (hit marker), hit_direction_zm, specialty_*_zombies (common_zm / zm_transit).
+
+## Menu audio + HUD banner (2026-10-06)
+Menu music = BO2 `mus_zombie_splash_screen` (restarted when it ends, stopped when a game starts). UI sounds: uin_main_nav (hover), uin_lobby_join, uin_cmn_backout, uin_main_pause, zmb_ui_globe_spin_start / map_level_switch / map_level_select, cac_cmn_deny (locked map). In game: mus_zombie_game_over, chr_heart_beat_ingame at low health. 11 new cues added via tools/audio_seed.json + derive_audio.py. CueMixer now plays menu sounds with no world and while paused.
+"Get ready" and "Next round" banners removed; the controls are listed on the pause menu instead.

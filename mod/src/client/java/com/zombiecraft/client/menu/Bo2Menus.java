@@ -1,6 +1,7 @@
 package com.zombiecraft.client.menu;
 
 import com.zombiecraft.client.AutoWorld;
+import com.zombiecraft.client.audio.MenuAudio;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -159,7 +160,7 @@ public final class Bo2Menus {
 	/** Shared menu behaviour: a vertical list of text items with an orange bracket on the selected one. */
 	abstract static class MenuScreen extends Screen {
 		String[] items;
-		int sel, x, y0;
+		int sel, x, y0, lastSel = -1;
 		float scale = 1.7f;
 
 		MenuScreen(String title) { super(Component.literal(title)); }
@@ -176,6 +177,7 @@ public final class Bo2Menus {
 				if (on) g.renderOutline(x - 6, y - 3, w + 12, step() - 2, ORANGE);
 				text(g, items[i], x, y, scale, on ? ORANGE : WHITE);
 			}
+			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("uin_main_nav"); lastSel = sel; }
 		}
 
 		@Override public boolean mouseClicked(double mx, double my, int button) {
@@ -203,13 +205,14 @@ public final class Bo2Menus {
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
 			switch (i) {
-				case 0 -> mc.setScreen(new Lobby(this));
+				case 0 -> { MenuAudio.play("uin_lobby_join"); mc.setScreen(new Lobby(this)); }
 				case 1 -> mc.setScreen(new OptionsScreen(this, mc.options));
 				default -> mc.stop();
 			}
 		}
 
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
+			MenuAudio.music();
 			background(g, width, height);
 			int lx = (int) (width * 0.16), ly = (int) (height * 0.2), lw = (int) (width * 0.42);
 			if (!UiArt.draw(g, "menu_zm_title_screen", lx - lw / 14, ly - lw / 5, lw, lw / 2)) {
@@ -236,16 +239,17 @@ public final class Bo2Menus {
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
-			if (i == 0) mc.setScreen(new MapSelect(this));
+			if (i == 0) { MenuAudio.play("zmb_ui_globe_spin_start"); mc.setScreen(new MapSelect(this)); }
 			else mc.setScreen(new OptionsScreen(this, mc.options));
 		}
 
 		@Override public boolean keyPressed(int key, int scan, int mods) {
-			if (key == GLFW.GLFW_KEY_ESCAPE) { Minecraft.getInstance().setScreen(parent); return true; }
+			if (key == GLFW.GLFW_KEY_ESCAPE) { MenuAudio.play("uin_cmn_backout"); Minecraft.getInstance().setScreen(parent); return true; }
 			return super.keyPressed(key, scan, mods);
 		}
 
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
+			MenuAudio.music();
 			background(g, width, height);
 			planet(g, -(int) (width * 0.06), (int) (height * 0.82), (int) (height * 0.5), seconds() / 90f);
 			text(g, "ZOMBIES", x, (int) (height * 0.07), 2.6f, WHITE);
@@ -275,7 +279,7 @@ public final class Bo2Menus {
 		/** Marker centre as a fraction of the planet radius from its centre. */
 		private static final double[][] POS = {{-0.12, -0.02}, {0.42, 0.18}, {-0.5, -0.45}, {0.22, -0.55}, {-0.38, 0.5}, {0.1, 0.62}};
 		private final Screen parent;
-		private int sel;
+		private int sel, lastSel = -1;
 
 		MapSelect(Screen parent) { super(Component.literal("Select map")); this.parent = parent; }
 
@@ -284,15 +288,18 @@ public final class Bo2Menus {
 		private int mx(int i) { return (int) (width / 2 + POS[i][0] * radius()); }
 		private int my(int i) { return (int) (height / 2 + POS[i][1] * radius()); }
 
-		private void pick() { if (sel == 0) AutoWorld.start(Minecraft.getInstance(), this); }
+		private void pick() {
+			if (sel == 0) { MenuAudio.play("zmb_ui_map_level_select"); AutoWorld.start(Minecraft.getInstance(), this); }
+			else MenuAudio.play("cac_cmn_deny");
+		}
 
 		@Override public boolean mouseClicked(double x, double y, int button) {
-			if (button == 0 && sel == 0) { pick(); return true; }
+			if (button == 0) { pick(); return true; }
 			return false;
 		}
 
 		@Override public boolean keyPressed(int key, int scan, int mods) {
-			if (key == GLFW.GLFW_KEY_ESCAPE) Minecraft.getInstance().setScreen(parent);
+			if (key == GLFW.GLFW_KEY_ESCAPE) { MenuAudio.play("uin_cmn_backout"); Minecraft.getInstance().setScreen(parent); }
 			else if (key == GLFW.GLFW_KEY_RIGHT || key == GLFW.GLFW_KEY_DOWN) sel = (sel + 1) % NAMES.length;
 			else if (key == GLFW.GLFW_KEY_LEFT || key == GLFW.GLFW_KEY_UP) sel = (sel + NAMES.length - 1) % NAMES.length;
 			else if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) pick();
@@ -304,6 +311,7 @@ public final class Bo2Menus {
 		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
 
 		@Override public void render(GuiGraphics g, int mouseX, int mouseY, float dt) {
+			MenuAudio.music();
 			background(g, width, height);
 			planet(g, width / 2, height / 2, radius(), seconds() / 80f);
 			for (int i = 0; i < NAMES.length; i++) {
@@ -313,6 +321,7 @@ public final class Bo2Menus {
 				UiArt.draw(g, icon, x, y, s, s, i == 0 ? 0xFFFFFFFF : 0x90FFFFFF);
 				if (i == sel) g.renderOutline(x - 3, y - 3, s + 6, s + 6, ORANGE);
 			}
+			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("zmb_ui_map_level_switch"); lastSel = sel; }
 			text(g, NAMES[sel], 24, height - 78, 2.2f, sel == 0 ? WHITE : GREY);
 			if (sel != 0) text(g, "COMING SOON", 24, height - 46, 1.0f, GREY);
 			hint(g, "ESC", "Back", 24, height - 26);
@@ -324,7 +333,7 @@ public final class Bo2Menus {
 	static final class Pause extends MenuScreen {
 		Pause() { super("Paused"); items = new String[] {"RESUME GAME", "OPTIONS", "LEAVE GAME"}; }
 
-		@Override protected void init() { x = (int) (width * 0.1); y0 = (int) (height * 0.3); }
+		@Override protected void init() { x = (int) (width * 0.1); y0 = (int) (height * 0.3); MenuAudio.play("uin_main_pause"); }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
@@ -350,6 +359,11 @@ public final class Bo2Menus {
 			text(g, "PAUSED", x, (int) (height * 0.14), 2.6f, WHITE);
 			drawItems(g, mx, my);
 			hint(g, "ESC", "Resume", x, height - 26);
+			// the controls, shown here instead of as a banner over the game
+			int cx = (int) (width * 0.58), cy = y0, line = (int) (H(1.0f) * 1.5f);
+			text(g, "CONTROLS", cx, cy - line - 6, 1.3f, WHITE);
+			String[][] keys = {{"RIGHT CLICK", "Shoot"}, {"R", "Reload"}, {"LEFT CLICK", "Knife"}, {"F", "Buy / Open / Hold to repair"}};
+			for (String[] k : keys) { hint(g, k[0], k[1], cx, cy); cy += line; }
 		}
 	}
 }

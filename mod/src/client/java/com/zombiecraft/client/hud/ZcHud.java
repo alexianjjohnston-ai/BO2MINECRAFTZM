@@ -18,7 +18,7 @@ public final class ZcHud {
 	private static final int DAMAGE_FLASH_TICKS = 10;
 	private static LocalPlayer trackedPlayer;
 	private static float previousHealth;
-	private static int previousHurtTime, previousPhase, damageFlashTicks, lastPoints = -1, popup, popupTicks;
+	private static int previousHurtTime, previousPhase, damageFlashTicks, lastPoints = -1, popup, popupTicks, heartTicks;
 
 	private ZcHud() {}
 
@@ -61,6 +61,9 @@ public final class ZcHud {
 			previousHealth = health;
 			previousHurtTime = player.hurtTime;
 		}
+		// low health: BO2's heartbeat
+		if (!mc.isPaused() && health <= player.getMaxHealth() * 0.35f && ++heartTicks >= 24) { heartTicks = 0; com.zombiecraft.client.audio.MenuAudio.play("chr_heart_beat_ingame"); }
+		else if (health > player.getMaxHealth() * 0.35f) heartTicks = 24;
 		previousPhase = phase;
 	}
 
@@ -211,12 +214,6 @@ public final class ZcHud {
 		}
 
 		// banners
-		if (s.phase() == Payloads.PHASE_COUNTDOWN) {
-			text(g, font, "Get ready... " + s.countdownSec(), w / 2, h / 3, 3f, 0xFFFFFFFF, true);
-			text(g, font, "Right click: shoot    R: reload    Left click: knife", w / 2, h / 3 + 40, 1.0f, 0xFFDDDDDD, true);
-			text(g, font, "F: buy guns, Mystery Box, Pack-a-Punch  (hold F to repair windows)", w / 2, h / 3 + 54, 1.0f, 0xFFDDDDDD, true);
-		}
-		else if (s.phase() == Payloads.PHASE_INTERMISSION) text(g, font, "Next round in " + s.countdownSec(), w / 2, h / 4, 2f, 0xFFCCCCCC, true);
 		if (!s.message().isEmpty()) text(g, font, s.message(), w / 2, h / 4 + 24, 3f, 0xFFD8A020, true);
 
 		// prompt (lower middle)
