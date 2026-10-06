@@ -42,5 +42,8 @@ public final class Rows {
 
 	public record CueFile(String id, String cue, String bank, long entryId, long size, String format, int channels, int rateHz, long frames) {}
 
+	/** A Black Ops II model the game converts from the player's own install (see tools/gen_bo2_models.py). */
+	public record Bo2Model(String id, String group, String xmodel, String world, String note) {}
+
 	public record HookRow(String id, String system, String kind, String target, String handler, String status, String note) {}
 }

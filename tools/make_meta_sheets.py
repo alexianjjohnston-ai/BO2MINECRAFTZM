@@ -58,6 +58,7 @@ schema = {
  "audio": {"file": "audio.json", "key": "cue", "columns": {"cue": STR, "category": enum("music", "ui", "world", "vox", "weapon"), "soundSource": enum("MASTER", "MUSIC", "PLAYERS", "HOSTILE", "BLOCKS"),
     "volume": NUM, "positional": BOOL, "loop": BOOL, "variants": NUM, "fallback": STR}},
  "audio_files": {"file": "audio_files.json", "key": "id", "columns": {"id": STR, "cue": ref("audio.cue"), "bank": STR, "entryId": NUM, "size": NUM, "format": enum("pcm16", "flac"), "channels": NUM, "rateHz": NUM, "frames": NUM}},
+ "bo2_models": {"file": "bo2_models.json", "key": "id", "columns": {"id": STR, "group": enum("gun", "zombie", "head", "machine", "prop", "perkbottle", "player"), "xmodel": STR, "world": opt(STR), "note": opt(STR)}},
  "hooks": {"file": "hooks.json", "key": "id", "columns": {"id": STR, "system": STR, "kind": STR, "target": STR, "handler": STR, "status": enum("todo", "coded", "tested"), "note": STR}},
 }
 json.dump(schema, open(os.path.join(SH, 'schema.json'), 'w'), indent=1)

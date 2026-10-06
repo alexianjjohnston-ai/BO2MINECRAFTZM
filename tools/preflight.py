@@ -108,6 +108,19 @@ if rr != list(range(1, len(rr) + 1)): err("[rounds] round numbers are not contig
 mx = [r['value'] for r in data.get('systems', []) if r['id'] == 'max_round_rows']
 if mx and len(rr) != int(mx[0]): err(f"[rounds] {len(rr)} rows but systems.max_round_rows = {int(mx[0])}")
 
+# bo2 models (converted at runtime from the player's own install; names must be unique and every weapon needs a gun model)
+mids = [m['id'] for m in data.get('bo2_models', [])]
+for i in {x for x in mids if mids.count(x) > 1}: err(f"[bo2_models.{i}] duplicate id")
+wids = {w['id'] for w in data.get('weapons', [])}
+for m in data.get('bo2_models', []):
+    if not m['xmodel']: err(f"[bo2_models.{m['id']}] empty xmodel")
+    if m['group'] == 'gun' and m['id'] not in wids: err(f"[bo2_models.{m['id']}] gun model for unknown weapon")
+    if m['group'] == 'gun' and not m['world']: err(f"[bo2_models.{m['id']}] gun needs a world model")
+gunModels = {m['id'] for m in data.get('bo2_models', []) if m['group'] == 'gun'}
+for w in data.get('weapons', []):
+    base = w['id'][:-4] if w.get('upgrade') and w['id'].endswith('_pap') else w['id']
+    if w['id'] not in gunModels and base not in gunModels: err(f"[weapons.{w['id']}] no gun model in bo2_models")
+
 # audio
 files = collections.defaultdict(list)
 for f in data.get('audio_files', []): files[f['cue']].append(f)

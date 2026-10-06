@@ -660,6 +660,38 @@
    }
   }
  },
+ "bo2_models": {
+  "file": "bo2_models.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "group": {
+    "t": "string",
+    "enum": [
+     "gun",
+     "zombie",
+     "head",
+     "machine",
+     "prop",
+     "perkbottle",
+     "player"
+    ]
+   },
+   "xmodel": {
+    "t": "string"
+   },
+   "world": {
+    "t": "string",
+    "optional": true
+   },
+   "note": {
+    "t": "string",
+    "optional": true
+   }
+  }
+ },
  "hooks": {
   "file": "hooks.json",
   "key": "id",

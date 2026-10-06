@@ -44,6 +44,7 @@ public final class Sheets {
 	public static final List<PlayerSpawn> PLAYER_SPAWNS = load("map_player.json", PlayerSpawn.class);
 	public static final List<CueDef> CUES = load("audio.json", CueDef.class);
 	public static final List<CueFile> CUE_FILES = load("audio_files.json", CueFile.class);
+	public static final List<Bo2Model> BO2_MODELS = load("bo2_models.json", Bo2Model.class);
 
 	private static final Map<String, SystemRow> SYS = new HashMap<>();
 	private static final Map<String, WeaponDef> WEAPON_BY_ID = new LinkedHashMap<>();
