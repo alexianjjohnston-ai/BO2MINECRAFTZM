@@ -62,10 +62,10 @@ public final class CueMixer {
 			Thread t = new Thread(m::mixLoop, "zombiecraft-mixer");
 			t.setDaemon(true);
 			t.start();
-			ZombiecraftMod.LOG.info("Zombiecraft mixer: {} sounds loaded", loaded);
+			ZombiecraftMod.LOG.info("Block Ops 2 mixer: {} sounds loaded", loaded);
 			return loaded > 0 ? m : null;
 		} catch (LineUnavailableException | IOException | RuntimeException e) {
-			ZombiecraftMod.LOG.warn("Zombiecraft mixer: no audio line, using Minecraft sounds ({})", e.toString());
+			ZombiecraftMod.LOG.warn("Block Ops 2 mixer: no audio line, using Minecraft sounds ({})", e.toString());
 			return null;
 		}
 	}

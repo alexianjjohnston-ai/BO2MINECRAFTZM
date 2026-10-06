@@ -119,3 +119,8 @@ Menus and HUD use art converted on the player's PC from their own install (`bo2/
 Done: title screen, lobby, map select (Green Run open, 5 locked "coming soon"), BO2 loading postcards, pause menu, HUD (weapon icons incl. Ray Gun, round tally marks, low-health red edge instead of hearts/XP).
 Perk icons are extracted (specialty_*_zombies) but not drawn yet: the HUD perk row comes with the perk system.
 Dev: put `oat.dir=<OAT folder>` in mod/run/config/zombiecraft.properties so the dev client can build the art cache.
+
+## Naming and HUD pass (2026-10-06)
+User-facing name is now "Block Ops 2" (UI, lang, mod name, README, licence). Internal ids, packages, folders (`zombiecraft/`), env vars and system properties are unchanged on purpose (saves, caches, config keep working).
+HUD now follows the BO2 Zombies layout: chalkmarks tallies bottom left, points + cyan +N popup + ammo bottom right over the BO2 blood splat (hud_dpad_blood), grenade icon, BO2 low-health overlay, small crosshair. Only Green Run is selectable; it starts the Diner and shows the diner postcard.
+Real BO2 images worth reusing later: chalkmarks_0-5, hud_dpad_blood, overlay_low_health, grenadeicon_32, damage_feedback (hit marker), hit_direction_zm, specialty_*_zombies (common_zm / zm_transit).

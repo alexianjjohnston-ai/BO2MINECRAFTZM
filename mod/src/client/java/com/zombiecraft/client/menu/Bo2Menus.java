@@ -6,10 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.GenericMessageScreen;
-import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.gui.screens.PauseScreen;
-import net.minecraft.client.gui.screens.ProgressScreen;
-import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.options.OptionsScreen;
@@ -27,8 +24,8 @@ public final class Bo2Menus {
 	static final int ORANGE = 0xFFF08A1C, WHITE = 0xFFF2EEE6, GREY = 0xFF9A958C, YELLOW = 0xFFF5D547, GOLD = 0xFFE0A82E;
 	private static final long T0 = System.nanoTime();
 	private static long loadStart, loadSeen;
-	private static final String[] LOADSCREENS = {"loadscreen_transit_standard_town", "loadscreen_transit_standard_busdepot", "loadscreen_transit_standard_farm", "loadscreen_transit_classic"};
-	private static String loadscreen = LOADSCREENS[0];
+	/** The only map is the Diner, so its postcard is the only loading picture. */
+	private static final String LOADSCREEN = "loadscreen_transit_classic";
 
 	public static void register() {
 		boolean autoplay = Boolean.getBoolean("zombiecraft.autoplay");
@@ -37,10 +34,6 @@ public final class Bo2Menus {
 				mc.execute(() -> mc.setScreen(new Title()));
 			} else if (screen instanceof PauseScreen ps && ps.showsPauseMenu()) {
 				mc.execute(() -> mc.setScreen(new Pause()));
-			} else if (screen instanceof LevelLoadingScreen || screen instanceof ReceivingLevelScreen || screen instanceof ProgressScreen) {
-				long now = System.nanoTime();
-				if (now - loadSeen > 2_000_000_000L) { loadStart = now; loadscreen = LOADSCREENS[new Random().nextInt(LOADSCREENS.length)]; }
-				ScreenEvents.afterRender(screen).register((s, g, mx, my, dt) -> loading(g, s.width, s.height));
 			}
 		});
 	}
@@ -49,7 +42,21 @@ public final class Bo2Menus {
 
 	/** {@code scale} 1 is about Minecraft's text size; the BO2 font is drawn a little bigger to read the same. */
 	static float H(float scale) { return 9f * scale * 1.3f; }
-	static void text(GuiGraphics g, String s, int x, int y, float scale, int color) { UiFont.draw(g, s, x, y, H(scale), color, true); }
+	static void raw(GuiGraphics g, String s, int x, int y, float scale, int color) { UiFont.draw(g, s, x, y, H(scale), color, true); }
+
+	/** Small grey gradient behind light text so it stays readable over bright art: solid on the left, fading out to the right. */
+	static void plate(GuiGraphics g, int x, int y, int w, int h) {
+		int fade = Math.min(w / 2, 28);
+		g.fill(x, y, x + w - fade, y + h, 0x78242424);
+		for (int i = 0; i < fade; i++) g.fill(x + w - fade + i, y, x + w - fade + i + 1, y + h, ((0x78 * (fade - i) / fade) << 24) | 0x242424);
+	}
+
+	private static boolean light(int c) { return ((c >> 16 & 255) + (c >> 8 & 255) + (c & 255)) / 3 >= 140; }
+
+	static void text(GuiGraphics g, String s, int x, int y, float scale, int color) {
+		if (light(color)) plate(g, x - 6, y, tw(s, scale) + 22, (int) H(scale) + 2);
+		raw(g, s, x, y, scale, color);
+	}
 	static int tw(String s, float scale) { return UiFont.width(s, H(scale)); }
 
 	static List<String> wrap(String s, int maxWidth, float scale) {
@@ -66,10 +73,11 @@ public final class Bo2Menus {
 
 	/** "ESC Back": a gold key name and its white label. Returns the width used. */
 	static int hint(GuiGraphics g, String key, String label, int x, int y) {
-		text(g, key, x, y, 1.0f, GOLD);
-		int kw = tw(key, 1.0f) + 5;
-		text(g, label, x + kw, y, 1.0f, WHITE);
-		return kw + tw(label, 1.0f) + 16;
+		int kw = tw(key, 1.0f) + 5, total = kw + tw(label, 1.0f);
+		plate(g, x - 6, y, total + 22, (int) H(1.0f) + 2);
+		raw(g, key, x, y, 1.0f, GOLD);
+		raw(g, label, x + kw, y, 1.0f, WHITE);
+		return total + 16;
 	}
 
 	/** Dark asteroid field with a warm glow, like the BO2 Zombies menu. */
@@ -113,11 +121,13 @@ public final class Bo2Menus {
 		}
 	}
 
-	private static void loading(GuiGraphics g, int w, int h) {
+	/** Called in place of the vanilla world-loading screens' own drawing. */
+	public static void loading(GuiGraphics g, int w, int h) {
 		long now = System.nanoTime();
+		if (now - loadSeen > 2_000_000_000L) loadStart = now;
 		loadSeen = now;
 		float t = (now - loadStart) / 1e9f;
-		boolean art = UiArt.cover(g, loadscreen, w, h);
+		boolean art = UiArt.cover(g, LOADSCREEN, w, h);
 		if (art) g.fillGradient(0, 0, w, 60, 0xB0000000, 0x00000000);
 		else background(g, w, h);
 		text(g, "GREEN RUN", 14, 12, 1.2f, ORANGE);
@@ -186,7 +196,7 @@ public final class Bo2Menus {
 	}
 
 	static final class Title extends MenuScreen {
-		Title() { super("Zombiecraft"); items = new String[] {"PLAY", "OPTIONS", "QUIT"}; }
+		Title() { super("Block Ops 2"); items = new String[] {"PLAY", "OPTIONS", "QUIT"}; }
 
 		@Override protected void init() { x = (int) (width * 0.16); y0 = (int) (height * 0.58); }
 
@@ -207,7 +217,7 @@ public final class Bo2Menus {
 				text(g, "ZOMBIES", lx, ly + 36, 4.0f, 0xFFB9B2A6);
 			}
 			drawItems(g, mx, my);
-			text(g, "ZOMBIECRAFT 0.1", width - 14 - tw("ZOMBIECRAFT 0.1", 0.8f), 8, 0.8f, GREY);
+			text(g, "BLOCK OPS 2  0.1", width - 14 - tw("BLOCK OPS 2  0.1", 0.8f), 8, 0.8f, GREY);
 			if (UiArt.busy()) text(g, "Preparing Black Ops II art...", 14, height - 40, 0.8f, GREY);
 			hint(g, "ENTER", "Select", 14, height - 26);
 		}
@@ -254,9 +264,8 @@ public final class Bo2Menus {
 			g.fill(rx - 4, ry + 20, width - 40, ry + 21, 0x50FFFFFF);
 			g.fill(rx, ry + 26, rx + 10, ry + 36, 0xFF55606A);
 			text(g, Minecraft.getInstance().getUser().getName(), rx + 16, ry + 24, 1.0f, YELLOW);
-			text(g, "ZOMBIECRAFT", x, height - 66, 2.2f, WHITE);
 			hint(g, "ESC", "Back", x, height - 26);
-			text(g, "ZOMBIECRAFT 0.1", width - 14 - tw("ZOMBIECRAFT 0.1", 0.8f), 8, 0.8f, GREY);
+			text(g, "BLOCK OPS 2  0.1", width - 14 - tw("BLOCK OPS 2  0.1", 0.8f), 8, 0.8f, GREY);
 		}
 	}
 
@@ -275,7 +284,7 @@ public final class Bo2Menus {
 		private int mx(int i) { return (int) (width / 2 + POS[i][0] * radius()); }
 		private int my(int i) { return (int) (height / 2 + POS[i][1] * radius()); }
 
-		private void pick() { if (sel == 0) Minecraft.getInstance().setScreen(new MapOverview(this)); }
+		private void pick() { if (sel == 0) AutoWorld.start(Minecraft.getInstance(), this); }
 
 		@Override public boolean mouseClicked(double x, double y, int button) {
 			if (button == 0 && sel == 0) { pick(); return true; }
@@ -308,62 +317,6 @@ public final class Bo2Menus {
 			if (sel != 0) text(g, "COMING SOON", 24, height - 46, 1.0f, GREY);
 			hint(g, "ESC", "Back", 24, height - 26);
 			if (sel == 0) hint(g, "ENTER", "Select", width - 24 - tw("ENTER", 1.0f) - tw("Select", 1.0f) - 10, height - 26);
-		}
-	}
-
-	/** Green Run from above: only the Diner start is open for now. */
-	static final class MapOverview extends Screen {
-		private record Spot(String name, String art, double x, double y, double size, boolean open) {}
-		private static final Spot[] SPOTS = {
-				new Spot("DINER", "menu_zm_map_transit_blit_diner", 0.28, 0.27, 0.30, true),
-				new Spot("TOWN", "menu_zm_map_transit_blit_town", 0.56, 0.37, 0.30, false),
-				new Spot("BUS DEPOT", "menu_zm_map_transit_blit_depot", 0.27, 0.74, 0.24, false),
-				new Spot("FARM", "menu_zm_map_transit_blit_farm", 0.76, 0.72, 0.26, false),
-				new Spot("POWER STATION", "menu_zm_map_transit_blit_power", 0.62, 0.80, 0.22, false)};
-		private final Screen parent;
-		private int sel;
-
-		MapOverview(Screen parent) { super(Component.literal("Green Run")); this.parent = parent; }
-
-		private int size(Spot s) { return (int) (width * s.size * 0.6); }
-		private int left(Spot s) { return (int) (width * s.x) - size(s) / 2; }
-		private int top(Spot s) { return (int) (height * s.y) - size(s) / 2; }
-
-		private void start() { if (SPOTS[sel].open) AutoWorld.start(Minecraft.getInstance(), this); }
-
-		@Override public boolean mouseClicked(double x, double y, int button) {
-			if (button == 0) { start(); return true; }
-			return false;
-		}
-
-		@Override public boolean keyPressed(int key, int scan, int mods) {
-			if (key == GLFW.GLFW_KEY_ESCAPE) Minecraft.getInstance().setScreen(parent);
-			else if (key == GLFW.GLFW_KEY_RIGHT || key == GLFW.GLFW_KEY_DOWN) sel = (sel + 1) % SPOTS.length;
-			else if (key == GLFW.GLFW_KEY_LEFT || key == GLFW.GLFW_KEY_UP) sel = (sel + SPOTS.length - 1) % SPOTS.length;
-			else if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) start();
-			else return super.keyPressed(key, scan, mods);
-			return true;
-		}
-
-		@Override public boolean shouldCloseOnEsc() { return false; }
-		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
-
-		@Override public void render(GuiGraphics g, int mouseX, int mouseY, float dt) {
-			g.fill(0, 0, width, height, 0xFF050403);
-			UiArt.cover(g, "menu_zm_map_transit_large", width, height);
-			for (int i = 0; i < SPOTS.length; i++) {
-				Spot s = SPOTS[i];
-				int x = left(s), y = top(s), sz = size(s);
-				if (mouseX >= x && mouseX <= x + sz && mouseY >= y && mouseY <= y + sz) sel = i;
-				int tint = i == sel ? 0xFFFFFFFF : s.open ? 0xB0FFFFFF : 0x60FFFFFF;
-				if (!UiArt.draw(g, s.art, x, y, sz, sz, tint)) g.fill(x, y, x + sz, y + sz, 0x40FFFFFF);
-				if (i == sel) g.renderOutline(x, y, sz, sz, ORANGE);
-			}
-			Spot cur = SPOTS[sel];
-			text(g, cur.name, 24, height - 78, 2.2f, cur.open ? WHITE : GREY);
-			if (!cur.open) text(g, "COMING SOON", 24, height - 46, 1.0f, GREY);
-			hint(g, "ESC", "Back", 24, height - 26);
-			if (cur.open) hint(g, "ENTER", "Start", width - 24 - tw("ENTER", 1.0f) - tw("Start", 1.0f) - 10, height - 26);
 		}
 	}
 

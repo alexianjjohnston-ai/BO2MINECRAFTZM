@@ -1,4 +1,4 @@
-# Black Ops Zombies in Minecraft (Zombiecraft)
+# Block Ops 2 (Black Ops Zombies in Minecraft)
 
 Round-based Zombies survival inside Minecraft: Java Edition (Fabric, 1.21.4), in a blocky Tranzit-style diner.
 Unofficial fan project, not affiliated with Activision, Treyarch, Mojang or Microsoft.
@@ -8,7 +8,7 @@ and cached locally (about 27 MB). Without Black Ops II the game still plays with
 
 ## Play it from source
 1. Install a JDK 25 (needed only to run the build tool) and own Minecraft: Java Edition.
-2. Double-click **`play.bat`** (first run downloads Minecraft + build tools, several minutes). It opens straight into a flat "Zombiecraft" world.
+2. Double-click **`play.bat`** (first run downloads Minecraft + build tools, several minutes). It opens straight into a flat world.
 
 Controls: **right click** shoot · **R** reload · **left click** knife · **F** buy / open Mystery Box / Pack-a-Punch / hold to repair windows.
 

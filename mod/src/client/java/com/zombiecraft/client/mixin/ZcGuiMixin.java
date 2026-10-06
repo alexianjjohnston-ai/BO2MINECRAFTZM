@@ -33,4 +33,9 @@ public abstract class ZcGuiMixin {
 	private void zombiecraft$hideXp(GuiGraphics graphics, int x, CallbackInfo ci) {
 		if (ZcHud.usesWeaponHud(Minecraft.getInstance())) ci.cancel();
 	}
+
+	@Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
+	private void zombiecraft$hideCrosshair(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+		if (ZcHud.usesWeaponHud(Minecraft.getInstance())) ci.cancel();
+	}
 }

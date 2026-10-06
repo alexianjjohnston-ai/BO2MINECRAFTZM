@@ -79,6 +79,7 @@ public final class ZcHud {
 		strength = Math.max(strength, Math.max(0f, Math.min(1f, low)) * 0.8f);
 		if (strength <= 0f) return;
 		int w = g.guiWidth(), h = g.guiHeight();
+		if (UiArt.draw(g, "overlay_low_health", 0, 0, w, h, ((int) (255 * Math.min(1f, strength * 1.2f)) << 24) | 0xFFFFFF)) return;
 		int edge = Math.max(12, Math.min(48, Math.min(w, h) / 8));
 		for (int i = 0; i < edge; i++) {
 			float fade = 1f - (float) i / edge;
@@ -104,21 +105,24 @@ public final class ZcHud {
 		};
 	}
 
-	/** The gun in hand as a big icon bottom right, the others small and dim to its left. Returns false when no icon art exists. */
-	private static boolean weaponIcons(GuiGraphics g, Minecraft mc) {
+	/** Icon file of the gun in hand, or null. */
+	private static String heldIcon(Minecraft mc) {
 		Inventory inventory = mc.player.getInventory();
-		int w = g.guiWidth(), h = g.guiHeight(), x = w - 14 - 128, shown = 0;
-		for (int slot = 0; slot < Inventory.getSelectionSize(); slot++) {
-			String id = ModItems.weaponOf(inventory.getItem(slot));
-			if (id == null) continue;
-			if (slot == inventory.selected) {
-				if (!UiArt.draw(g, icon(id), w - 14 - 128, h - 118, 128, 64)) return false;
-			} else {
-				shown++;
-				UiArt.draw(g, icon(id), x - shown * 66, h - 98, 64, 32, 0x80FFFFFF);
-			}
+		String id = ModItems.weaponOf(inventory.getItem(inventory.selected));
+		return id == null ? null : icon(id);
+	}
+
+	/** BO2's small four-tick crosshair (the vanilla one is hidden while a match runs). */
+	private static void crosshair(GuiGraphics g, Minecraft mc) {
+		if (!mc.options.getCameraType().isFirstPerson() || mc.screen != null) return;
+		int cx = g.guiWidth() / 2, cy = g.guiHeight() / 2;
+		for (int pass = 0; pass < 2; pass++) {
+			int c = pass == 0 ? 0x90000000 : 0xFFFFFFFF, o = pass == 0 ? 1 : 0;
+			g.fill(cx - o, cy - 7 - o, cx + 1 + o, cy - 3 + o, c);
+			g.fill(cx - o, cy + 4 - o, cx + 1 + o, cy + 8 + o, c);
+			g.fill(cx - 7 - o, cy - o, cx - 3 + o, cy + 1 + o, c);
+			g.fill(cx + 4 - o, cy - o, cx + 8 + o, cy + 1 + o, c);
 		}
-		return true;
 	}
 
 	private static void hitMarker(GuiGraphics g, Minecraft mc, float partialTick) {
@@ -140,13 +144,11 @@ public final class ZcHud {
 		}
 	}
 
-	/** Blood-red chalk tally marks: four strokes struck through by a fifth. */
-	private static void tally(GuiGraphics g, int n, int x, int y) {
-		for (int group = 0; group * 5 < n; group++) {
-			int marks = Math.min(5, n - group * 5), gx = x + group * 40;
-			for (int i = 0; i < Math.min(4, marks); i++) { g.fill(gx + i * 7 + 1, y + 1, gx + i * 7 + 4, y + 33, 0xFF300404); g.fill(gx + i * 7, y, gx + i * 7 + 3, y + 32, 0xFFB01010); }
-			if (marks == 5) for (int k = 0; k < 32; k++) { int dx = gx - 2 + k * 30 / 32, dy = y + 30 - k; g.fill(dx, dy, dx + 4, dy + 3, 0xFFB01010); }
-		}
+	/** Round tallies from BO2's own chalk-mark images, tinted blood red: groups of five, then the remainder. */
+	private static void tally(GuiGraphics g, int n, int x, int y, int size) {
+		int step = size * 3 / 4, groups = n / 5, rest = n % 5;
+		for (int i = 0; i < groups; i++) UiArt.draw(g, "chalkmarks_5", x + i * step, y, size, size, 0xFFB01010);
+		if (rest > 0) UiArt.draw(g, "chalkmarks_" + rest, x + groups * step, y, size, size, 0xFFB01010);
 	}
 
 	private static void text(GuiGraphics g, Font font, String s, int x, int y, float scale, int color, boolean centered) {
@@ -174,31 +176,39 @@ public final class ZcHud {
 			text(g, font, "You survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " round" : " rounds"), w / 2, h / 2 + 8, 2f, 0xFFFFFFFF, true);
 			return;
 		}
-		boolean icons = weaponIcons(g, mc);
 		hitMarker(g, mc, partialTick);
+		crosshair(g, mc);
 
-		// round counter (bottom left, red) and points
-		if (s.round() > 10) text(g, font, String.valueOf(s.round()), 14, h - 78, 5f, 0xFFB01010, false);
-		else tally(g, s.round(), 16, h - 74);
+		// round tallies bottom left (a number once past round 10)
+		int tallySize = Math.max(32, h / 6);
+		if (s.round() > 10) text(g, font, String.valueOf(s.round()), 14, h - 14 - (int) (9 * 4f * 1.3f), 4f, 0xFFB01010, false);
+		else if (s.round() > 0) tally(g, s.round(), 6, h - tallySize - 6, tallySize);
+
+		// bottom right, stacked up from the ammo line so nothing overlaps: blood splat, points, +points, ammo
+		float ammoScale = 2.2f, pointsScale = 1.9f, popScale = 1.2f;
+		int right = w - Math.max(16, w / 14), ammoH = (int) (9 * ammoScale * 1.3f), popH = (int) (9 * popScale * 1.3f), pointsH = (int) (9 * pointsScale * 1.3f);
+		int ammoY = h - 10 - ammoH, popY = ammoY - popH - 3, pointsY = popY - pointsH - 1;
+		UiArt.draw(g, "hud_dpad_blood", right - 130, pointsY - 12, 170, 85 + (h - 10 - pointsY) - 40, 0xA0B01010);
 		if (s.points() != lastPoints) { if (s.points() > lastPoints && lastPoints >= 0) { popup = s.points() - lastPoints; popupTicks = 50; } lastPoints = s.points(); }
-		text(g, font, String.valueOf(s.points()), 16, h - 52, 2.4f, 0xFFFFFFFF, false);
-		if (popupTicks > 0) text(g, font, "+" + popup, 18, h - 26, 1.5f, (Math.min(255, popupTicks * 8) << 24) | 0x5FE0E8, false);
-
-		// ammo (bottom right)
+		String pts = String.valueOf(s.points());
+		text(g, font, pts, right - UiFont.width(pts, 9f * pointsScale * 1.3f), pointsY, pointsScale, 0xFFFFFFFF, false);
+		if (popupTicks > 0) {
+			String pop = "+" + popup;
+			text(g, font, pop, right - UiFont.width(pop, 9f * popScale * 1.3f), popY, popScale, (Math.min(255, popupTicks * 8) << 24) | 0x5FE0E8, false);
+		}
 		if (s.mag() >= 0) {
-			if (!icons) text(g, font, s.gun(), w - 14 - font.width(s.gun()), h - 60, 1f, 0xFFDDDDDD, false);
 			String ammo = s.mag() + "/" + s.reserve();
-			text(g, font, ammo, w - 14 - UiFont.width(ammo, 9f * 2.4f * 1.3f), h - 50, 2.4f, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
+			int ammoW = UiFont.width(ammo, 9f * ammoScale * 1.3f);
+			text(g, font, ammo, right - ammoW, ammoY, ammoScale, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
+			String held = heldIcon(mc);
+			if (held != null && !UiArt.draw(g, held, right - ammoW - 70, ammoY - 4, 64, 32, 0xC0FFFFFF)) text(g, font, s.gun(), right - ammoW - 8 - UiFont.width(s.gun(), 9f * 1.3f), ammoY + 6, 1f, 0xFFDDDDDD, false);
+			UiArt.draw(g, "grenadeicon_32", right + 8, ammoY, 20, 20);
 			if (GunFeedback.isReloading()) {
 				int barWidth = 64;
-				text(g, font, "RELOADING", w - 14 - font.width("RELOADING"), h - 25, 1f, 0xFFFFD878, false);
-				g.fill(w - 14 - barWidth, h - 12, w - 14, h - 10, 0xA0404040);
-				g.fill(w - 14 - barWidth, h - 12, w - 14 - barWidth + (int) (barWidth * GunFeedback.reloadProgress(partialTick)), h - 10, 0xFFD8A020);
+				g.fill(right - barWidth, h - 6, right, h - 4, 0xA0404040);
+				g.fill(right - barWidth, h - 6, right - barWidth + (int) (barWidth * GunFeedback.reloadProgress(partialTick)), h - 4, 0xFFD8A020);
 			}
 		}
-
-		// zombies left (top right, small)
-		if (s.phase() == Payloads.PHASE_ACTIVE) text(g, font, "Zombies: " + s.zombiesLeft(), w - 12 - font.width("Zombies: 00"), 10, 1f, 0xFFAAAAAA, false);
 
 		// banners
 		if (s.phase() == Payloads.PHASE_COUNTDOWN) {

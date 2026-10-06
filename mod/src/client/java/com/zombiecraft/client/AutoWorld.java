@@ -20,7 +20,7 @@ import net.minecraft.world.level.levelgen.presets.WorldPresets;
 public final class AutoWorld {
 	private AutoWorld() {}
 
-	public static final String WORLD = "Zombiecraft";
+	public static final String WORLD = "Block Ops 2";
 	private static boolean done;
 
 	public static void register() {
@@ -35,17 +35,17 @@ public final class AutoWorld {
 	public static void start(Minecraft mc, net.minecraft.client.gui.screens.Screen title) {
 		try {
 			if (mc.getLevelSource().levelExists(WORLD)) {
-				ZombiecraftMod.LOG.info("Zombiecraft: opening the existing world");
+				ZombiecraftMod.LOG.info("Block Ops 2: opening the existing world");
 				mc.createWorldOpenFlows().openWorld(WORLD, () -> {});
 			} else {
-				ZombiecraftMod.LOG.info("Zombiecraft: creating the flat world");
+				ZombiecraftMod.LOG.info("Block Ops 2: creating the flat world");
 				LevelSettings settings = new LevelSettings(WORLD, GameType.ADVENTURE, false, Difficulty.NORMAL, true,
 						new GameRules(FeatureFlags.DEFAULT_FLAGS), WorldDataConfiguration.DEFAULT);
 				mc.createWorldOpenFlows().createFreshLevel(WORLD, settings, new WorldOptions(20261006L, false, false),
 						WorldPresets::createFlatWorldDimensions, title);
 			}
 		} catch (RuntimeException e) {
-			ZombiecraftMod.LOG.error("Zombiecraft: could not open the world automatically", e);
+			ZombiecraftMod.LOG.error("Block Ops 2: could not open the world automatically", e);
 			done = false;
 		}
 	}

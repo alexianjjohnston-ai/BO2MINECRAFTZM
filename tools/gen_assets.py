@@ -50,7 +50,7 @@ os.makedirs(os.path.join(RES, 'textures', 'item'), exist_ok=True)
 os.makedirs(os.path.join(RES, 'models', 'item'), exist_ok=True)
 os.makedirs(os.path.join(RES, 'items'), exist_ok=True)
 os.makedirs(os.path.join(RES, 'lang'), exist_ok=True)
-lang = {"key.zombiecraft.interact": "Buy / Use / Repair", "key.zombiecraft.reload": "Reload", "key.categories.zombiecraft": "Zombiecraft"}
+lang = {"key.zombiecraft.interact": "Buy / Use / Repair", "key.zombiecraft.reload": "Reload", "key.categories.zombiecraft": "Block Ops 2"}
 for w in [x for x in weapons if not x['upgrade']]:
     png(os.path.join(RES, 'textures', 'item', w['id'] + '.png'), draw(w['iconShape'], w['iconColor']))
     DISPLAY = {

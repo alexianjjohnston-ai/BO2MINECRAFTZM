@@ -38,9 +38,9 @@ public final class UiArt {
 				if (bo2.isEmpty()) { failed = true; return; }
 				String dump = System.getProperty("zombiecraft.bo2dump", "");
 				List<Path> dumps = dump.isBlank() ? List.of() : java.util.Arrays.stream(dump.split(";")).map(Path::of).toList();
-				UiAssets.prepare(game, bo2.get(), dumps, m -> ZombiecraftMod.LOG.info("Zombiecraft menu art: {}", m));
+				UiAssets.prepare(game, bo2.get(), dumps, m -> ZombiecraftMod.LOG.info("Block Ops 2 menu art: {}", m));
 			} catch (IOException | RuntimeException e) {
-				ZombiecraftMod.LOG.warn("Zombiecraft menu art unavailable: {}", e.toString());
+				ZombiecraftMod.LOG.warn("Block Ops 2 menu art unavailable: {}", e.toString());
 				failed = true;
 			} finally { working = false; }
 		}, "zombiecraft-menu-art");
@@ -61,7 +61,7 @@ public final class UiArt {
 			Minecraft.getInstance().getTextureManager().register(loc, new DynamicTexture(img));
 			t = new Tex(loc, img.getWidth(), img.getHeight());
 		} catch (IOException | RuntimeException e) {
-			ZombiecraftMod.LOG.warn("Zombiecraft menu art {} unreadable: {}", name, e.toString());
+			ZombiecraftMod.LOG.warn("Block Ops 2 menu art {} unreadable: {}", name, e.toString());
 			t = new Tex(null, 0, 0);
 		}
 		TEX.put(name, t);
