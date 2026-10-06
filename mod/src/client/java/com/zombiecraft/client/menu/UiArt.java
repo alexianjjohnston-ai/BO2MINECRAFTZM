@@ -81,6 +81,20 @@ public final class UiArt {
 		return true;
 	}
 
+	public static int w(String name) { Tex t = tex(name); return t == null ? 0 : t.w; }
+	public static int h(String name) { Tex t = tex(name); return t == null ? 0 : t.h; }
+
+	/** A (rw x rh) piece of the image starting at (u, v), stretched into the box; u wraps around the image width. */
+	static void strip(GuiGraphics g, String name, int x, int y, int w, int h, int u, int v, int rw, int rh, int argb) {
+		Tex t = tex(name);
+		if (t == null || t.loc == null || w <= 0) return;
+		u = Math.floorMod(u, t.w);
+		int first = Math.min(rw, t.w - u);
+		int w1 = Math.max(1, Math.round((float) w * first / rw));
+		g.blit(RenderType::guiTextured, t.loc, x, y, u, v, w1, h, first, rh, t.w, t.h, argb);
+		if (first < rw) g.blit(RenderType::guiTextured, t.loc, x + w1, y, 0f, v, w - w1, h, rw - first, rh, t.w, t.h, argb);
+	}
+
 	/** Image scaled to fill the screen, centre-cropped. */
 	static boolean cover(GuiGraphics g, String name, int w, int h) {
 		Tex t = tex(name);

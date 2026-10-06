@@ -16,13 +16,14 @@ public final class UiAssets {
 	private UiAssets() {}
 
 	/** Bump when {@link #IMAGES} changes: the set is rebuilt once. */
-	public static final int VERSION = 2;
+	public static final int VERSION = 3;
 	/** Patches first: the first zone that has an image wins. */
 	static final String[] ZONES = {"patch_ui_zm", "ui_zm", "patch_zm", "code_post_gfx_zm", "zm_transit"};
 	public static final String[] IMAGES = concat(
 			new String[] {"lui_bkg_zm", "lui_bkg_zm_rocks_back", "lui_bkg_zm_rocks_front", "menu_zm_title_screen",
 					"loadscreen_transit_standard_town", "loadscreen_transit_standard_busdepot", "loadscreen_transit_standard_farm", "loadscreen_transit_classic",
-					"menu_zm_tranzit_map_select_final", "menu_zm_map_frame", "menu_zm_map_signpost_nuketown", "pc_lock",
+					"menu_zm_tranzit_map_select_final", "menu_zm_map_frame", "menu_zm_map_signpost_nuketown", "menu_zm_map_signpost_transit", "pc_lock", "globe_map_zm", "menu_zm_map_transit_large",
+					"menu_zm_map_transit_blit_depot", "menu_zm_map_transit_blit_diner", "menu_zm_map_transit_blit_farm", "menu_zm_map_transit_blit_power", "menu_zm_map_transit_blit_town",
 					"menu_zm_weapons_raygun_big", "specialty_juggernaut_zombies", "specialty_fastreload_zombies", "specialty_doubletap_zombies", "specialty_quickrevive_zombies"},
 			names("menu_mp_weapons_%s_big", "1911", "olympia", "mp5", "ak74u", "m14", "m16", "galil", "python"));
 

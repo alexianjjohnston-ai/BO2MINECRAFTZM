@@ -3,6 +3,7 @@ package com.zombiecraft.client.hud;
 import com.zombiecraft.client.ZombiecraftClient;
 import com.zombiecraft.client.GunFeedback;
 import com.zombiecraft.client.menu.UiArt;
+import com.zombiecraft.client.menu.UiFont;
 import com.zombiecraft.item.ModItems;
 import com.zombiecraft.net.Payloads;
 import net.minecraft.client.DeltaTracker;
@@ -17,7 +18,7 @@ public final class ZcHud {
 	private static final int DAMAGE_FLASH_TICKS = 10;
 	private static LocalPlayer trackedPlayer;
 	private static float previousHealth;
-	private static int previousHurtTime, previousPhase, damageFlashTicks;
+	private static int previousHurtTime, previousPhase, damageFlashTicks, lastPoints = -1, popup, popupTicks;
 
 	private ZcHud() {}
 
@@ -29,6 +30,7 @@ public final class ZcHud {
 
 	/** Called once per client tick, even when the HUD is hidden. */
 	public static void tick(Minecraft mc) {
+		if (popupTicks > 0) popupTicks--;
 		int phase = ZombiecraftClient.state.phase();
 		if (!usesWeaponHud(mc)) {
 			reset();
@@ -64,6 +66,8 @@ public final class ZcHud {
 
 	public static void reset() {
 		trackedPlayer = null;
+		lastPoints = -1;
+		popupTicks = 0;
 		previousHealth = 0;
 		previousHurtTime = previousPhase = damageFlashTicks = 0;
 	}
@@ -146,12 +150,9 @@ public final class ZcHud {
 	}
 
 	private static void text(GuiGraphics g, Font font, String s, int x, int y, float scale, int color, boolean centered) {
-		g.pose().pushPose();
-		g.pose().scale(scale, scale, 1f);
-		int w = font.width(s);
-		int px = centered ? (int) (x / scale - w / 2f) : (int) (x / scale);
-		g.drawString(font, s, px, (int) (y / scale), color, true);
-		g.pose().popPose();
+		float height = 9f * scale * 1.3f;
+		int px = centered ? x - UiFont.width(s, height) / 2 : x;
+		UiFont.draw(g, s, px, y, height, color, true);
 	}
 
 	public static void render(GuiGraphics g, DeltaTracker dt) {
@@ -179,13 +180,15 @@ public final class ZcHud {
 		// round counter (bottom left, red) and points
 		if (s.round() > 10) text(g, font, String.valueOf(s.round()), 14, h - 78, 5f, 0xFFB01010, false);
 		else tally(g, s.round(), 16, h - 74);
-		text(g, font, String.valueOf(s.points()), 16, h - 30, 2f, 0xFFFFFFFF, false);
+		if (s.points() != lastPoints) { if (s.points() > lastPoints && lastPoints >= 0) { popup = s.points() - lastPoints; popupTicks = 50; } lastPoints = s.points(); }
+		text(g, font, String.valueOf(s.points()), 16, h - 52, 2.4f, 0xFFFFFFFF, false);
+		if (popupTicks > 0) text(g, font, "+" + popup, 18, h - 26, 1.5f, (Math.min(255, popupTicks * 8) << 24) | 0x5FE0E8, false);
 
 		// ammo (bottom right)
 		if (s.mag() >= 0) {
 			if (!icons) text(g, font, s.gun(), w - 14 - font.width(s.gun()), h - 60, 1f, 0xFFDDDDDD, false);
-			String ammo = s.mag() + " / " + s.reserve();
-			text(g, font, ammo, w - 14 - (int) (font.width(ammo) * 2f), h - 48, 2f, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
+			String ammo = s.mag() + "/" + s.reserve();
+			text(g, font, ammo, w - 14 - UiFont.width(ammo, 9f * 2.4f * 1.3f), h - 50, 2.4f, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
 			if (GunFeedback.isReloading()) {
 				int barWidth = 64;
 				text(g, font, "RELOADING", w - 14 - font.width("RELOADING"), h - 25, 1f, 0xFFFFD878, false);
