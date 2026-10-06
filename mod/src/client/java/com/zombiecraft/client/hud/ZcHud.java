@@ -2,6 +2,7 @@ package com.zombiecraft.client.hud;
 
 import com.zombiecraft.client.ZombiecraftClient;
 import com.zombiecraft.client.GunFeedback;
+import com.zombiecraft.client.menu.UiArt;
 import com.zombiecraft.item.ModItems;
 import com.zombiecraft.net.Payloads;
 import net.minecraft.client.DeltaTracker;
@@ -67,8 +68,11 @@ public final class ZcHud {
 		previousHurtTime = previousPhase = damageFlashTicks = 0;
 	}
 
-	private static void damageFlash(GuiGraphics g, float partialTick) {
+	/** Red screen edge: a pulse when hit, and a steady one while health is low (BO2 has no hearts). */
+	private static void damageFlash(GuiGraphics g, Minecraft mc, float partialTick) {
 		float strength = Math.max(0f, (damageFlashTicks - partialTick) / DAMAGE_FLASH_TICKS);
+		float low = 1f - mc.player.getHealth() / (mc.player.getMaxHealth() * 0.5f);
+		strength = Math.max(strength, Math.max(0f, Math.min(1f, low)) * 0.8f);
 		if (strength <= 0f) return;
 		int w = g.guiWidth(), h = g.guiHeight();
 		int edge = Math.max(12, Math.min(48, Math.min(w, h) / 8));
@@ -84,26 +88,33 @@ public final class ZcHud {
 		}
 	}
 
-	private static void weaponSlots(GuiGraphics g, Minecraft mc) {
+	/** BO2 weapon icon files by weapon id (pack-a-punched guns use the base gun's icon). */
+	private static String icon(String weaponId) {
+		String id = weaponId.replace("_pap", "");
+		return switch (id) {
+			case "m1911" -> "menu_mp_weapons_1911_big";
+			case "rottweil72" -> "menu_mp_weapons_olympia_big";
+			case "mp5k" -> "menu_mp_weapons_mp5_big";
+			case "ray_gun" -> "menu_zm_weapons_raygun_big";
+			default -> "menu_mp_weapons_" + id + "_big";
+		};
+	}
+
+	/** The gun in hand as a big icon bottom right, the others small and dim to its left. Returns false when no icon art exists. */
+	private static boolean weaponIcons(GuiGraphics g, Minecraft mc) {
 		Inventory inventory = mc.player.getInventory();
-		int count = 0;
+		int w = g.guiWidth(), h = g.guiHeight(), x = w - 14 - 128, shown = 0;
 		for (int slot = 0; slot < Inventory.getSelectionSize(); slot++) {
-			if (ModItems.weaponOf(inventory.getItem(slot)) != null) count++;
+			String id = ModItems.weaponOf(inventory.getItem(slot));
+			if (id == null) continue;
+			if (slot == inventory.selected) {
+				if (!UiArt.draw(g, icon(id), w - 14 - 128, h - 118, 128, 64)) return false;
+			} else {
+				shown++;
+				UiArt.draw(g, icon(id), x - shown * 66, h - 98, 64, 32, 0x80FFFFFF);
+			}
 		}
-		if (count == 0) return;
-		int width = 28, gap = 4;
-		int x = (g.guiWidth() - (count * (width + gap) - gap)) / 2;
-		int y = g.guiHeight() - 27;
-		for (int slot = 0; slot < Inventory.getSelectionSize(); slot++) {
-			var stack = inventory.getItem(slot);
-			if (ModItems.weaponOf(stack) == null) continue;
-			boolean selected = slot == inventory.selected;
-			g.fill(x, y, x + width, y + 24, selected ? 0xC02A2722 : 0x8A141414);
-			g.renderOutline(x, y, width, 24, selected ? 0xFFD8A020 : 0x80666666);
-			g.renderItem(stack, x + 6, y + 2);
-			g.drawString(mc.font, Integer.toString(slot + 1), x + 2, y + 14, selected ? 0xFFFFD878 : 0xFFAAAAAA, true);
-			x += width + gap;
-		}
+		return true;
 	}
 
 	private static void hitMarker(GuiGraphics g, Minecraft mc, float partialTick) {
@@ -125,6 +136,15 @@ public final class ZcHud {
 		}
 	}
 
+	/** Blood-red chalk tally marks: four strokes struck through by a fifth. */
+	private static void tally(GuiGraphics g, int n, int x, int y) {
+		for (int group = 0; group * 5 < n; group++) {
+			int marks = Math.min(5, n - group * 5), gx = x + group * 40;
+			for (int i = 0; i < Math.min(4, marks); i++) { g.fill(gx + i * 7 + 1, y + 1, gx + i * 7 + 4, y + 33, 0xFF300404); g.fill(gx + i * 7, y, gx + i * 7 + 3, y + 32, 0xFFB01010); }
+			if (marks == 5) for (int k = 0; k < 32; k++) { int dx = gx - 2 + k * 30 / 32, dy = y + 30 - k; g.fill(dx, dy, dx + 4, dy + 3, 0xFFB01010); }
+		}
+	}
+
 	private static void text(GuiGraphics g, Font font, String s, int x, int y, float scale, int color, boolean centered) {
 		g.pose().pushPose();
 		g.pose().scale(scale, scale, 1f);
@@ -141,7 +161,7 @@ public final class ZcHud {
 		Font font = mc.font;
 		int w = g.guiWidth(), h = g.guiHeight();
 		float partialTick = dt.getGameTimeDeltaPartialTick(false);
-		damageFlash(g, partialTick);
+		damageFlash(g, mc, partialTick);
 
 		// tell the player where the sounds come from
 		var audio = com.zombiecraft.client.audio.AudioCache.status;
@@ -153,16 +173,17 @@ public final class ZcHud {
 			text(g, font, "You survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " round" : " rounds"), w / 2, h / 2 + 8, 2f, 0xFFFFFFFF, true);
 			return;
 		}
-		weaponSlots(g, mc);
+		boolean icons = weaponIcons(g, mc);
 		hitMarker(g, mc, partialTick);
 
 		// round counter (bottom left, red) and points
-		if (s.round() > 0) text(g, font, String.valueOf(s.round()), 14, h - 78, 5f, 0xFFB01010, false);
+		if (s.round() > 10) text(g, font, String.valueOf(s.round()), 14, h - 78, 5f, 0xFFB01010, false);
+		else tally(g, s.round(), 16, h - 74);
 		text(g, font, String.valueOf(s.points()), 16, h - 30, 2f, 0xFFFFFFFF, false);
 
 		// ammo (bottom right)
 		if (s.mag() >= 0) {
-			text(g, font, s.gun(), w - 14 - font.width(s.gun()), h - 60, 1f, 0xFFDDDDDD, false);
+			if (!icons) text(g, font, s.gun(), w - 14 - font.width(s.gun()), h - 60, 1f, 0xFFDDDDDD, false);
 			String ammo = s.mag() + " / " + s.reserve();
 			text(g, font, ammo, w - 14 - (int) (font.width(ammo) * 2f), h - 48, 2f, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
 			if (GunFeedback.isReloading()) {

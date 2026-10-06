@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Menu and loading-screen art from the player's own Black Ops II install, converted to PNG in the local cache
@@ -15,12 +16,18 @@ public final class UiAssets {
 	private UiAssets() {}
 
 	/** Bump when {@link #IMAGES} changes: the set is rebuilt once. */
-	public static final int VERSION = 1;
+	public static final int VERSION = 2;
 	/** Patches first: the first zone that has an image wins. */
-	static final String[] ZONES = {"patch_ui_zm", "ui_zm", "patch_zm", "code_post_gfx_zm"};
-	public static final String[] IMAGES = {"lui_bkg_zm", "lui_bkg_zm_rocks_back", "lui_bkg_zm_rocks_front", "menu_zm_title_screen",
-			"loadscreen_transit_standard_town", "loadscreen_transit_standard_busdepot",
-			"loadscreen_transit_standard_farm", "loadscreen_transit_classic"};
+	static final String[] ZONES = {"patch_ui_zm", "ui_zm", "patch_zm", "code_post_gfx_zm", "zm_transit"};
+	public static final String[] IMAGES = concat(
+			new String[] {"lui_bkg_zm", "lui_bkg_zm_rocks_back", "lui_bkg_zm_rocks_front", "menu_zm_title_screen",
+					"loadscreen_transit_standard_town", "loadscreen_transit_standard_busdepot", "loadscreen_transit_standard_farm", "loadscreen_transit_classic",
+					"menu_zm_tranzit_map_select_final", "menu_zm_map_frame", "menu_zm_map_signpost_nuketown", "pc_lock",
+					"menu_zm_weapons_raygun_big", "specialty_juggernaut_zombies", "specialty_fastreload_zombies", "specialty_doubletap_zombies", "specialty_quickrevive_zombies"},
+			names("menu_mp_weapons_%s_big", "1911", "olympia", "mp5", "ak74u", "m14", "m16", "galil", "python"));
+
+	private static String[] names(String fmt, String... ids) { return Arrays.stream(ids).map(i -> fmt.formatted(i)).toArray(String[]::new); }
+	private static String[] concat(String[] a, String[] b) { return Stream.concat(Arrays.stream(a), Arrays.stream(b)).toArray(String[]::new); }
 
 	public static Path dir(Path gameDir) { return Bo2Assets.cacheDir(gameDir).resolve("ui"); }
 	public static Path file(Path gameDir, String name) { return dir(gameDir).resolve(name + ".png"); }
@@ -47,7 +54,10 @@ public final class UiAssets {
 				if (src == null) { log.accept("menu image not found: " + name); continue; }
 				Dds.Image im = Dds.read(src);
 				BufferedImage bi = new BufferedImage(im.width(), im.height(), BufferedImage.TYPE_INT_ARGB);
-				bi.setRGB(0, 0, im.width(), im.height(), im.argb(), 0, im.width());
+				int[] px = im.argb();
+				// weapon icons are drawn on solid black: make black transparent
+				if (name.contains("_weapons_")) for (int i = 0; i < px.length; i++) { int c = px[i]; px[i] = (Math.max((c >> 16) & 255, Math.max((c >> 8) & 255, c & 255)) << 24) | (c & 0xFFFFFF); }
+				bi.setRGB(0, 0, im.width(), im.height(), px, 0, im.width());
 				ImageIO.write(bi, "png", file(gameDir, name).toFile());
 				n++;
 			}

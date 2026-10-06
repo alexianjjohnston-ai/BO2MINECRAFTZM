@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /** BO2 menu art from the local cache (built from the player's own install on first run). Everything returns false/null until it exists. */
-final class UiArt {
+public final class UiArt {
 	private UiArt() {}
 
 	private record Tex(ResourceLocation loc, int w, int h) {}
@@ -28,7 +28,7 @@ final class UiArt {
 	private static volatile boolean working, failed;
 
 	/** Starts the one-time conversion in the background if the cache is missing. */
-	static void ensure() {
+	public static void ensure() {
 		Path game = Minecraft.getInstance().gameDirectory.toPath();
 		if (UiAssets.ready(game) || working || failed) return;
 		working = true;
@@ -68,13 +68,16 @@ final class UiArt {
 		return t;
 	}
 
-	static boolean has(String name) { Tex t = tex(name); return t != null && t.loc != null; }
+	public static boolean has(String name) { Tex t = tex(name); return t != null && t.loc != null; }
 
 	/** Whole image stretched into the box. */
-	static boolean draw(GuiGraphics g, String name, int x, int y, int w, int h) {
+	public static boolean draw(GuiGraphics g, String name, int x, int y, int w, int h) { return draw(g, name, x, y, w, h, -1); }
+
+	/** Same, tinted by an ARGB colour (alpha fades it). */
+	public static boolean draw(GuiGraphics g, String name, int x, int y, int w, int h, int argb) {
 		Tex t = tex(name);
 		if (t == null || t.loc == null) return false;
-		g.blit(RenderType::guiTextured, t.loc, x, y, 0f, 0f, w, h, t.w, t.h, t.w, t.h);
+		g.blit(RenderType::guiTextured, t.loc, x, y, 0f, 0f, w, h, t.w, t.h, t.w, t.h, argb);
 		return true;
 	}
 

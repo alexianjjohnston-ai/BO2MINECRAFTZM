@@ -113,3 +113,9 @@ Dev tip: set `pauseOnLostFocus:false` in mod/run/options.txt or the integrated s
 
 ## Next
 Finish the BO2 zombie renderer on branch `bo2-visuals` (models, textures, anims are readable; renderer not wired). Then: bigger map, power/perks/power-ups, 3D guns, box model.
+
+## UI with real BO2 art (2026-10-06)
+Menus and HUD use art converted on the player's PC from their own install (`bo2/UiAssets`, cache `zombiecraft/bo2/ui/`, needs OAT Unlinker like the models). Falls back to plain drawing without it.
+Done: title screen, lobby, map select (Green Run open, 5 locked "coming soon"), BO2 loading postcards, pause menu, HUD (weapon icons incl. Ray Gun, round tally marks, low-health red edge instead of hearts/XP).
+Perk icons are extracted (specialty_*_zombies) but not drawn yet: the HUD perk row comes with the perk system.
+Dev: put `oat.dir=<OAT folder>` in mod/run/config/zombiecraft.properties so the dev client can build the art cache.

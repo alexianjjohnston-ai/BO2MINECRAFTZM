@@ -5,7 +5,9 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.GenericMessageScreen;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
+import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.ProgressScreen;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -32,6 +34,8 @@ public final class Bo2Menus {
 		ScreenEvents.AFTER_INIT.register((mc, screen, w, h) -> {
 			if (screen instanceof TitleScreen && !autoplay) {
 				mc.execute(() -> mc.setScreen(new Title()));
+			} else if (screen instanceof PauseScreen ps && ps.showsPauseMenu()) {
+				mc.execute(() -> mc.setScreen(new Pause()));
 			} else if (screen instanceof LevelLoadingScreen || screen instanceof ReceivingLevelScreen || screen instanceof ProgressScreen) {
 				long now = System.nanoTime();
 				if (now - loadSeen > 2_000_000_000L) { loadStart = now; loadscreen = LOADSCREENS[new Random().nextInt(LOADSCREENS.length)]; }
@@ -184,7 +188,7 @@ public final class Bo2Menus {
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
-			if (i == 0) AutoWorld.start(mc, this);
+			if (i == 0) mc.setScreen(new MapSelect(this));
 			else mc.setScreen(new OptionsScreen(this, mc.options));
 		}
 
@@ -212,6 +216,100 @@ public final class Bo2Menus {
 			g.drawString(font, "x " + Minecraft.getInstance().getUser().getName(), rx + 4, ry + 19, YELLOW, true);
 			g.fill(14, height - 22, 22, height - 14, 0xFFC8201C);
 			g.drawString(font, "Back (Esc)", 28, height - 22, WHITE, true);
+		}
+	}
+
+	/** Map select: only Green Run is playable for now. */
+	static final class MapSelect extends Screen {
+		private static final String[] NAMES = {"GREEN RUN", "NUKETOWN ZOMBIES", "DIE RISE", "MOB OF THE DEAD", "BURIED", "ORIGINS"};
+		private final Screen parent;
+		private int sel;
+
+		MapSelect(Screen parent) { super(Component.literal("Select map")); this.parent = parent; }
+
+		private int cardSize() { return Math.min((int) (width * 0.14), 130); }
+		private int cardX(int i) { int cs = cardSize(), gap = cs / 8; return (width - (NAMES.length * cs + (NAMES.length - 1) * gap)) / 2 + i * (cs + gap); }
+		private int cardY() { return (int) (height * 0.28); }
+
+		private void start() { if (sel == 0) AutoWorld.start(Minecraft.getInstance(), this); }
+
+		@Override public boolean mouseClicked(double mx, double my, int button) {
+			if (button == 0 && sel == 0) { start(); return true; }
+			return false;
+		}
+
+		@Override public boolean keyPressed(int key, int scan, int mods) {
+			if (key == GLFW.GLFW_KEY_ESCAPE) Minecraft.getInstance().setScreen(parent);
+			else if (key == GLFW.GLFW_KEY_RIGHT) sel = (sel + 1) % NAMES.length;
+			else if (key == GLFW.GLFW_KEY_LEFT) sel = (sel + NAMES.length - 1) % NAMES.length;
+			else if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) start();
+			else return super.keyPressed(key, scan, mods);
+			return true;
+		}
+
+		@Override public boolean shouldCloseOnEsc() { return false; }
+		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
+
+		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
+			var font = Minecraft.getInstance().font;
+			background(g, width, height);
+			text(g, "SELECT MAP", (int) (width * 0.1), (int) (height * 0.08), 3.0f, WHITE);
+			int cs = cardSize(), y = cardY();
+			for (int i = 0; i < NAMES.length; i++) {
+				int x = cardX(i);
+				if (mx >= x && mx <= x + cs && my >= y && my <= y + cs) sel = i;
+				boolean open = i == 0;
+				int inset = cs / 14;
+				if (open && !UiArt.draw(g, "menu_zm_tranzit_map_select_final", x + inset, y + inset, cs - 2 * inset, cs - 2 * inset)) g.fill(x + inset, y + inset, x + cs - inset, y + cs - inset, 0xFF2D4A78);
+				if (!open) {
+					g.fill(x + inset, y + inset, x + cs - inset, y + cs - inset, 0xFF0C0A08);
+					if (i == 1) UiArt.draw(g, "menu_zm_map_signpost_nuketown", x + cs / 4, y + cs / 4, cs / 2, cs / 2, 0x60FFFFFF);
+					UiArt.draw(g, "pc_lock", x + cs / 2 - 12, y + cs / 2 - 12, 24, 24);
+				}
+				UiArt.draw(g, "menu_zm_map_frame", x, y, cs, cs);
+				if (i == sel) g.renderOutline(x - 2, y - 2, cs + 4, cs + 4, ORANGE);
+			}
+			boolean open = sel == 0;
+			int cx = width / 2, ty = y + cs + 18;
+			g.fill(0, ty - 6, width, ty + 38, 0xA0000000);
+			String name = NAMES[sel];
+			text(g, name, cx - (int) (font.width(name) * 2.0f / 2), ty, 2.0f, open ? ORANGE : GREY);
+			String sub = open ? "Transit - Survive the diner. Press Enter or click to start." : "COMING SOON";
+			text(g, sub, cx - (int) (font.width(sub) * 1.0f / 2), ty + 24, 1.0f, open ? WHITE : GREY);
+			g.fill(14, height - 22, 22, height - 14, 0xFFC8201C);
+			g.drawString(font, "Back (Esc)", 28, height - 22, WHITE, true);
+		}
+	}
+
+	/** In-game pause menu in the same style. */
+	static final class Pause extends MenuScreen {
+		Pause() { super("Paused"); items = new String[] {"RESUME GAME", "OPTIONS", "LEAVE GAME"}; }
+
+		@Override protected void init() { x = (int) (width * 0.1); y0 = (int) (height * 0.3); }
+
+		@Override void activate(int i) {
+			Minecraft mc = Minecraft.getInstance();
+			switch (i) {
+				case 0 -> mc.setScreen(null);
+				case 1 -> mc.setScreen(new OptionsScreen(this, mc.options));
+				default -> {
+					boolean local = mc.isLocalServer();
+					mc.level.disconnect();
+					if (local) mc.disconnect(new GenericMessageScreen(Component.translatable("menu.savingLevel")));
+					else mc.disconnect();
+					mc.setScreen(new TitleScreen());
+				}
+			}
+		}
+
+		@Override public boolean shouldCloseOnEsc() { return true; }
+		@Override public boolean isPauseScreen() { return true; }
+
+		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
+			g.fillGradient(0, 0, width, height, 0x90000000, 0xB0000000);
+			g.fill(0, 0, (int) (width * 0.36), height, 0x70000000);
+			text(g, "PAUSED", x, (int) (height * 0.14), 3.0f, WHITE);
+			drawItems(g, mx, my);
 		}
 	}
 }
