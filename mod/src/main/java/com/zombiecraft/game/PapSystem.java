@@ -55,9 +55,9 @@ public final class PapSystem {
 			Cue.ui("zmb_cha_ching", p);
 			int slot = p.getInventory().selected;
 			weapon = g.weapon; user = p.getUUID();
+			WeaponSystem.cancelReload(p, pg);
 			pg.guns[slot] = null;
 			p.getInventory().setItem(slot, net.minecraft.world.item.ItemStack.EMPTY);
-			WeaponSystem.cancelReload(pg);
 			state = State.UPGRADING; timer = Sheets.sysInt("pap_upgrade_ticks");
 			display("zombiecraft:" + weapon);
 			Cue.at("zmb_perks_packa_upgrade", level, center());

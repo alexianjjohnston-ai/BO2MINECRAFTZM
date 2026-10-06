@@ -18,7 +18,7 @@ public final class Bo2Locator {
 
 	private static boolean valid(Path dir) { return dir != null && Files.isRegularFile(dir.resolve(PROOF)); }
 
-	/** Order: environment variable (Melty sets it), config file, Steam's library list, then common library folders on every drive. */
+	/** Order: environment variable config file, Steam's library list, then common library folders on every drive. */
 	public static Optional<Path> find(Path gameDir) {
 		List<Path> candidates = new ArrayList<>();
 		for (String key : new String[]{"ZOMBIECRAFT_BO2_DIR", "BO2_DIR"}) {

@@ -169,10 +169,16 @@ public final class Pose {
 	 * so the part sits exactly where the body's bones are, then rebuilds the skinning matrices.
 	 */
 	public void followWorld(Pose body) {
+		float[] r = new float[9], local = new float[12];
 		for (int i = 0; i < n; i++) {
 			int b = body.model.boneIndex(model.boneNames[i]);
-			if (b < 0) continue;
-			System.arraycopy(body.world, b * 12, world, i * 12, 12);
+			if (b >= 0) System.arraycopy(body.world, b * 12, world, i * 12, 12);
+			else if (model.parent[i] >= 0) {
+				// own bone (jaw, hair...): re-attach to the possibly moved parent
+				quatToMat(localQ, i * 4, r);
+				for (int a = 0; a < 3; a++) { local[a * 4] = r[a * 3]; local[a * 4 + 1] = r[a * 3 + 1]; local[a * 4 + 2] = r[a * 3 + 2]; local[a * 4 + 3] = localT[i * 3 + a]; }
+				mul34(world, model.parent[i] * 12, local, 0, world, i * 12);
+			}
 			mul34(world, i * 12, invBind, i * 12, skin, i * 12);
 		}
 	}

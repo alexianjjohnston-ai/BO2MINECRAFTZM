@@ -3,12 +3,14 @@ package com.zombiecraft.game;
 import com.zombiecraft.entity.ZcZombie;
 import com.zombiecraft.game.PlayerGame.Gun;
 import com.zombiecraft.item.ModItems;
+import com.zombiecraft.net.Payloads;
 import com.zombiecraft.sheet.Rows.WeaponDef;
 import com.zombiecraft.sheet.Sheets;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -31,10 +33,11 @@ public final class WeaponSystem {
 
 	/** Put a gun into a slot (and select it). */
 	public static void give(ServerPlayer p, PlayerGame pg, int slot, String weaponId, boolean pap) {
+		cancelReload(p, pg);
 		pg.guns[slot] = new Gun(weaponId, pap);
 		p.getInventory().setItem(slot, ModItems.stack(weaponId, pap));
 		p.getInventory().selected = slot;
-		cancelReload(pg);
+		p.connection.send(new ClientboundSetHeldSlotPacket(slot));
 	}
 
 	/** Slot a newly bought gun goes into: an empty slot, else the one in hand. */
@@ -49,7 +52,13 @@ public final class WeaponSystem {
 		return -1;
 	}
 
-	public static void cancelReload(PlayerGame pg) { pg.reloadSlot = -1; }
+	public static void cancelReload(ServerPlayer p, PlayerGame pg) {
+		if (pg.reloadSlot < 0) return;
+		Gun gun = pg.guns[pg.reloadSlot];
+		ServerPlayNetworking.send(p, new Payloads.CombatFeedback(Payloads.FEEDBACK_RELOAD_STOP, pg.reloadSlot,
+				gun == null ? "" : gun.weapon, 0, false, false));
+		pg.reloadSlot = -1;
+	}
 
 	/** Called every tick for every player in the game. */
 	public static void tick(Game game, ServerPlayer p, PlayerGame pg) {
@@ -58,7 +67,7 @@ public final class WeaponSystem {
 
 		// reload progress; switching guns cancels it
 		if (pg.reloadSlot >= 0) {
-			if (g == null || pg.guns[pg.reloadSlot] != g || p.getInventory().selected != pg.reloadSlot) cancelReload(pg);
+			if (g == null || pg.guns[pg.reloadSlot] != g || p.getInventory().selected != pg.reloadSlot) cancelReload(p, pg);
 			else {
 				WeaponDef w = g.def();
 				long total = pg.reloadEnd - pg.reloadStart;
@@ -69,7 +78,7 @@ public final class WeaponSystem {
 				if (now >= pg.reloadEnd) {
 					int n = Math.min(g.magSize() - g.mag, g.reserve);
 					g.mag += n; g.reserve -= n;
-					cancelReload(pg);
+					cancelReload(p, pg);
 				}
 			}
 		}
@@ -119,6 +128,8 @@ public final class WeaponSystem {
 		pg.reloadStart = game.tick;
 		pg.reloadEnd = game.tick + Math.max(4, (long) Math.ceil(seconds * 20));
 		pg.reloadStage = 0;
+		ServerPlayNetworking.send(p, new Payloads.CombatFeedback(Payloads.FEEDBACK_RELOAD_START, pg.reloadSlot,
+				g.weapon, (int) (pg.reloadEnd - pg.reloadStart), false, false));
 	}
 
 	private static Vec3 spread(Vec3 dir, double deg) {
@@ -143,7 +154,8 @@ public final class WeaponSystem {
 		WeaponDef w = g.def();
 		g.mag--;
 		Cue.ui(w.cueFire(), p);
-		p.swing(InteractionHand.MAIN_HAND);
+		ServerPlayNetworking.send(p, new Payloads.CombatFeedback(Payloads.FEEDBACK_SHOT, p.getInventory().selected,
+				g.weapon, 0, false, false));
 		Vec3 eye = p.getEyePosition();
 		Vec3 look = p.getViewVector(1f);
 

@@ -24,11 +24,15 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 2;
+	public static final int VERSION = 3;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
 	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit"};
-	static final String[] ASSET_TYPES = {"xmodel", "material", "image"};
+	static final String[] ASSET_TYPES = {"xmodel", "material", "image", "xanim"};
+	/** Animations copied into the cache (compiled xanim files are small). The renderer picks them by these names. */
+	public static final String[] ANIMS = {"ai_zombie_walk_v1", "ai_zombie_walk_v2", "ai_zombie_walk_v3", "ai_zombie_walk_v4",
+			"ai_zombie_run_v2", "ai_zombie_run_v3", "ai_zombie_sprint_v1", "ai_zombie_sprint_v2", "ai_zombie_attack_v1", "ai_zombie_attack_v2",
+			"ai_zombie_boardtear_aligned_m_1_pull", "ai_zombie_barricade_enter_m_v1", "ch_dazed_a_death", "ch_dazed_b_death"};
 
 	public static Path cacheDir(Path gameDir) { return gameDir.resolve("zombiecraft").resolve("bo2"); }
 
@@ -177,6 +181,13 @@ public final class Bo2Assets {
 			m.writeCompact(models.resolve(name + ".zcm"));
 			written++;
 		}
+		Path anims = cache.resolve("anims");
+		Files.createDirectories(anims);
+		for (String a : ANIMS)
+			for (Path z : zoneDirs) {
+				Path f = z.resolve("xanim").resolve(a);
+				if (Files.isRegularFile(f)) { Files.copy(f, anims.resolve(a), StandardCopyOption.REPLACE_EXISTING); break; }
+			}
 		if (!missing.isEmpty()) log.accept("models not found in this install: " + missing);
 		Properties p = new Properties();
 		p.setProperty("version", String.valueOf(VERSION));
