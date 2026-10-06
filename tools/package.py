@@ -59,7 +59,6 @@ os.makedirs(os.path.join(mc, 'mods')); os.makedirs(os.path.join(mc, 'config'))
 open(os.path.join(prism, 'instances', 'instgroups.json'), 'w').write(json.dumps({"formatVersion": "1", "groups": {}}))
 open(os.path.join(inst, 'instance.cfg'), 'w', newline='\n').write('\n'.join([
     '[General]', 'ConfigVersion=1.2', 'InstanceType=OneSix', 'iconKey=default', 'name=Zombiecraft', f'notes=Zombiecraft {VERSION}',
-    'OverrideJavaArgs=true', 'JvmArgs=-Dzombiecraft.autoplay=true',
     'OverrideMemory=true', 'MaxMemAlloc=3072', 'MinMemAlloc=1024',
     'OverrideConsole=true', 'ShowConsole=false', 'ShowConsoleOnError=true', 'AutoCloseConsole=true', 'RecordGameTime=false', ''
 ]))

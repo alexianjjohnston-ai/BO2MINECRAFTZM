@@ -32,17 +32,18 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
-// the dev client skips the title screen and opens the flat Zombiecraft world by itself
+// bench runs skip the menus and open the flat Zombiecraft world by itself
 loom {
 	runs {
 		client {
-			vmArg "-Dzombiecraft.autoplay=true"
 			if (project.hasProperty("bench")) {
 				vmArg "-Dzombiecraft.bench=1"
+				vmArg "-Dzombiecraft.autoplay=true"
 				runDir "run/bench"
 			}
 			if (project.hasProperty("feelBench")) {
 				vmArg "-Dzombiecraft.feelBench=true"
+				vmArg "-Dzombiecraft.autoplay=true"
 				runDir "run/feel-bench"
 			}
 		}

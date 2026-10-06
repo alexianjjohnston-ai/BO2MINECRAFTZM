@@ -28,11 +28,11 @@ public final class AutoWorld {
 		ScreenEvents.AFTER_INIT.register((mc, screen, w, h) -> {
 			if (done || !(screen instanceof TitleScreen)) return;
 			done = true;
-			mc.execute(() -> open(mc, screen));
+			mc.execute(() -> start(mc, screen));
 		});
 	}
 
-	private static void open(Minecraft mc, net.minecraft.client.gui.screens.Screen title) {
+	public static void start(Minecraft mc, net.minecraft.client.gui.screens.Screen title) {
 		try {
 			if (mc.getLevelSource().levelExists(WORLD)) {
 				ZombiecraftMod.LOG.info("Zombiecraft: opening the existing world");
