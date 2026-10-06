@@ -22,7 +22,10 @@ public final class Bo2Menus {
 	private Bo2Menus() {}
 
 	static final int ORANGE = 0xFFF08A1C, WHITE = 0xFFF2EEE6, GREY = 0xFF9A958C, YELLOW = 0xFFF5D547;
+	private static final long T0 = System.nanoTime();
 	private static long loadStart, loadSeen;
+	private static final String[] LOADSCREENS = {"loadscreen_transit_standard_town", "loadscreen_transit_standard_busdepot", "loadscreen_transit_standard_farm", "loadscreen_transit_classic"};
+	private static String loadscreen = LOADSCREENS[0];
 
 	public static void register() {
 		boolean autoplay = Boolean.getBoolean("zombiecraft.autoplay");
@@ -31,7 +34,7 @@ public final class Bo2Menus {
 				mc.execute(() -> mc.setScreen(new Title()));
 			} else if (screen instanceof LevelLoadingScreen || screen instanceof ReceivingLevelScreen || screen instanceof ProgressScreen) {
 				long now = System.nanoTime();
-				if (now - loadSeen > 2_000_000_000L) loadStart = now;
+				if (now - loadSeen > 2_000_000_000L) { loadStart = now; loadscreen = LOADSCREENS[new Random().nextInt(LOADSCREENS.length)]; }
 				ScreenEvents.afterRender(screen).register((s, g, mx, my, dt) -> loading(g, s.width, s.height));
 			}
 		});
@@ -47,6 +50,17 @@ public final class Bo2Menus {
 
 	/** Dark asteroid field with a warm glow, like the BO2 Zombies menu. */
 	static void background(GuiGraphics g, int w, int h) {
+		UiArt.ensure();
+		if (UiArt.cover(g, "lui_bkg_zm", w, h)) {
+			// two drifting rock strips, far one slower
+			float t = (System.nanoTime() - T0) / 1e9f;
+			int sh = w / 4;
+			for (int layer = 0; layer < 2; layer++) {
+				int off = (int) ((t * (layer == 0 ? 4 : 9)) % w);
+				for (int k = -1; k <= 0; k++) UiArt.draw(g, layer == 0 ? "lui_bkg_zm_rocks_back" : "lui_bkg_zm_rocks_front", k * w + off, (int) (h * 0.5) - sh / 2, w, sh);
+			}
+			return;
+		}
 		g.fillGradient(0, 0, w, h, 0xFF1C140D, 0xFF050403);
 		int cx = (int) (w * 0.38), cy = (int) (h * 0.55);
 		for (int r = 200; r >= 10; r -= 10) g.fill(cx - r * 3, cy - r / 3, cx + r * 3, cy + r / 3, (7 << 24) | 0xFFB347);
@@ -61,11 +75,21 @@ public final class Bo2Menus {
 		long now = System.nanoTime();
 		loadSeen = now;
 		float t = (now - loadStart) / 1e9f;
-		background(g, w, h);
+		boolean art = UiArt.cover(g, loadscreen, w, h);
+		if (art) g.fillGradient(0, 0, w, 60, 0xB0000000, 0x00000000);
+		else background(g, w, h);
 		text(g, "GREEN RUN", 14, 12, 1.0f, ORANGE);
 		text(g, "NORTHERN HEMISPHERE", 14, 24, 0.7f, GREY);
 		text(g, "SURVIVAL", 14, 33, 0.7f, GREY);
-		// the postcard
+		if (!art) postcard(g, w, h);
+		// progress line + status
+		g.fill(14, h - 22, w - 14, h - 21, 0x40FFFFFF);
+		g.fill(14, h - 22, 14 + (int) ((w - 28) * (1 - Math.exp(-t / 2.5))), h - 21, ORANGE);
+		text(g, "Awaiting challenge...", 14, h - 16, 0.7f, GREY);
+	}
+
+	/** Plain-drawn postcard for installs without BO2 art. */
+	private static void postcard(GuiGraphics g, int w, int h) {
 		int cw = Math.min(w - 80, 300), ch = cw * 5 / 8, x = (w - cw) / 2, y = (h - ch) / 2 - 10;
 		g.fill(x - 3, y - 3, x + cw + 3, y + ch + 3, 0xFF000000);
 		g.fill(x, y, x + cw, y + ch, 0xFFD9CDB0);
@@ -78,10 +102,6 @@ public final class Bo2Menus {
 			g.fill(bx, by, bx + s, by + s, 0xFF7A0C0C);
 		}
 		g.drawString(Minecraft.getInstance().font, Component.literal("Greetings!").withStyle(ChatFormatting.ITALIC), x + cw / 8, y + ch * 2 / 3, 0xFF8A3A1A, false);
-		// progress line + status
-		g.fill(14, h - 22, w - 14, h - 21, 0x40FFFFFF);
-		g.fill(14, h - 22, 14 + (int) ((w - 28) * (1 - Math.exp(-t / 2.5))), h - 21, ORANGE);
-		text(g, "Awaiting challenge...", 14, h - 16, 0.7f, GREY);
 	}
 
 	/** Shared menu behaviour: a vertical list of text items with an orange [bracket] on the selected one. */
@@ -139,11 +159,15 @@ public final class Bo2Menus {
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			background(g, width, height);
 			int lx = (int) (width * 0.16), ly = (int) (height * 0.2);
-			text(g, "BLACK OPS", lx, ly, 3.0f, WHITE);
-			text(g, "II", lx + 3 * Minecraft.getInstance().font.width("BLACK OPS "), ly, 3.0f, ORANGE);
-			text(g, "ZOMBIES", lx, ly + 30, 5.0f, 0xFFB9B2A6);
+			int lw = (int) (width * 0.42);
+			if (!UiArt.draw(g, "menu_zm_title_screen", lx - lw / 14, ly - lw / 5, lw, lw / 2)) {
+				text(g, "BLACK OPS", lx, ly, 3.0f, WHITE);
+				text(g, "II", lx + 3 * Minecraft.getInstance().font.width("BLACK OPS "), ly, 3.0f, ORANGE);
+				text(g, "ZOMBIES", lx, ly + 30, 5.0f, 0xFFB9B2A6);
+			}
 			drawItems(g, mx, my);
 			text(g, "ZOMBIECRAFT - unofficial fan project", width - 190, 8, 0.7f, GREY);
+			if (UiArt.busy()) text(g, "Preparing Black Ops II art...", 14, height - 14, 0.7f, GREY);
 		}
 	}
 
