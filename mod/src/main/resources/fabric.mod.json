@@ -1,0 +1,20 @@
+{
+	"schemaVersion": 1,
+	"id": "zombiecraft",
+	"version": "${version}",
+	"name": "Zombiecraft",
+	"description": "Black Ops II style Zombies in Minecraft. Unofficial fan project, not affiliated with Activision or Mojang. Sounds come from the player's own Black Ops II install and are never shipped.",
+	"authors": ["Zombiecraft"],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["com.zombiecraft.ZombiecraftMod"],
+		"client": ["com.zombiecraft.client.ZombiecraftClient"]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

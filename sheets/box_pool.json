@@ -1,0 +1,50 @@
+[
+ {
+  "id": "pool_rottweil72",
+  "weaponId": "rottweil72",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_mp5k",
+  "weaponId": "mp5k",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_ak74u",
+  "weaponId": "ak74u",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_m14",
+  "weaponId": "m14",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_m16",
+  "weaponId": "m16",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_galil",
+  "weaponId": "galil",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_python",
+  "weaponId": "python",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_ray_gun",
+  "weaponId": "ray_gun",
+  "weight": 0.35,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "id": "r_none",
+  "usesMin": 0,
+  "usesMax": 3,
+  "moves": "any",
+  "teddyPct": 0,
+  "source": "_zm_magicbox.gsc",
+  "note": "fewer than chest_min_move_usage uses: never a teddy"
+ },
+ {
+  "id": "r_early",
+  "usesMin": 4,
+  "usesMax": 7,
+  "moves": "any",
+  "teddyPct": 15,
+  "source": "_zm_magicbox.gsc",
+  "note": "4-7 uses: 15% teddy"
+ },
+ {
+  "id": "r_first_forced",
+  "usesMin": 8,
+  "usesMax": 999,
+  "moves": "zero",
+  "teddyPct": 100,
+  "source": "_zm_magicbox.gsc",
+  "note": "8+ uses and the box has never moved: teddy guaranteed"
+ },
+ {
+  "id": "r_mid",
+  "usesMin": 8,
+  "usesMax": 12,
+  "moves": "positive",
+  "teddyPct": 30,
+  "source": "_zm_magicbox.gsc",
+  "note": "8-12 uses after it has moved: 30%"
+ },
+ {
+  "id": "r_late",
+  "usesMin": 13,
+  "usesMax": 999,
+  "moves": "positive",
+  "teddyPct": 50,
+  "source": "_zm_magicbox.gsc",
+  "note": "13+ uses after it has moved: 50%"
+ }
+]

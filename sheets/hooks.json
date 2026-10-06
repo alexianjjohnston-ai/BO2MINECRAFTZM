@@ -1,0 +1,164 @@
+[
+ {
+  "id": "h_join",
+  "system": "bootstrap",
+  "kind": "event",
+  "target": "ServerPlayConnectionEvents.JOIN",
+  "handler": "GameBootstrap.onJoin",
+  "status": "todo",
+  "note": "build the map once, set gamerules and time, give the starting gun, start the game"
+ },
+ {
+  "id": "h_tick",
+  "system": "rounds",
+  "kind": "event",
+  "target": "ServerTickEvents.END_SERVER_TICK",
+  "handler": "RoundDirector.tick",
+  "status": "todo",
+  "note": "round state machine: countdown, spawning, intermission"
+ },
+ {
+  "id": "h_gun_use",
+  "system": "weapons",
+  "kind": "item",
+  "target": "GunItem.use / onUseTick",
+  "handler": "GunItem",
+  "status": "todo",
+  "note": "right click fires; holding repeats for auto weapons"
+ },
+ {
+  "id": "h_gun_reload",
+  "system": "weapons",
+  "kind": "key",
+  "target": "client key R -> ReloadPayload (C2S)",
+  "handler": "WeaponSystem.reload",
+  "status": "todo",
+  "note": "reload with the BO2 mag-out/in/end cues"
+ },
+ {
+  "id": "h_block_use",
+  "system": "interact",
+  "kind": "event",
+  "target": "UseBlockCallback.EVENT",
+  "handler": "Interactions.onUseBlock",
+  "status": "todo",
+  "note": "box chest, Pack-a-Punch machine, board repair"
+ },
+ {
+  "id": "h_entity_use",
+  "system": "interact",
+  "kind": "event",
+  "target": "UseEntityCallback.EVENT",
+  "handler": "Interactions.onUseEntity",
+  "status": "todo",
+  "note": "wall-buy item frames"
+ },
+ {
+  "id": "h_attack",
+  "system": "melee",
+  "kind": "event",
+  "target": "AttackEntityCallback.EVENT",
+  "handler": "Melee.onAttack",
+  "status": "todo",
+  "note": "left click is the knife"
+ },
+ {
+  "id": "h_damage",
+  "system": "zombies",
+  "kind": "event",
+  "target": "ServerLivingEntityEvents.ALLOW_DAMAGE",
+  "handler": "ZombieHealth.onDamage",
+  "status": "todo",
+  "note": "cancel vanilla damage to Zombiecraft zombies; hit points are our own"
+ },
+ {
+  "id": "h_player_death",
+  "system": "bootstrap",
+  "kind": "event",
+  "target": "ServerLivingEntityEvents.ALLOW_DEATH",
+  "handler": "GameOver.onPlayerDeath",
+  "status": "todo",
+  "note": "game over screen then restart"
+ },
+ {
+  "id": "h_zombie_entity",
+  "system": "zombies",
+  "kind": "entity",
+  "target": "ZcZombie extends Zombie",
+  "handler": "ZcZombie",
+  "status": "todo",
+  "note": "own goals: go to the window, tear boards, climb in, hunt the player"
+ },
+ {
+  "id": "h_commands",
+  "system": "dev",
+  "kind": "command",
+  "target": "CommandRegistrationCallback.EVENT",
+  "handler": "DevCommands",
+  "status": "todo",
+  "note": "/zc start|stop|round N|points N|give ID|status for testing"
+ },
+ {
+  "id": "h_state_sync",
+  "system": "net",
+  "kind": "network",
+  "target": "ServerPlayNetworking.send StateSync (S2C)",
+  "handler": "StateSync",
+  "status": "todo",
+  "note": "round, points, ammo, boards, box state to the HUD"
+ },
+ {
+  "id": "h_cue_net",
+  "system": "net",
+  "kind": "network",
+  "target": "ServerPlayNetworking.send CuePlay (S2C)",
+  "handler": "AudioNet",
+  "status": "todo",
+  "note": "tells clients which BO2 cue to play at a position"
+ },
+ {
+  "id": "h_hud",
+  "system": "hud",
+  "kind": "event",
+  "target": "HudRenderCallback.EVENT",
+  "handler": "ZcHud.render",
+  "status": "todo",
+  "note": "round number, points, ammo, messages"
+ },
+ {
+  "id": "h_audio_boot",
+  "system": "audio",
+  "kind": "event",
+  "target": "ClientLifecycleEvents.CLIENT_STARTED",
+  "handler": "AudioCache.prepare",
+  "status": "todo",
+  "note": "find BO2, read sound banks, write the local cue cache"
+ },
+ {
+  "id": "h_audio_play",
+  "system": "audio",
+  "kind": "client",
+  "target": "CuePlayer via OpenAL",
+  "handler": "CuePlayer",
+  "status": "todo",
+  "note": "plays cached WAV cues (positional or 2D), falls back to vanilla sounds"
+ },
+ {
+  "id": "h_food",
+  "system": "bootstrap",
+  "kind": "event",
+  "target": "ServerTickEvents.END_SERVER_TICK",
+  "handler": "PlayerRules.tick",
+  "status": "todo",
+  "note": "keep food full, custom health regeneration"
+ },
+ {
+  "id": "h_barrier_ai",
+  "system": "zombies",
+  "kind": "goal",
+  "target": "ZcZombie.registerGoals",
+  "handler": "BarrierGoal",
+  "status": "todo",
+  "note": "walk to the window attack spot, tear boards, then enter"
+ }
+]

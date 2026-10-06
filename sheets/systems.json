@@ -1,0 +1,386 @@
+[
+ {
+  "id": "start_points",
+  "value": 500,
+  "unit": "pts",
+  "source": "_zm.gsc level.player_starting_points = round*500",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "max_alive",
+  "value": 24,
+  "unit": "zombies",
+  "source": "_zm.gsc zombie_max_ai",
+  "status": "script",
+  "note": "cap on simultaneously alive zombies (solo)"
+ },
+ {
+  "id": "ai_per_player",
+  "value": 6,
+  "unit": "zombies",
+  "source": "_zm.gsc zombie_ai_per_player",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "between_round_s",
+  "value": 10,
+  "unit": "s",
+  "source": "_zm.gsc zombie_between_round_time",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "spawn_delay_start_s",
+  "value": 2.0,
+  "unit": "s",
+  "source": "_zm.gsc zombie_spawn_delay",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "spawn_delay_mult",
+  "value": 0.95,
+  "unit": "x/round",
+  "source": "_zm.gsc round loop",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "spawn_delay_min_s",
+  "value": 0.08,
+  "unit": "s",
+  "source": "_zm.gsc",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "health_start",
+  "value": 150,
+  "unit": "hp",
+  "source": "_zm.gsc zombie_health_start",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "health_add_to_r9",
+  "value": 100,
+  "unit": "hp/round",
+  "source": "_zm.gsc ai_calculate_health",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "health_mult_from_r10",
+  "value": 1.1,
+  "unit": "x/round",
+  "source": "_zm.gsc ai_calculate_health",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "speed_var_per_round",
+  "value": 8,
+  "unit": "x/round",
+  "source": "_zm.gsc zombie_move_speed_multiplier",
+  "status": "script",
+  "note": "zombie_move_speed = round*8"
+ },
+ {
+  "id": "speed_roll_width",
+  "value": 35,
+  "unit": "roll",
+  "source": "_zm_utility.gsc set_run_speed",
+  "status": "script",
+  "note": "rand in [v, v+35): <=35 walk, <=70 run, else sprint"
+ },
+ {
+  "id": "speed_walk_max",
+  "value": 35,
+  "unit": "roll",
+  "source": "_zm_utility.gsc",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "speed_run_max",
+  "value": 70,
+  "unit": "roll",
+  "source": "_zm_utility.gsc",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "hit_points",
+  "value": 10,
+  "unit": "pts",
+  "source": "_zm.gsc zombie_score_damage_normal",
+  "status": "script",
+  "note": "per non-lethal hit"
+ },
+ {
+  "id": "kill_points",
+  "value": 50,
+  "unit": "pts",
+  "source": "_zm.gsc zombie_score_kill_1player",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "bonus_head",
+  "value": 50,
+  "unit": "pts",
+  "source": "_zm.gsc zombie_score_bonus_head",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "bonus_neck",
+  "value": 20,
+  "unit": "pts",
+  "source": "_zm.gsc zombie_score_bonus_neck",
+  "status": "script",
+  "note": "not used: Minecraft hitboxes have no neck zone"
+ },
+ {
+  "id": "bonus_torso",
+  "value": 10,
+  "unit": "pts",
+  "source": "_zm.gsc zombie_score_bonus_torso",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "bonus_melee",
+  "value": 80,
+  "unit": "pts",
+  "source": "_zm.gsc zombie_score_bonus_melee",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "box_cost",
+  "value": 950,
+  "unit": "pts",
+  "source": "_zm_magicbox.gsc",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "box_timeout_s",
+  "value": 12,
+  "unit": "s",
+  "source": "_zm_magicbox.gsc treasure_chest_timeout",
+  "status": "script",
+  "note": "weapon is taken back after this"
+ },
+ {
+  "id": "box_min_uses_before_teddy",
+  "value": 4,
+  "unit": "uses",
+  "source": "_zm_magicbox.gsc chest_min_move_usage",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "pap_cost",
+  "value": 5000,
+  "unit": "pts",
+  "source": "_zm_perks.gsc",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "pap_pickup_timeout_s",
+  "value": 15,
+  "unit": "s",
+  "source": "_zm_perks.gsc packapunch_timeout",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "pap_upgrade_ticks",
+  "value": 70,
+  "unit": "ticks",
+  "source": "",
+  "status": "tuned",
+  "note": "time the machine takes before the weapon is ready"
+ },
+ {
+  "id": "board_repair_points",
+  "value": 10,
+  "unit": "pts",
+  "source": "_zm_blockers.gsc cost = 10",
+  "status": "script",
+  "note": "per board repaired"
+ },
+ {
+  "id": "board_cap_mult",
+  "value": 50,
+  "unit": "pts/round",
+  "source": "_zm.gsc maxreward = 50*round",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "board_cap_max",
+  "value": 500,
+  "unit": "pts",
+  "source": "_zm.gsc",
+  "status": "script",
+  "note": ""
+ },
+ {
+  "id": "board_repair_ticks",
+  "value": 18,
+  "unit": "ticks",
+  "source": "",
+  "status": "tuned",
+  "note": "time to repair one board while holding use"
+ },
+ {
+  "id": "board_tear_ticks",
+  "value": 50,
+  "unit": "ticks",
+  "source": "",
+  "status": "tuned",
+  "note": "time a zombie takes to tear one board"
+ },
+ {
+  "id": "wallbuy_ammo_ratio",
+  "value": 0.5,
+  "unit": "x",
+  "source": "",
+  "status": "tuned",
+  "note": "ammo refill from a wall costs half the gun"
+ },
+ {
+  "id": "first_round_delay_s",
+  "value": 15,
+  "unit": "s",
+  "source": "",
+  "status": "tuned",
+  "note": "countdown before round 1 after the game starts"
+ },
+ {
+  "id": "player_max_health",
+  "value": 20,
+  "unit": "hp",
+  "source": "",
+  "status": "tuned",
+  "note": "vanilla scale, 10 hearts"
+ },
+ {
+  "id": "zombie_hit_damage",
+  "value": 10,
+  "unit": "hp",
+  "source": "",
+  "status": "tuned",
+  "note": "two hits down the player (BO2: 2 hits)"
+ },
+ {
+  "id": "regen_delay_ticks",
+  "value": 100,
+  "unit": "ticks",
+  "source": "",
+  "status": "tuned",
+  "note": "no damage for this long, then health regenerates"
+ },
+ {
+  "id": "regen_per_tick",
+  "value": 0.1,
+  "unit": "hp",
+  "source": "",
+  "status": "tuned",
+  "note": ""
+ },
+ {
+  "id": "melee_damage",
+  "value": 150,
+  "unit": "hp",
+  "source": "",
+  "status": "tuned",
+  "note": "knife stab (BO2 base knife)"
+ },
+ {
+  "id": "melee_range",
+  "value": 2.4,
+  "unit": "blocks",
+  "source": "",
+  "status": "tuned",
+  "note": ""
+ },
+ {
+  "id": "melee_cooldown_ticks",
+  "value": 14,
+  "unit": "ticks",
+  "source": "",
+  "status": "tuned",
+  "note": ""
+ },
+ {
+  "id": "headshot_band",
+  "value": 0.28,
+  "unit": "fraction",
+  "source": "",
+  "status": "tuned",
+  "note": "top fraction of a zombie's hitbox counts as head"
+ },
+ {
+  "id": "zombie_follow_range",
+  "value": 64,
+  "unit": "blocks",
+  "source": "",
+  "status": "tuned",
+  "note": ""
+ },
+ {
+  "id": "world_time",
+  "value": 18000,
+  "unit": "ticks",
+  "source": "",
+  "status": "tuned",
+  "note": "midnight, frozen"
+ },
+ {
+  "id": "map_origin_y_offset",
+  "value": 0,
+  "unit": "blocks",
+  "source": "",
+  "status": "tuned",
+  "note": "ground layer relative to the world surface"
+ },
+ {
+  "id": "max_round_rows",
+  "value": 40,
+  "unit": "rounds",
+  "source": "",
+  "status": "tuned",
+  "note": "rows generated in rounds.json"
+ },
+ {
+  "id": "game_over_delay_s",
+  "value": 8,
+  "unit": "s",
+  "source": "",
+  "status": "tuned",
+  "note": "time on the game-over screen before restart"
+ },
+ {
+  "id": "zombie_sprint_speed_attr",
+  "value": 0.3,
+  "unit": "attr",
+  "source": "",
+  "status": "tuned",
+  "note": "movement attribute of a sprinting zombie; walk and run scale from it (zombies.json speedRatio). Calibrate in game"
+ },
+ {
+  "id": "interact_reach",
+  "value": 3.4,
+  "unit": "blocks",
+  "source": "",
+  "status": "tuned",
+  "note": "how far away the F key works on the box, machine and wall guns"
+ }
+]

@@ -1,0 +1,44 @@
+[
+ {
+  "id": "walk",
+  "speedRatio": 0.38,
+  "hitDamageKey": "zombie_hit_damage",
+  "attackIntervalTicks": 20,
+  "reachBlocks": 1.7,
+  "cueAmbient": "zmb_vocals_zombie_ambience",
+  "cueAttack": "zmb_vocals_zombie_attack",
+  "cueDeath": "zmb_vocals_zombie_death",
+  "cueSpawn": "zmb_zombie_spawn",
+  "cueTear": "zmb_vocals_zombie_teardown",
+  "cueRun": "zmb_vocals_zombie_ambience",
+  "status": "tuned"
+ },
+ {
+  "id": "run",
+  "speedRatio": 0.68,
+  "hitDamageKey": "zombie_hit_damage",
+  "attackIntervalTicks": 20,
+  "reachBlocks": 1.7,
+  "cueAmbient": "zmb_vocals_zombie_ambience",
+  "cueAttack": "zmb_vocals_zombie_attack",
+  "cueDeath": "zmb_vocals_zombie_death",
+  "cueSpawn": "zmb_zombie_spawn",
+  "cueTear": "zmb_vocals_zombie_teardown",
+  "cueRun": "zmb_vocals_zombie_sprint",
+  "status": "tuned"
+ },
+ {
+  "id": "sprint",
+  "speedRatio": 1.0,
+  "hitDamageKey": "zombie_hit_damage",
+  "attackIntervalTicks": 20,
+  "reachBlocks": 1.7,
+  "cueAmbient": "zmb_vocals_zombie_ambience",
+  "cueAttack": "zmb_vocals_zombie_attack",
+  "cueDeath": "zmb_vocals_zombie_death",
+  "cueSpawn": "zmb_zombie_spawn",
+  "cueTear": "zmb_vocals_zombie_teardown",
+  "cueRun": "zmb_vocals_zombie_sprint",
+  "status": "tuned"
+ }
+]

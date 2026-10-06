@@ -1,0 +1,8 @@
+mod/build/
+mod/.gradle/
+mod/run/
+mod/.idea/
+*.log
+shots/
+dist/
+.claude/

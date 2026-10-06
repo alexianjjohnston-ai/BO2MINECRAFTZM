@@ -1,0 +1,15 @@
+{
+ "key.zombiecraft.interact": "Buy / Use / Repair",
+ "key.zombiecraft.reload": "Reload",
+ "key.categories.zombiecraft": "Zombiecraft",
+ "item.zombiecraft.m1911": "M1911",
+ "item.zombiecraft.rottweil72": "Olympia",
+ "item.zombiecraft.mp5k": "MP5K",
+ "item.zombiecraft.ak74u": "AK74u",
+ "item.zombiecraft.m14": "M14",
+ "item.zombiecraft.m16": "M16",
+ "item.zombiecraft.galil": "Galil",
+ "item.zombiecraft.python": "Python",
+ "item.zombiecraft.ray_gun": "Ray Gun",
+ "entity.zombiecraft.zombie": "Zombie"
+}

@@ -1,0 +1,402 @@
+[
+ {
+  "round": 1,
+  "zombies": 6,
+  "health": 150,
+  "spawnDelay": 2.0,
+  "walkPct": 100,
+  "runPct": 0,
+  "sprintPct": 0,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 2,
+  "zombies": 8,
+  "health": 250,
+  "spawnDelay": 1.9,
+  "walkPct": 57,
+  "runPct": 43,
+  "sprintPct": 0,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 3,
+  "zombies": 13,
+  "health": 350,
+  "spawnDelay": 1.805,
+  "walkPct": 34,
+  "runPct": 66,
+  "sprintPct": 0,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 4,
+  "zombies": 18,
+  "health": 450,
+  "spawnDelay": 1.715,
+  "walkPct": 11,
+  "runPct": 89,
+  "sprintPct": 0,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 5,
+  "zombies": 24,
+  "health": 550,
+  "spawnDelay": 1.629,
+  "walkPct": 0,
+  "runPct": 89,
+  "sprintPct": 11,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 6,
+  "zombies": 27,
+  "health": 650,
+  "spawnDelay": 1.548,
+  "walkPct": 0,
+  "runPct": 66,
+  "sprintPct": 34,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 7,
+  "zombies": 28,
+  "health": 750,
+  "spawnDelay": 1.47,
+  "walkPct": 0,
+  "runPct": 43,
+  "sprintPct": 57,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 8,
+  "zombies": 28,
+  "health": 850,
+  "spawnDelay": 1.397,
+  "walkPct": 0,
+  "runPct": 20,
+  "sprintPct": 80,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 9,
+  "zombies": 29,
+  "health": 950,
+  "spawnDelay": 1.327,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 10,
+  "zombies": 33,
+  "health": 1045,
+  "spawnDelay": 1.26,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 11,
+  "zombies": 34,
+  "health": 1149,
+  "spawnDelay": 1.197,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 12,
+  "zombies": 36,
+  "health": 1263,
+  "spawnDelay": 1.138,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 13,
+  "zombies": 39,
+  "health": 1389,
+  "spawnDelay": 1.081,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 14,
+  "zombies": 41,
+  "health": 1527,
+  "spawnDelay": 1.027,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 15,
+  "zombies": 44,
+  "health": 1679,
+  "spawnDelay": 0.975,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 16,
+  "zombies": 47,
+  "health": 1846,
+  "spawnDelay": 0.927,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 17,
+  "zombies": 50,
+  "health": 2030,
+  "spawnDelay": 0.88,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 18,
+  "zombies": 53,
+  "health": 2233,
+  "spawnDelay": 0.836,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 19,
+  "zombies": 56,
+  "health": 2456,
+  "spawnDelay": 0.794,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 20,
+  "zombies": 60,
+  "health": 2701,
+  "spawnDelay": 0.755,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 21,
+  "zombies": 63,
+  "health": 2971,
+  "spawnDelay": 0.717,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 22,
+  "zombies": 67,
+  "health": 3268,
+  "spawnDelay": 0.681,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 23,
+  "zombies": 71,
+  "health": 3594,
+  "spawnDelay": 0.647,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 24,
+  "zombies": 75,
+  "health": 3953,
+  "spawnDelay": 0.615,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 25,
+  "zombies": 80,
+  "health": 4348,
+  "spawnDelay": 0.584,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 26,
+  "zombies": 84,
+  "health": 4782,
+  "spawnDelay": 0.555,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 27,
+  "zombies": 89,
+  "health": 5260,
+  "spawnDelay": 0.527,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 28,
+  "zombies": 94,
+  "health": 5786,
+  "spawnDelay": 0.501,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 29,
+  "zombies": 99,
+  "health": 6364,
+  "spawnDelay": 0.476,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 30,
+  "zombies": 105,
+  "health": 7000,
+  "spawnDelay": 0.452,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 31,
+  "zombies": 110,
+  "health": 7700,
+  "spawnDelay": 0.429,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 32,
+  "zombies": 116,
+  "health": 8470,
+  "spawnDelay": 0.408,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 33,
+  "zombies": 122,
+  "health": 9317,
+  "spawnDelay": 0.387,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 34,
+  "zombies": 128,
+  "health": 10248,
+  "spawnDelay": 0.368,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 35,
+  "zombies": 134,
+  "health": 11272,
+  "spawnDelay": 0.35,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 36,
+  "zombies": 140,
+  "health": 12399,
+  "spawnDelay": 0.332,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 37,
+  "zombies": 147,
+  "health": 13638,
+  "spawnDelay": 0.316,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 38,
+  "zombies": 153,
+  "health": 15001,
+  "spawnDelay": 0.3,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 39,
+  "zombies": 160,
+  "health": 16501,
+  "spawnDelay": 0.285,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ },
+ {
+  "round": 40,
+  "zombies": 168,
+  "health": 18151,
+  "spawnDelay": 0.271,
+  "walkPct": 0,
+  "runPct": 0,
+  "sprintPct": 100,
+  "source": "derived from _zm.gsc formulas"
+ }
+]

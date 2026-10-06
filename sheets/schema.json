@@ -1,0 +1,695 @@
+{
+ "systems": {
+  "file": "systems.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "value": {
+    "t": "number"
+   },
+   "unit": {
+    "t": "string"
+   },
+   "source": {
+    "t": "string",
+    "optional": true
+   },
+   "status": {
+    "t": "string",
+    "enum": [
+     "script",
+     "tuned"
+    ]
+   },
+   "note": {
+    "t": "string",
+    "optional": true
+   }
+  }
+ },
+ "rounds": {
+  "file": "rounds.json",
+  "key": "round",
+  "columns": {
+   "round": {
+    "t": "number"
+   },
+   "zombies": {
+    "t": "number"
+   },
+   "health": {
+    "t": "number"
+   },
+   "spawnDelay": {
+    "t": "number"
+   },
+   "walkPct": {
+    "t": "number"
+   },
+   "runPct": {
+    "t": "number"
+   },
+   "sprintPct": {
+    "t": "number"
+   },
+   "source": {
+    "t": "string"
+   }
+  }
+ },
+ "zombies": {
+  "file": "zombies.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "speedRatio": {
+    "t": "number"
+   },
+   "hitDamageKey": {
+    "t": "string",
+    "ref": "systems.id"
+   },
+   "attackIntervalTicks": {
+    "t": "number"
+   },
+   "reachBlocks": {
+    "t": "number"
+   },
+   "cueAmbient": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueAttack": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueDeath": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueSpawn": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueTear": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueRun": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "status": {
+    "t": "string",
+    "enum": [
+     "script",
+     "tuned"
+    ]
+   }
+  }
+ },
+ "weapons": {
+  "file": "weapons.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "name": {
+    "t": "string"
+   },
+   "bo2Id": {
+    "t": "string"
+   },
+   "kind": {
+    "t": "string",
+    "enum": [
+     "pistol",
+     "shotgun",
+     "smg",
+     "rifle",
+     "raygun"
+    ]
+   },
+   "fireMode": {
+    "t": "string",
+    "enum": [
+     "semi",
+     "auto",
+     "burst"
+    ]
+   },
+   "damage": {
+    "t": "number"
+   },
+   "damageMin": {
+    "t": "number"
+   },
+   "rangeFull": {
+    "t": "number"
+   },
+   "rangeMin": {
+    "t": "number"
+   },
+   "headMult": {
+    "t": "number"
+   },
+   "pellets": {
+    "t": "number"
+   },
+   "spreadDeg": {
+    "t": "number"
+   },
+   "fireTime": {
+    "t": "number"
+   },
+   "burstCount": {
+    "t": "number"
+   },
+   "burstGap": {
+    "t": "number"
+   },
+   "mag": {
+    "t": "number"
+   },
+   "reserve": {
+    "t": "number"
+   },
+   "reloadTime": {
+    "t": "number"
+   },
+   "reloadEmptyTime": {
+    "t": "number"
+   },
+   "projectile": {
+    "t": "boolean"
+   },
+   "projSpeed": {
+    "t": "number"
+   },
+   "explRadius": {
+    "t": "number"
+   },
+   "range": {
+    "t": "number"
+   },
+   "wallCost": {
+    "t": "number",
+    "optional": true
+   },
+   "boxWeight": {
+    "t": "number"
+   },
+   "start": {
+    "t": "boolean"
+   },
+   "upgrade": {
+    "t": "boolean"
+   },
+   "papId": {
+    "t": "string",
+    "ref": "weapons.id",
+    "optional": true
+   },
+   "papName": {
+    "t": "string"
+   },
+   "cueFire": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueDry": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueReloadOut": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueReloadIn": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueReloadEnd": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "cueProjectile": {
+    "t": "string",
+    "ref": "audio.cue",
+    "optional": true
+   },
+   "cueExplosion": {
+    "t": "string",
+    "ref": "audio.cue",
+    "optional": true
+   },
+   "iconShape": {
+    "t": "string",
+    "enum": [
+     "pistol",
+     "shotgun",
+     "smg",
+     "rifle",
+     "revolver",
+     "raygun"
+    ]
+   },
+   "iconColor": {
+    "t": "string"
+   },
+   "status": {
+    "t": "string",
+    "enum": [
+     "script",
+     "tuned",
+     "weapon-file"
+    ]
+   }
+  }
+ },
+ "box_pool": {
+  "file": "box_pool.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "weaponId": {
+    "t": "string",
+    "ref": "weapons.id"
+   },
+   "weight": {
+    "t": "number"
+   },
+   "source": {
+    "t": "string"
+   }
+  }
+ },
+ "box_rules": {
+  "file": "box_rules.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "usesMin": {
+    "t": "number"
+   },
+   "usesMax": {
+    "t": "number"
+   },
+   "moves": {
+    "t": "string",
+    "enum": [
+     "any",
+     "zero",
+     "positive"
+    ]
+   },
+   "teddyPct": {
+    "t": "number"
+   },
+   "source": {
+    "t": "string"
+   },
+   "note": {
+    "t": "string"
+   }
+  }
+ },
+ "map_ops": {
+  "file": "map_ops.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "order": {
+    "t": "number"
+   },
+   "op": {
+    "t": "string",
+    "enum": [
+     "fill",
+     "walls",
+     "checker",
+     "grid"
+    ]
+   },
+   "block": {
+    "t": "string"
+   },
+   "block2": {
+    "t": "string",
+    "optional": true
+   },
+   "x1": {
+    "t": "number"
+   },
+   "y1": {
+    "t": "number"
+   },
+   "z1": {
+    "t": "number"
+   },
+   "x2": {
+    "t": "number"
+   },
+   "y2": {
+    "t": "number"
+   },
+   "z2": {
+    "t": "number"
+   },
+   "stepX": {
+    "t": "number"
+   },
+   "stepZ": {
+    "t": "number"
+   },
+   "group": {
+    "t": "string"
+   },
+   "note": {
+    "t": "string"
+   }
+  }
+ },
+ "map_windows": {
+  "file": "map_windows.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "wall": {
+    "t": "string",
+    "enum": [
+     "N",
+     "S",
+     "E",
+     "W"
+    ]
+   },
+   "fixed": {
+    "t": "number"
+   },
+   "a": {
+    "t": "number"
+   },
+   "width": {
+    "t": "number"
+   },
+   "y0": {
+    "t": "number"
+   },
+   "height": {
+    "t": "number"
+   },
+   "boards": {
+    "t": "number"
+   },
+   "room": {
+    "t": "string"
+   },
+   "boardBlock": {
+    "t": "string"
+   },
+   "sillBlock": {
+    "t": "string"
+   }
+  }
+ },
+ "map_spawns": {
+  "file": "map_spawns.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "window": {
+    "t": "string",
+    "ref": "map_windows.id"
+   },
+   "x": {
+    "t": "number"
+   },
+   "y": {
+    "t": "number"
+   },
+   "z": {
+    "t": "number"
+   }
+  }
+ },
+ "map_wallbuys": {
+  "file": "map_wallbuys.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "weaponId": {
+    "t": "string",
+    "ref": "weapons.id"
+   },
+   "x": {
+    "t": "number"
+   },
+   "y": {
+    "t": "number"
+   },
+   "z": {
+    "t": "number"
+   },
+   "facing": {
+    "t": "string",
+    "enum": [
+     "north",
+     "south",
+     "east",
+     "west"
+    ]
+   },
+   "room": {
+    "t": "string"
+   }
+  }
+ },
+ "map_boxes": {
+  "file": "map_boxes.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "x": {
+    "t": "number"
+   },
+   "y": {
+    "t": "number"
+   },
+   "z": {
+    "t": "number"
+   },
+   "facing": {
+    "t": "string",
+    "enum": [
+     "north",
+     "south",
+     "east",
+     "west"
+    ]
+   },
+   "initial": {
+    "t": "boolean"
+   },
+   "room": {
+    "t": "string"
+   }
+  }
+ },
+ "map_pap": {
+  "file": "map_pap.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "x1": {
+    "t": "number"
+   },
+   "y1": {
+    "t": "number"
+   },
+   "z1": {
+    "t": "number"
+   },
+   "x2": {
+    "t": "number"
+   },
+   "y2": {
+    "t": "number"
+   },
+   "z2": {
+    "t": "number"
+   },
+   "facing": {
+    "t": "string",
+    "enum": [
+     "north",
+     "south",
+     "east",
+     "west"
+    ]
+   },
+   "room": {
+    "t": "string"
+   }
+  }
+ },
+ "map_player": {
+  "file": "map_player.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "x": {
+    "t": "number"
+   },
+   "y": {
+    "t": "number"
+   },
+   "z": {
+    "t": "number"
+   },
+   "yaw": {
+    "t": "number"
+   },
+   "room": {
+    "t": "string"
+   }
+  }
+ },
+ "audio": {
+  "file": "audio.json",
+  "key": "cue",
+  "columns": {
+   "cue": {
+    "t": "string"
+   },
+   "category": {
+    "t": "string",
+    "enum": [
+     "music",
+     "ui",
+     "world",
+     "vox",
+     "weapon"
+    ]
+   },
+   "soundSource": {
+    "t": "string",
+    "enum": [
+     "MASTER",
+     "MUSIC",
+     "PLAYERS",
+     "HOSTILE",
+     "BLOCKS"
+    ]
+   },
+   "volume": {
+    "t": "number"
+   },
+   "positional": {
+    "t": "boolean"
+   },
+   "loop": {
+    "t": "boolean"
+   },
+   "variants": {
+    "t": "number"
+   },
+   "fallback": {
+    "t": "string"
+   }
+  }
+ },
+ "audio_files": {
+  "file": "audio_files.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "cue": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "bank": {
+    "t": "string"
+   },
+   "entryId": {
+    "t": "number"
+   },
+   "size": {
+    "t": "number"
+   },
+   "format": {
+    "t": "string",
+    "enum": [
+     "pcm16",
+     "flac"
+    ]
+   },
+   "channels": {
+    "t": "number"
+   },
+   "rateHz": {
+    "t": "number"
+   },
+   "frames": {
+    "t": "number"
+   }
+  }
+ },
+ "hooks": {
+  "file": "hooks.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "system": {
+    "t": "string"
+   },
+   "kind": {
+    "t": "string"
+   },
+   "target": {
+    "t": "string"
+   },
+   "handler": {
+    "t": "string"
+   },
+   "status": {
+    "t": "string",
+    "enum": [
+     "todo",
+     "coded",
+     "tested"
+    ]
+   },
+   "note": {
+    "t": "string"
+   }
+  }
+ }
+}

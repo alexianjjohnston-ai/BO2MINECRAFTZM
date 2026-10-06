@@ -1,0 +1,283 @@
+package com.zombiecraft.game;
+
+import com.zombiecraft.ZombiecraftMod;
+import com.zombiecraft.entity.ZcEntities;
+import com.zombiecraft.entity.ZcZombie;
+import com.zombiecraft.net.Payloads;
+import com.zombiecraft.sheet.Rows.BoxDef;
+import com.zombiecraft.sheet.Rows.WallBuyDef;
+import com.zombiecraft.sheet.Sheets;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Scripted self-test, only active with -Dzombiecraft.bench. It drives the server game directly (no human input), checks the results
+ * and writes PASS/FAIL lines to run/zc-bench.txt. It also asks the client to save real in-game screenshots at key moments.
+ */
+public final class Bench {
+	private Bench() {}
+
+	private static final boolean ON = System.getProperty("zombiecraft.bench") != null;
+	private static int step, sub, passes, fails;
+	private static long until;
+	private static int shots, boxUses, ticksInStep;
+	private static ZcZombie target;
+	private static int pointsBefore;
+	private static String weaponBefore;
+	private static int locBefore;
+	private static boolean sawTeddy;
+	private static Path out;
+
+	public static void register() {
+		if (!ON) return;
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			try { tick(); } catch (Throwable t) { log(false, "bench-crash", String.valueOf(t)); ZombiecraftMod.LOG.error("bench crashed", t); step = 999; }
+		});
+	}
+
+	private static void log(boolean ok, String name, String detail) {
+		if (ok) passes++; else fails++;
+		String line = (ok ? "PASS " : "FAIL ") + name + " | " + detail;
+		ZombiecraftMod.LOG.info("[bench] {}", line);
+		try {
+			if (out == null) out = Path.of("zc-bench.txt");
+			Files.writeString(out, line + System.lineSeparator(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+		} catch (IOException ignored) {}
+	}
+
+	private static void shot(ServerPlayer p, String name) { ServerPlayNetworking.send(p, new Payloads.Shot(name)); }
+
+	private static void next(int s, int delayTicks) { step = s; sub = 0; ticksInStep = 0; until = Game.INSTANCE.tick + delayTicks; }
+
+	private static void face(ServerPlayer p, Vec3 from, Vec3 to) {
+		double dx = to.x - from.x, dy = to.y - (from.y + 1.62), dz = to.z - from.z;
+		float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
+		float pitch = (float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
+		p.connection.teleport(from.x, from.y, from.z, yaw, pitch);
+	}
+
+	private static Vec3 abs(Game g, double x, double y, double z) { return new Vec3(g.origin.getX() + x, g.origin.getY() + y, g.origin.getZ() + z); }
+
+	private static void tick() {
+		Game g = Game.INSTANCE;
+		if (g == null || g.level == null || g.phase == Payloads.PHASE_IDLE) return;
+		List<ServerPlayer> ps = g.level.players();
+		if (ps.isEmpty()) return;
+		ServerPlayer p = ps.get(0);
+		PlayerGame pg = g.pg(p);
+		ticksInStep++;
+		if (g.tick < until) return;
+
+		switch (step) {
+			case 0 -> { // wait for round 1
+				if (g.phase == Payloads.PHASE_ACTIVE) {
+					p.setInvulnerable(true);
+					log(g.round == 1 && g.zombiesToSpawn + g.alive.size() == Sheets.round(1).zombies(), "round-start", "round=" + g.round + " zombies=" + (g.zombiesToSpawn + g.alive.size()) + " expected=" + Sheets.round(1).zombies());
+					shot(p, "01_round1");
+					next(1, 60);
+				}
+			}
+			case 1 -> { // shooting a free zombie in front of the player
+				if (sub == 0) {
+					g.zombiesToSpawn = Math.max(g.zombiesToSpawn, 1); // keep the round open
+					Vec3 pos = abs(g, -21.5, 1, -10.5);
+					ZcZombie z = new ZcZombie(ZcEntities.ZOMBIE, g.level);
+					Vec3 zp = abs(g, -21.5, 1, -6.5);
+					z.moveTo(zp.x, zp.y, zp.z, 180f, 0f);
+					z.setup("walk", 150, null);
+					z.setNoAi(true);
+					g.level.addFreshEntity(z);
+					g.alive.add(z);
+					target = z; pointsBefore = pg.points; shots = 0; sub = 1;
+					p.connection.teleport(pos.x, pos.y, pos.z, 0f, 0f);
+					until = g.tick + 10;
+				} else {
+					Vec3 pos = abs(g, -21.5, 1, -10.5);
+					face(p, pos, new Vec3(target.getX(), target.getY() + 1.75, target.getZ()));
+					if (!target.isAlive() || target.hp <= 0) {
+						int gained = pg.points - pointsBefore;
+						log(shots <= 12 && gained >= 100, "shoot-kill", "shots=" + shots + " points +" + gained + " (expect >= 100: kill 50 + head 50, plus hits)");
+						shot(p, "02_shoot");
+						next(2, 20);
+					} else if (shots >= 14) {
+						log(false, "shoot-kill", "zombie still alive after " + shots + " shots hp=" + target.hp);
+						next(2, 20);
+					} else if (ticksInStep % 6 == 0) {
+						var gun = WeaponSystem.active(p, pg);
+						if (gun != null && gun.mag > 0) { pg.fireClick = true; shots++; }
+						else if (gun != null) WeaponSystem.startReload(g, p, pg);
+					}
+				}
+			}
+			case 2 -> { // wall-buy: gun, then ammo
+				WallBuyDef wb = Sheets.WALLBUYS.get(0); // Olympia
+				Vec3 stand = abs(g, wb.x() + 0.5, 1, wb.z() - 2.6);
+				Vec3 frame = abs(g, wb.x() + 0.5, wb.y() + 0.5, wb.z() + 0.5);
+				if (sub == 0) { pg.points = 1000; weaponBefore = pg.guns[0].weapon; face(p, stand, frame); sub = 1; until = g.tick + 5; }
+				else if (sub == 1) { face(p, stand, frame); pg.interactHeld = true; sub = 2; until = g.tick + 3; }
+				else if (sub == 2) {
+					pg.interactHeld = false;
+					boolean has = WeaponSystem.slotHolding(pg, wb.weaponId()) >= 0;
+					log(has && pg.points == 1000 - Sheets.weapon(wb.weaponId()).wallCost(), "wallbuy-gun", wb.weaponId() + " owned=" + has + " points=" + pg.points + " (expect " + (1000 - Sheets.weapon(wb.weaponId()).wallCost()) + ")");
+					shot(p, "03_wallbuy");
+					int slot = WeaponSystem.slotHolding(pg, wb.weaponId());
+					if (slot >= 0) { pg.guns[slot].mag = 0; pg.guns[slot].reserve = 0; }
+					sub = 3; until = g.tick + 5;
+				} else if (sub == 3) { face(p, stand, frame); pg.interactHeld = true; sub = 4; until = g.tick + 3; }
+				else {
+					pg.interactHeld = false;
+					int slot = WeaponSystem.slotHolding(pg, wb.weaponId());
+					var gun = slot >= 0 ? pg.guns[slot] : null;
+					boolean full = gun != null && gun.mag == gun.magSize() && gun.reserve == gun.reserveMax();
+					log(full && pg.points == 500 - (int) (Sheets.weapon(wb.weaponId()).wallCost() * Sheets.sys("wallbuy_ammo_ratio")), "wallbuy-ammo", "refilled=" + full + " points=" + pg.points);
+					next(3, 20);
+				}
+			}
+			case 3 -> { // Mystery Box until the teddy bear moves it
+				BoxSystem box = g.box;
+				BoxDef loc = box.loc();
+				BlockPos cp = box.chestPos();
+				Vec3 center = new Vec3(cp.getX() + 0.5, cp.getY() + 0.5, cp.getZ() + 0.5);
+				int dx = loc.facing().equals("east") ? 2 : loc.facing().equals("west") ? -2 : 0;
+				int dz = loc.facing().equals("south") ? 2 : loc.facing().equals("north") ? -2 : 0;
+				Vec3 stand = new Vec3(cp.getX() + 0.5 + dx * 0.8, g.origin.getY() + 1, cp.getZ() + 0.5 + dz * 0.8);
+				switch (sub) {
+					case 0 -> { pg.points = 9000; locBefore = g.box.loc().x(); sawTeddy = false; boxUses = 0; face(p, stand, center); sub = 1; until = g.tick + 5; }
+					case 1 -> { // pay
+						if (box.state == BoxSystem.State.CLOSED) {
+							face(p, stand, center); pointsBefore = pg.points; pg.interactHeld = true; sub = 2; until = g.tick + 3;
+						} else if (box.state == BoxSystem.State.GONE) { until = g.tick + 10; }
+						else { until = g.tick + 5; }
+					}
+					case 2 -> {
+						pg.interactHeld = false; boxUses++;
+						log(box.state == BoxSystem.State.ROLLING && pg.points == pointsBefore - Sheets.sysInt("box_cost"), "box-pay", "use " + boxUses + " state=" + box.state + " points " + pointsBefore + " -> " + pg.points);
+						if (boxUses == 1) shot(p, "04_box_rolling");
+						sub = 3;
+					}
+					case 3 -> { // wait for the result
+						if (box.state == BoxSystem.State.OFFER) {
+							if (boxUses == 1) shot(p, "05_box_offer");
+							face(p, stand, center); pg.interactHeld = true; weaponBefore = pg.guns[0] == null ? "" : pg.guns[0].weapon; sub = 4; until = g.tick + 3;
+						} else if (box.state == BoxSystem.State.TEDDY) {
+							shot(p, "06_box_teddy"); sawTeddy = true; sub = 5; log(true, "box-teddy", "teddy after " + boxUses + " uses");
+						}
+					}
+					case 4 -> {
+						pg.interactHeld = false;
+						log(box.state == BoxSystem.State.CLOSED, "box-take", "box state after taking = " + box.state + ", guns = " + (pg.guns[0] == null ? "-" : pg.guns[0].weapon) + "," + (pg.guns[1] == null ? "-" : pg.guns[1].weapon));
+						sub = boxUses >= 14 ? 6 : 1; until = g.tick + 10;
+					}
+					case 5 -> { // wait for the box to move
+						if (box.state == BoxSystem.State.CLOSED) {
+							boolean moved = g.box.loc().x() != locBefore;
+							boolean chestThere = g.level.getBlockState(g.box.chestPos()).is(Blocks.CHEST);
+							log(moved && chestThere && pg.points >= 0, "box-moves", "location changed=" + moved + " chest at new spot=" + chestThere + " after " + boxUses + " uses");
+							shot(p, "07_box_moved");
+							next(4, 20);
+						}
+					}
+					default -> { log(false, "box-teddy", "no teddy bear in 14 uses"); next(4, 20); }
+				}
+			}
+			case 4 -> { // Pack-a-Punch
+				var d = g.pap.def();
+				Vec3 stand = abs(g, (d.x1() + d.x2()) / 2.0 + 0.5, 1, d.z2() + 2.4);
+				Vec3 machine = abs(g, (d.x1() + d.x2()) / 2.0 + 0.5, 2.2, d.z2() + 0.5);
+				switch (sub) {
+					case 0 -> {
+						WeaponSystem.give(p, pg, 0, "m14", false);
+						pg.points = 6000; face(p, stand, machine); sub = 1; until = g.tick + 5;
+					}
+					case 1 -> { face(p, stand, machine); pg.interactHeld = true; sub = 2; until = g.tick + 3; }
+					case 2 -> {
+						pg.interactHeld = false;
+						log(g.pap.state == PapSystem.State.UPGRADING && pg.points == 1000 && pg.guns[0] == null, "pap-start", "state=" + g.pap.state + " points=" + pg.points + " gun removed=" + (pg.guns[0] == null));
+						sub = 3;
+					}
+					case 3 -> { if (g.pap.state == PapSystem.State.READY) { shot(p, "08_pap_ready"); face(p, stand, machine); pg.interactHeld = true; sub = 4; until = g.tick + 3; } }
+					default -> {
+						pg.interactHeld = false;
+						var gun = WeaponSystem.active(p, pg);
+						log(gun != null && gun.pap && gun.weapon.equals("m14") && g.pap.state == PapSystem.State.IDLE, "pap-take", "gun=" + (gun == null ? "none" : gun.displayName()) + " mag=" + (gun == null ? 0 : gun.mag) + "/" + (gun == null ? 0 : gun.reserve));
+						shot(p, "09_pap_gun");
+						next(5, 20);
+					}
+				}
+			}
+			case 5 -> { // window repair
+				Barrier b = g.barriers.get(0);
+				Vec3 stand = new Vec3(b.insideSpot.x, b.insideSpot.y, b.insideSpot.z);
+				switch (sub) {
+					case 0 -> { b.tear(); b.tear(); b.tear(); pg.points = 0; pg.boardPointsThisRound = 0; face(p, stand, b.center); sub = 1; until = g.tick + 5; }
+					case 1 -> { shot(p, "10_window_torn"); face(p, stand, b.center); pg.interactHeld = true; sub = 2; ticksInStep = 0; }
+					default -> {
+						if (b.boardsLeft() >= b.boardsTotal() || ticksInStep > 200) {
+							pg.interactHeld = false;
+							log(b.boardsLeft() == b.boardsTotal() && pg.points == 30, "window-repair", "boards " + b.boardsLeft() + "/" + b.boardsTotal() + " points=" + pg.points + " (expect 30)");
+							shot(p, "11_window_repaired");
+							next(6, 20);
+						}
+					}
+				}
+			}
+			case 6 -> { // a real zombie goes through a window
+				if (sub == 0) {
+					target = g.spawnTest("s1a", "run", 150); sub = 1; ticksInStep = 0;
+					// keep the player away from the window so the zombie is not distracted
+					Vec3 pos = abs(g, -21.5, 1, -10.5); p.connection.teleport(pos.x, pos.y, pos.z, 0f, 0f);
+				} else {
+					if (target.stage == 1 && shots == 0) { shots = 1; shot(p, "12_zombie_tearing"); }
+					if (target.stage == 3) {
+						log(true, "window-entry", "zombie came in through " + target.barrier.def.id() + " after " + ticksInStep / 20 + " s, boards left " + target.barrier.boardsLeft() + "/" + target.barrier.boardsTotal());
+						target.discard(); g.alive.remove(target);
+						next(7, 20);
+					} else if (ticksInStep > 1800) {
+						log(false, "window-entry", "zombie stuck at stage " + target.stage + " after 90 s at " + target.position());
+						target.discard(); g.alive.remove(target);
+						next(7, 20);
+					}
+				}
+			}
+			case 7 -> { // round flow
+				if (sub == 0) {
+					g.alive.forEach(z -> z.discard()); g.alive.clear(); g.zombiesToSpawn = 0;
+					sub = 1; until = g.tick + 5;
+				} else if (sub == 1) {
+					log(g.phase == Payloads.PHASE_INTERMISSION, "round-end", "phase=" + g.phase + " (3 = intermission)");
+					sub = 2;
+				} else if (g.phase == Payloads.PHASE_ACTIVE) {
+					log(g.round == 2 && g.zombiesToSpawn + g.alive.size() == Sheets.round(2).zombies(), "round-2", "round=" + g.round + " zombies=" + (g.zombiesToSpawn + g.alive.size()) + " expected " + Sheets.round(2).zombies());
+					shot(p, "13_round2");
+					next(8, 40);
+				}
+			}
+			case 8 -> { // game over and restart
+				if (sub == 0) { g.gameOver(p); sub = 1; until = g.tick + 20; }
+				else if (sub == 1) { log(g.phase == Payloads.PHASE_GAMEOVER, "game-over", "phase=" + g.phase); shot(p, "14_game_over"); sub = 2; }
+				else if (g.phase == Payloads.PHASE_COUNTDOWN) {
+					boolean boardsFull = g.barriers.stream().allMatch(b -> b.boardsLeft() == b.boardsTotal());
+					log(g.round == 0 && boardsFull && pg.points == Sheets.sysInt("start_points") && g.alive.isEmpty(), "restart", "round=" + g.round + " boardsFull=" + boardsFull + " points=" + pg.points);
+					shot(p, "15_restarted");
+					next(9, 40);
+				}
+			}
+			case 9 -> {
+				log(fails == 0, "BENCH-DONE", passes + " passed, " + fails + " failed");
+				step = 999;
+			}
+			default -> {}
+		}
+	}
+}

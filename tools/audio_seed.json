@@ -1,0 +1,240 @@
+{
+ "base": {
+  "mus_zombie_round_start": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 1.0,
+   "fallback": "minecraft:block.bell.use"
+  },
+  "mus_zombie_round_over": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 1.0,
+   "fallback": "minecraft:block.bell.resonate"
+  },
+  "mus_perks_packa_sting": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.beacon.activate"
+  },
+  "zmb_cha_ching": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:entity.experience_orb.pickup"
+  },
+  "zmb_no_cha_ching": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:block.note_block.bass"
+  },
+  "zmb_weap_wall": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:item.armor.equip_iron"
+  },
+  "evt_player_death": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.player.death"
+  },
+  "evt_player_swiped": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.player.hurt"
+  },
+  "zmb_melee_whoosh_plr": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.9,
+   "fallback": "minecraft:entity.player.attack.sweep"
+  },
+  "wpn_melee_hit": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.9,
+   "fallback": "minecraft:entity.player.attack.strong"
+  },
+  "zmb_perks_packa_deny": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.note_block.bass"
+  },
+  "zmb_perks_packa_ready": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.beacon.power_select"
+  },
+  "zmb_perks_packa_upgrade": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.anvil.use"
+  },
+  "zmb_perks_packa_ticktock": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.note_block.hat"
+  },
+  "zmb_perks_packa_loop": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 0.8,
+   "fallback": "minecraft:block.beacon.ambient"
+  },
+  "zmb_break_boards": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.wood.break"
+  },
+  "zmb_repair_boards": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.wood.place"
+  },
+  "zmb_board_slam": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.wood.hit"
+  },
+  "zmb_lid_open": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.chest.open"
+  },
+  "zmb_lid_close": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.chest.close"
+  },
+  "zmb_music_box": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.note_block.chime"
+  },
+  "zmb_laugh_child": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.witch.celebrate"
+  },
+  "zmb_box_move": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.enderman.teleport"
+  },
+  "zmb_box_poof": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.generic.explode"
+  },
+  "zmb_zombie_head_gib": {
+   "category": "world",
+   "soundSource": "HOSTILE",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.zombie.break_wooden_door"
+  },
+  "zmb_vocals_zombie_sprint": {
+   "category": "vox",
+   "soundSource": "HOSTILE",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.zombie.ambient"
+  }
+ },
+ "roles": {
+  "cueAmbient": {
+   "category": "vox",
+   "soundSource": "HOSTILE",
+   "volume": 0.9,
+   "fallback": "minecraft:entity.zombie.ambient"
+  },
+  "cueAttack": {
+   "category": "vox",
+   "soundSource": "HOSTILE",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.zombie.attack_iron_door"
+  },
+  "cueDeath": {
+   "category": "vox",
+   "soundSource": "HOSTILE",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.zombie.death"
+  },
+  "cueSpawn": {
+   "category": "vox",
+   "soundSource": "HOSTILE",
+   "volume": 0.9,
+   "fallback": "minecraft:entity.zombie.ambient"
+  },
+  "cueTear": {
+   "category": "vox",
+   "soundSource": "HOSTILE",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.zombie.attack_wooden_door"
+  },
+  "cueRun": {
+   "category": "vox",
+   "soundSource": "HOSTILE",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.zombie.ambient"
+  },
+  "cueFire": {
+   "category": "weapon",
+   "soundSource": "PLAYERS",
+   "volume": 0.8,
+   "fallback": "minecraft:entity.arrow.shoot"
+  },
+  "cueDry": {
+   "category": "weapon",
+   "soundSource": "PLAYERS",
+   "volume": 0.8,
+   "fallback": "minecraft:block.dispenser.fail"
+  },
+  "cueReloadOut": {
+   "category": "weapon",
+   "soundSource": "PLAYERS",
+   "volume": 0.8,
+   "fallback": "minecraft:item.crossbow.loading_start"
+  },
+  "cueReloadIn": {
+   "category": "weapon",
+   "soundSource": "PLAYERS",
+   "volume": 0.8,
+   "fallback": "minecraft:item.crossbow.loading_middle"
+  },
+  "cueReloadEnd": {
+   "category": "weapon",
+   "soundSource": "PLAYERS",
+   "volume": 0.8,
+   "fallback": "minecraft:item.crossbow.loading_end"
+  },
+  "cueProjectile": {
+   "category": "world",
+   "soundSource": "PLAYERS",
+   "volume": 0.8,
+   "fallback": "minecraft:entity.blaze.shoot"
+  },
+  "cueExplosion": {
+   "category": "world",
+   "soundSource": "PLAYERS",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.generic.explode"
+  }
+ }
+}
