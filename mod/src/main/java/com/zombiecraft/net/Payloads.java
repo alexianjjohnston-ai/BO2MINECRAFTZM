@@ -14,6 +14,16 @@ public final class Payloads {
 
 	/** Game phases shown on the HUD. */
 	public static final int PHASE_IDLE = 0, PHASE_COUNTDOWN = 1, PHASE_ACTIVE = 2, PHASE_INTERMISSION = 3, PHASE_GAMEOVER = 4;
+	public static final int FEEDBACK_SHOT = 0, FEEDBACK_RELOAD_START = 1, FEEDBACK_RELOAD_STOP = 2, FEEDBACK_HIT = 3;
+
+	/** Immediate, server-confirmed combat effects. Weapon is the base item ID, including for upgraded guns. */
+	public record CombatFeedback(int kind, int slot, String weapon, int durationTicks, boolean headshot, boolean killed) implements CustomPacketPayload {
+		public static final Type<CombatFeedback> TYPE = new Type<>(id("combat_feedback"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, CombatFeedback> CODEC = StreamCodec.ofMember(
+				(p, b) -> { b.writeVarInt(p.kind); b.writeVarInt(p.slot); b.writeUtf(p.weapon); b.writeVarInt(p.durationTicks); b.writeBoolean(p.headshot); b.writeBoolean(p.killed); },
+				b -> new CombatFeedback(b.readVarInt(), b.readVarInt(), b.readUtf(), b.readVarInt(), b.readBoolean(), b.readBoolean()));
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
 
 	/** Everything the HUD needs, sent a few times a second. */
 	public record StateSync(int phase, int round, int points, int mag, int reserve, String gun, String prompt, String message,
@@ -76,6 +86,7 @@ public final class Payloads {
 
 	public static void register() {
 		PayloadTypeRegistry.playS2C().register(StateSync.TYPE, StateSync.CODEC);
+		PayloadTypeRegistry.playS2C().register(CombatFeedback.TYPE, CombatFeedback.CODEC);
 		PayloadTypeRegistry.playS2C().register(CuePlay.TYPE, CuePlay.CODEC);
 		PayloadTypeRegistry.playS2C().register(CueStop.TYPE, CueStop.CODEC);
 		PayloadTypeRegistry.playS2C().register(Shot.TYPE, Shot.CODEC);

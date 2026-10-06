@@ -7,6 +7,7 @@
 	"authors": ["Zombiecraft"],
 	"license": "MIT",
 	"environment": "*",
+	"mixins": [{ "config": "zombiecraft.client.mixins.json", "environment": "client" }],
 	"entrypoints": {
 		"main": ["com.zombiecraft.ZombiecraftMod"],
 		"client": ["com.zombiecraft.client.ZombiecraftClient"]

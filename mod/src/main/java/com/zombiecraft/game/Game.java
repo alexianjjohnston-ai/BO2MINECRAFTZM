@@ -222,6 +222,7 @@ public final class Game {
 	public void gameOver(ServerPlayer p) {
 		if (phase == Payloads.PHASE_GAMEOVER) return;
 		phase = Payloads.PHASE_GAMEOVER;
+		for (ServerPlayer player : level.players()) WeaponSystem.cancelReload(player, pg(player));
 		roundsSurvived = round;
 		gameOverTicks = Sheets.sysInt("game_over_delay_s") * 20;
 		p.setHealth(p.getMaxHealth());

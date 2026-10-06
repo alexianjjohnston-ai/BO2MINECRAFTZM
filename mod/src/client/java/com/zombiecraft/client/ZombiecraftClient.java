@@ -5,12 +5,15 @@ import com.zombiecraft.client.audio.AudioCache;
 import com.zombiecraft.client.audio.CuePlayer;
 import com.zombiecraft.client.hud.ZcHud;
 import com.zombiecraft.entity.ZcEntities;
+import com.zombiecraft.game.FeedbackBench;
+import com.zombiecraft.item.ModItems;
 import com.zombiecraft.net.Payloads;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -26,6 +29,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 	public static volatile Payloads.StateSync state = new Payloads.StateSync(0, 0, 0, -1, 0, "", "", "", false, 0, 0, 0);
 	private static KeyMapping interactKey, reloadKey;
 	private static boolean lastFire, lastInteract, lastAttack;
+	private static int lastWeaponSlot;
 
 	@Override
 	public void onInitializeClient() {
@@ -41,6 +45,12 @@ public class ZombiecraftClient implements ClientModInitializer {
 		AttackBlockCallback.EVENT.register((player, level, hand, pos, dir) -> InteractionResult.FAIL);
 
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.StateSync.TYPE, (payload, ctx) -> state = payload);
+		ClientPlayNetworking.registerGlobalReceiver(Payloads.CombatFeedback.TYPE, (payload, ctx) -> {
+			GunFeedback.accept(payload);
+			FeedbackBench.received(payload);
+		});
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> resetSession());
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> resetSession());
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.CuePlay.TYPE, (payload, ctx) -> CuePlayer.play(payload));
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.Shot.TYPE, (payload, ctx) -> {
 			Minecraft mc = Minecraft.getInstance();
@@ -49,12 +59,47 @@ public class ZombiecraftClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.CueStop.TYPE, (payload, ctx) -> CuePlayer.stop(payload.cue()));
 
 		ClientTickEvents.START_CLIENT_TICK.register(ZombiecraftClient::pollInput);
+		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+			keepWeaponSelected(mc);
+			GunFeedback.tick(mc);
+			ZcHud.tick(mc);
+			if (FeedbackBench.finished()) mc.stop();
+		});
 		HudRenderCallback.EVENT.register(ZcHud::render);
 		ClientLifecycleEvents.CLIENT_STARTED.register(c -> AudioCache.prepareAsync());
 	}
 
+	private static void resetSession() {
+		state = new Payloads.StateSync(Payloads.PHASE_IDLE, 0, 0, -1, 0, "", "", "", false, 0, 0, 0);
+		lastFire = lastInteract = lastAttack = false;
+		lastWeaponSlot = 0;
+		GunFeedback.reset();
+		ZcHud.reset();
+	}
+
+	/** Number keys aimed at hidden, empty slots keep the last usable weapon selected. */
+	private static void keepWeaponSelected(Minecraft mc) {
+		if (!ZcHud.usesWeaponHud(mc)) return;
+		var inventory = mc.player.getInventory();
+		if (ModItems.weaponOf(inventory.getItem(inventory.selected)) != null) {
+			lastWeaponSlot = inventory.selected;
+			return;
+		}
+		if (ModItems.weaponOf(inventory.getItem(lastWeaponSlot)) != null) {
+			inventory.setSelectedHotbarSlot(lastWeaponSlot);
+			return;
+		}
+		for (int slot = 0; slot < 9; slot++) {
+			if (ModItems.weaponOf(inventory.getItem(slot)) == null) continue;
+			inventory.setSelectedHotbarSlot(slot);
+			lastWeaponSlot = slot;
+			return;
+		}
+	}
+
 	private static void pollInput(Minecraft mc) {
 		if (mc.player == null || mc.level == null) { lastFire = lastInteract = lastAttack = false; return; }
+		keepWeaponSelected(mc);
 		// F used to swap hands: swallow it so the gun never ends up in the off hand
 		while (mc.options.keySwapOffhand.consumeClick()) { }
 		boolean playing = mc.screen == null && mc.mouseHandler.isMouseGrabbed();

@@ -1,8 +1,10 @@
 package com.zombiecraft.game;
 
 import com.zombiecraft.entity.ZcZombie;
+import com.zombiecraft.net.Payloads;
 import com.zombiecraft.sheet.Rows.ZombieTier;
 import com.zombiecraft.sheet.Sheets;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -14,6 +16,7 @@ public final class ZombieHealth {
 		if (!z.isAlive() || z.hp <= 0) return;
 		ServerLevel level = (ServerLevel) z.level();
 		z.hp -= dmg;
+		ServerPlayNetworking.send(p, new Payloads.CombatFeedback(Payloads.FEEDBACK_HIT, -1, "", 0, head, z.hp <= 0));
 		if (z.hp > 0) {
 			pg.points += Sheets.sysInt("hit_points");
 			level.broadcastEntityEvent(z, (byte) 2);

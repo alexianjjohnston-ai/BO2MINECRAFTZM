@@ -32,6 +32,17 @@ public class ZcZombie extends Zombie {
 	public String tier = "walk";
 	public boolean headGibbed;
 	private int tearTicks, stuckTicks, vocalTimer;
+	/** Synced to clients for animation: stage (0-3) in the low bits, speed tier (0 walk, 1 run, 2 sprint) times 4 above. */
+	public static final net.minecraft.network.syncher.EntityDataAccessor<Byte> DATA_ANIM =
+			net.minecraft.network.syncher.SynchedEntityData.defineId(ZcZombie.class, net.minecraft.network.syncher.EntityDataSerializers.BYTE);
+
+	@Override protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder b) {
+		super.defineSynchedData(b);
+		b.define(DATA_ANIM, (byte) 3);
+	}
+
+	public int animStage() { return entityData.get(DATA_ANIM) & 3; }
+	public int animTier() { return entityData.get(DATA_ANIM) >> 2; }
 
 	public ZcZombie(EntityType<? extends Zombie> type, Level level) {
 		super(type, level);
@@ -70,6 +81,7 @@ public class ZcZombie extends Zombie {
 	@Override public void aiStep() {
 		super.aiStep();
 		if (level().isClientSide) return;
+		entityData.set(DATA_ANIM, (byte) (stage | (tier.equals("walk") ? 0 : tier.equals("run") ? 1 : 2) << 2));
 		if (isAlive() && --vocalTimer <= 0 && level() instanceof ServerLevel sl) {
 			ZombieTier t = Sheets.tier(tier);
 			Cue.at(tier.equals("walk") ? t.cueAmbient() : t.cueRun(), sl, position());

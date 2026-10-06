@@ -37,7 +37,14 @@ loom {
 	runs {
 		client {
 			vmArg "-Dzombiecraft.autoplay=true"
-			if (project.hasProperty("bench")) vmArg "-Dzombiecraft.bench=1"
+			if (project.hasProperty("bench")) {
+				vmArg "-Dzombiecraft.bench=1"
+				runDir "run/bench"
+			}
+			if (project.hasProperty("feelBench")) {
+				vmArg "-Dzombiecraft.feelBench=true"
+				runDir "run/feel-bench"
+			}
 		}
 	}
 }
