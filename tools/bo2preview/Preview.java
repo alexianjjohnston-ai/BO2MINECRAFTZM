@@ -10,7 +10,8 @@ import java.util.Map;
 
 /**
  * Dev tool: renders a dumped BO2 model with a tiny software rasteriser so the converter can be checked by eye.
- * usage: java Preview <model.xmodel_export> <images dir> <out.png> [yawDegrees] [size]
+ * usage: java Preview <model.xmodel_export> <images dir> <out.png> [yawDegrees] [size] [anim file] [frames] [head.xmodel_export]
+ * With an animation, renders [frames] evenly spaced poses side by side.
  */
 public class Preview {
 	public static void main(String[] a) throws Exception {
@@ -18,13 +19,72 @@ public class Preview {
 		double yaw = a.length > 3 ? Math.toRadians(Double.parseDouble(a[3])) : 0;
 		int size = a.length > 4 ? Integer.parseInt(a[4]) : 700;
 		XModel m = XModel.read(mf);
-		System.out.printf("%s: %d bones, %d verts, %d surfaces, %d materials%n", m.name, m.boneCount(), m.vertCount, m.surfaces.size(), m.materials.size());
+		if (a.length > 5) {
+			com.zombiecraft.bo2.XAnim anim = com.zombiecraft.bo2.XAnim.read(Path.of(a[5]));
+			int frames = a.length > 6 ? Integer.parseInt(a[6]) : 4;
+			XModel head = a.length > 7 ? XModel.read(Path.of(a[7])) : null;
+			BufferedImage sheet = new BufferedImage(size * frames, size, BufferedImage.TYPE_INT_ARGB);
+			for (int f = 0; f < frames; f++) {
+				float fr = anim.numFrames * f / (float) frames;
+				com.zombiecraft.bo2.Pose pose = new com.zombiecraft.bo2.Pose(m);
+				pose.apply(anim, fr, 1f); pose.build();
+				XModel posed = posedCopy(m, pose);
+				if (head != null) {
+					com.zombiecraft.bo2.Pose hp = new com.zombiecraft.bo2.Pose(head);
+					hp.apply(anim, fr, 1f); hp.build();
+					hp.followWorld(pose);
+					posed = merge(posed, posedCopy(head, hp));
+				}
+				java.awt.Graphics2D g = sheet.createGraphics();
+				g.drawImage(render(posed, imgDir, yaw, size, f == 0), f * size, 0, null);
+				g.dispose();
+			}
+			ImageIO.write(sheet, "png", out.toFile());
+			System.out.println(anim.name + ": " + anim.numFrames + " frames @" + anim.frameRate);
+			return;
+		}
+		ImageIO.write(render(m, imgDir, yaw, size, true), "png", out.toFile());
+	}
+
+	static XModel posedCopy(XModel m, com.zombiecraft.bo2.Pose pose) {
+		XModel c = new XModel();
+		c.name = m.name; c.vertCount = m.vertCount; c.pos = new float[m.pos.length];
+		float[] o = new float[3];
+		for (int v = 0; v < m.vertCount; v++) { pose.skinPos(v, o); System.arraycopy(o, 0, c.pos, v * 3, 3); }
+		c.materials.addAll(m.materials); c.surfaces.addAll(m.surfaces);
+		return c;
+	}
+
+	static XModel merge(XModel a, XModel b) {
+		XModel c = new XModel();
+		c.vertCount = a.vertCount + b.vertCount;
+		c.pos = new float[c.vertCount * 3];
+		System.arraycopy(a.pos, 0, c.pos, 0, a.pos.length); System.arraycopy(b.pos, 0, c.pos, a.pos.length, b.pos.length);
+		c.materials.addAll(a.materials); c.materials.addAll(b.materials);
+		c.surfaces.addAll(a.surfaces);
+		for (XModel.Surface s : b.surfaces) {
+			XModel.Surface t = new XModel.Surface();
+			t.material = s.material + a.materials.size();
+			t.vert = s.vert.clone(); for (int i = 0; i < t.vert.length; i++) t.vert[i] += a.vertCount;
+			t.normal = s.normal; t.uv = s.uv;
+			c.surfaces.add(t);
+		}
+		return c;
+	}
+
+	static final java.util.Map<String, Dds.Image> TEX = new HashMap<>();
+	static float FIXED_SCALE = -1, FIX_MINX, FIX_MINY;
+
+	static BufferedImage render(XModel m, Path imgDir, double yaw, int size, boolean log) throws Exception {
+		if (log) System.out.printf("%s: %d bones, %d verts, %d surfaces, %d materials%n", m.name, m.boneCount(), m.vertCount, m.surfaces.size(), m.materials.size());
 		Map<Integer, Dds.Image> tex = new HashMap<>();
 		for (int i = 0; i < m.materials.size(); i++) {
 			String t = m.materials.get(i).texture();
+			String better = com.zombiecraft.bo2.Bo2Assets.colorMapFor(java.util.List.of(imgDir.getParent()), m.materials.get(i).name());
+			if (better != null) t = better;
 			Path p = imgDir.resolve(t);
-			try { tex.put(i, Dds.read(p)); System.out.println("  tex " + t + " " + tex.get(i).width() + "x" + tex.get(i).height()); }
-			catch (Exception e) { System.out.println("  tex FAILED " + t + ": " + e.getMessage()); }
+			try { Dds.Image im = TEX.get(t); if (im == null) { im = Dds.read(p); TEX.put(t, im); } tex.put(i, im); }
+			catch (Exception e) { if (log) System.out.println("  tex FAILED " + t + ": " + e.getMessage()); }
 		}
 		// view: rotate around the up axis (z), look along +y after rotation; screen x = -y_rot? keep simple
 		float[] p = m.pos; int n = m.vertCount;
@@ -37,7 +97,8 @@ public class Preview {
 			sx[i] = (float) -ry; sy[i] = (float) -z; sz[i] = (float) rx;   // screen: x = right (BO2 -y), y down (-z), depth = x (forward is away)
 			minX = Math.min(minX, sx[i]); maxX = Math.max(maxX, sx[i]); minY = Math.min(minY, sy[i]); maxY = Math.max(maxY, sy[i]);
 		}
-		float scale = (size - 40) / Math.max(maxX - minX, maxY - minY);
+		if (FIXED_SCALE < 0) { FIXED_SCALE = (size - 40) / Math.max(maxX - minX, maxY - minY) * 0.8f; FIX_MINX = minX - (maxX - minX) * 0.12f; FIX_MINY = minY - (maxY - minY) * 0.12f; }
+		float scale = FIXED_SCALE; minX = FIX_MINX; minY = FIX_MINY; maxX = minX + (size - 40) / scale; maxY = minY + (size - 40) / scale;
 		BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
 		float[] zb = new float[size * size];
 		java.util.Arrays.fill(zb, Float.MAX_VALUE);
@@ -59,7 +120,7 @@ public class Preview {
 				raster(img, zb, size, X, Y, Z, U, V, L, t);
 			}
 		}
-		ImageIO.write(img, "png", out.toFile());
+		return img;
 	}
 
 	static void raster(BufferedImage img, float[] zb, int size, float[] X, float[] Y, float[] Z, float[] U, float[] V, float[] L, Dds.Image t) {

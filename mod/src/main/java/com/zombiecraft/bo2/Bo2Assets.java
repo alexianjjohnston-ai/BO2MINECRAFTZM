@@ -24,11 +24,11 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 1;
+	public static final int VERSION = 2;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
 	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit"};
-	static final String[] ASSET_TYPES = {"xmodel", "image"};
+	static final String[] ASSET_TYPES = {"xmodel", "material", "image"};
 
 	public static Path cacheDir(Path gameDir) { return gameDir.resolve("zombiecraft").resolve("bo2"); }
 
@@ -156,7 +156,11 @@ public final class Bo2Assets {
 			if (src == null) { missing.add(name); continue; }
 			XModel m = XModel.read(src);
 			m.name = name;
-			for (XModel.Material mat : m.materials) {
+			for (int mi = 0; mi < m.materials.size(); mi++) {
+				XModel.Material mat0 = m.materials.get(mi);
+				String better = colorMapFor(zoneDirs, mat0.name());
+				if (better != null) m.materials.set(mi, new XModel.Material(mat0.name(), better));
+				XModel.Material mat = m.materials.get(mi);
 				String t = mat.texture();
 				if (t.isEmpty() || !doneTex.add(t)) continue;
 				Path found = null;
@@ -182,6 +186,34 @@ public final class Bo2Assets {
 		try (var out = Files.newOutputStream(cache.resolve("manifest.properties"))) { p.store(out, "Zombiecraft Black Ops II asset cache (generated on this PC)"); }
 		log.accept("Black Ops II models ready: " + written + " models, " + textures + " textures");
 		return written;
+	}
+
+	/**
+	 * The export names a material's first image as its texture, which is sometimes a mask. The material file (materials/&lt;name&gt;.json)
+	 * says which image is the diffuse map. Returns that image's DDS file name, or null when unknown.
+	 */
+	public static String colorMapFor(List<Path> zoneDirs, String material) {
+		for (Path z : zoneDirs) {
+			Path f = z.resolve("materials").resolve(material + ".json");
+			if (!Files.isRegularFile(f)) continue;
+			try (var r = Files.newBufferedReader(f)) {
+				var root = com.google.gson.JsonParser.parseReader(r).getAsJsonObject();
+				var tex = root.getAsJsonArray("textures");
+				if (tex == null) return null;
+				String first = null, named = null;
+				for (var e : tex) {
+					var o = e.getAsJsonObject();
+					if (!"colorMap".equals(o.has("semantic") ? o.get("semantic").getAsString() : "")) continue;
+					String img = o.get("image").getAsString();
+					if (first == null) first = img;
+					String nm = o.has("name") ? o.get("name").getAsString() : "";
+					if (named == null && (nm.equalsIgnoreCase("Diffuse_Map") || nm.equalsIgnoreCase("Color_Map") || nm.equalsIgnoreCase("colorMap"))) named = img;
+				}
+				String pick = named != null ? named : first;
+				return pick == null ? null : pick + ".dds";
+			} catch (IOException | RuntimeException e) { return null; }
+		}
+		return null;
 	}
 
 	/** File name of a converted texture: the DDS name without extension, made safe for resource ids. */
