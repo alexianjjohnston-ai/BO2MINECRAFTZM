@@ -218,7 +218,7 @@ public final class Bo2Menus {
 			}
 			drawItems(g, mx, my);
 			text(g, "BLOCK OPS 2  0.1", width - 14 - tw("BLOCK OPS 2  0.1", 0.8f), 8, 0.8f, GREY);
-			if (UiArt.busy()) text(g, "Preparing Black Ops II art...", 14, height - 40, 0.8f, GREY);
+			if (UiArt.busy()) text(g, "Preparing Black Ops II art...", 14, height - 26 - (int) H(1.0f) - (int) H(0.8f) - 10, 0.8f, GREY);
 			hint(g, "ENTER", "Select", 14, height - 26);
 		}
 	}
@@ -232,7 +232,7 @@ public final class Bo2Menus {
 			items = new String[] {"SOLO PLAY", "OPTIONS"};
 		}
 
-		@Override protected void init() { x = (int) (width * 0.16); y0 = (int) (height * 0.2); }
+		@Override protected void init() { x = (int) (width * 0.16); y0 = (int) (height * 0.07) + (int) H(2.6f) + 12; }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
