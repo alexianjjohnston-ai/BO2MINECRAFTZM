@@ -184,7 +184,7 @@ public final class WeaponSystem {
 				double dmg = damageAt(w, bestDist) * (head ? w.headMult() : 1.0);
 				double[] acc = hits.computeIfAbsent(best, k -> new double[]{0, 0});
 				acc[0] += dmg; if (head) acc[1] = 1;
-				level.sendParticles(ParticleTypes.CRIT, bestPos.x, bestPos.y, bestPos.z, 3, 0.05, 0.05, 0.05, 0.1);
+				Blood.hit(level, bestPos, head);
 			} else if (bh.getType() != HitResult.Type.MISS) {
 				Vec3 l = bh.getLocation();
 				level.sendParticles(ParticleTypes.SMOKE, l.x, l.y, l.z, 2, 0.05, 0.05, 0.05, 0.01);

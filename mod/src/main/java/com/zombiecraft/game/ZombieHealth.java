@@ -20,6 +20,7 @@ public final class ZombieHealth {
 		if (z.hp > 0) {
 			pg.earn(Sheets.sysInt("hit_points"));
 			level.broadcastEntityEvent(z, (byte) 2);
+			Blood.hit(level, z.position().add(0, z.getBbHeight() * 0.6, 0), false);
 			z.knockback(0.2, p.getX() - z.getX(), p.getZ() - z.getZ());
 			return;
 		}
@@ -31,6 +32,7 @@ public final class ZombieHealth {
 		ZombieTier t = Sheets.tier(z.tier);
 		Cue.at(t.cueDeath(), level, z.position());
 		if (head && !melee) Cue.at("zmb_zombie_head_gib", level, z.getEyePosition());
+		Blood.kill(level, z.position().add(0, head && !melee ? z.getBbHeight() * 0.9 : z.getBbHeight() * 0.55, 0), head && !melee);
 		game.onZombieKilled(z);
 		z.kill(level);
 	}

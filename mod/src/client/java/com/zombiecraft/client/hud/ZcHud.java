@@ -75,6 +75,43 @@ public final class ZcHud {
 		previousHurtTime = previousPhase = damageFlashTicks = 0;
 	}
 
+	private static double hitX, hitZ;
+	private static long hitTick = -1000;
+
+	public static void hitFrom(double x, double z) {
+		hitX = x; hitZ = z;
+		Minecraft mc = Minecraft.getInstance();
+		hitTick = mc.level == null ? -1000 : mc.level.getGameTime();
+	}
+
+	/** BO2's hit direction: a red wedge on a ring around the crosshair, pointing at whatever hit you. */
+	private static void hitDirection(GuiGraphics g, Minecraft mc, float partialTick) {
+		if (mc.player == null || mc.level == null) return;
+		float age = mc.level.getGameTime() - hitTick + partialTick;
+		if (age < 0 || age > 40) return;
+		double dx = hitX - mc.player.getX(), dz = hitZ - mc.player.getZ();
+		double world = Math.atan2(-dx, dz); // yaw that faces the attacker
+		double rel = Math.toRadians(world * 180 / Math.PI - mc.player.getViewYRot(partialTick));
+		int cx = g.guiWidth() / 2, cy = g.guiHeight() / 2, r = Math.min(cx, cy) / 2;
+		int alpha = (int) (200 * (1f - age / 40f));
+		for (int i = -6; i <= 6; i++) {
+			double a = rel + i * 0.045;
+			int x = cx + (int) Math.round(Math.sin(a) * r), y = cy + (int) Math.round(Math.cos(a) * -r);
+			int half = 6 - Math.abs(i) / 2;
+			g.fill(x - half / 2, y - half / 2, x + half / 2 + 1, y + half / 2 + 1, (alpha << 24) | 0xC01010);
+		}
+	}
+
+	/** Brief warm light bloom on the screen when firing (the gun lights up the room). */
+	private static void muzzleBloom(GuiGraphics g, Minecraft mc, float partialTick) {
+		if (!mc.options.getCameraType().isFirstPerson()) return;
+		float age = GunFeedback.shotAgeTicks(partialTick);
+		if (age >= 2f) return;
+		int a = (int) (38 * (1f - age / 2f));
+		int w = g.guiWidth(), h = g.guiHeight();
+		g.fillGradient(0, h / 3, w, h, 0x00FFD890, (a << 24) | 0xFFD890);
+	}
+
 	/** Red screen edge: a pulse when hit, and a steady one while health is low (BO2 has no hearts). */
 	private static void damageFlash(GuiGraphics g, Minecraft mc, float partialTick) {
 		float strength = Math.max(0f, (damageFlashTicks - partialTick) / DAMAGE_FLASH_TICKS);
@@ -262,6 +299,8 @@ public final class ZcHud {
 			return;
 		}
 		hitMarker(g, mc, partialTick);
+		hitDirection(g, mc, partialTick);
+		muzzleBloom(g, mc, partialTick);
 		crosshair(g, mc);
 
 		// round tallies bottom left (a number once past round 10)

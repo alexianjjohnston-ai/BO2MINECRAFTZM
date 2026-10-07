@@ -81,7 +81,10 @@ public final class Game {
 				if (pg != null && (pg.downed || pg.dead)) return false;
 				if (pg != null && INSTANCE.tick < pg.shieldUntil) return false;
 				if (pg != null) pg.lastHurtTick = INSTANCE.tick;
-				if (source.getEntity() instanceof ZcZombie) Cue.ui("evt_player_swiped", p);
+				if (source.getEntity() instanceof ZcZombie zz) {
+					Cue.ui("evt_player_swiped", p);
+					ServerPlayNetworking.send(p, new Payloads.HitDirection(zz.getX(), zz.getZ()));
+				}
 			}
 			return true;
 		});

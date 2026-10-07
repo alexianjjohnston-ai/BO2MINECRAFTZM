@@ -163,3 +163,10 @@ Built so new maps are data, not code:
 - Cache/pack rebuild now also keys on the bo2_models sheet (`Bo2Assets.sheetsHash`).
 - Dev switches (use `-PdevProps=a,b`): debugGun (every gun idle + reload screenshots), debugPap, debugDrink, debugPowerups, debugOptions=..., debugVm.
 - Known: `bench` box-pay can flake on a late teddy; `viewmodel_m14_idle` does not exist in BO2.
+
+## Zombies, combat feel (workstream C, first pass, 2026-10-07)
+- `game/Blood`: dark red dust spray/mist on every zombie hit, bigger burst (more on headshots) on kills; replaces the vanilla crit stars.
+- `ZcZombie.tickDeath`: bodies stay on the floor for 8 s and are discarded without vanilla's white poof cloud (the white clumps).
+- Hit direction: `Payloads.HitDirection` sent when a zombie hurts a player; `ZcHud` draws a red arc on a ring round the crosshair that fades in 2 s. A short warm light bloom is drawn when firing.
+- Existing and kept: hit marker (white/gold headshot/red kill), red low-health edge, `tag_flash` muzzle flash.
+- Not done / not verified by eye: zombie close-up textures, eyes, torn clothes, climb/tear animation review, spawn presentation, crawlers, counts. Compiles; not run in game.
