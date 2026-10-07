@@ -33,6 +33,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		EntityRendererRegistry.register(ZcEntities.BOX, com.zombiecraft.client.render.ZcBoxRenderer::new);
 		EntityRendererRegistry.register(ZcEntities.ZOMBIE, com.zombiecraft.client.render.ZcZombieRenderer::new);
 		AutoWorld.register();
 		com.zombiecraft.client.menu.Bo2Menus.register();

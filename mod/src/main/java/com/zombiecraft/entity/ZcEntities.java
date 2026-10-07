@@ -14,6 +14,7 @@ public final class ZcEntities {
 	private ZcEntities() {}
 
 	public static EntityType<Zombie> ZOMBIE;
+	public static EntityType<ZcBox> BOX;
 
 	public static void register() {
 		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Payloads.id("zombie"));
@@ -21,5 +22,8 @@ public final class ZcEntities {
 				EntityType.Builder.<Zombie>of((type, level) -> new ZcZombie(type, level), MobCategory.MONSTER)
 						.sized(0.6f, 1.95f).clientTrackingRange(10).build(key));
 		FabricDefaultAttributeRegistry.register(ZOMBIE, ZcZombie.createZcAttributes());
+		ResourceKey<EntityType<?>> boxKey = ResourceKey.create(Registries.ENTITY_TYPE, Payloads.id("mystery_box"));
+		BOX = Registry.register(BuiltInRegistries.ENTITY_TYPE, boxKey,
+				EntityType.Builder.<ZcBox>of(ZcBox::new, MobCategory.MISC).sized(2.2f, 0.9f).clientTrackingRange(10).updateInterval(20).noSave().build(boxKey));
 	}
 }
