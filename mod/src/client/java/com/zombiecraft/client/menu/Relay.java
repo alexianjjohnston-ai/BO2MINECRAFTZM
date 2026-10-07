@@ -111,7 +111,8 @@ final class Relay {
 				}
 				if (!ip.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) throw new IOException("The public address must be IPv4 (got " + ip + ").");
 				code = encode(ip, port);
-				status = "";
+				// a tunnel (playit.gg) points at one local port, 25565 by default: if the game had to take another, the code will not reach it
+				status = pub != null && localPort != 25565 ? "Warning: port 25565 was busy, so the game opened on " + localPort + " and your tunnel will not reach it. Close whatever uses 25565 (another game or server) and host again." : "";
 				ZombiecraftMod.LOG.info("Block Ops 2 online: join code {} = {}:{}", code, ip, port);
 			} catch (IOException | RuntimeException e) {
 				status = e.getMessage() == null ? e.toString() : e.getMessage();

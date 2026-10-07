@@ -408,11 +408,12 @@ final class Bo2Locations {
 				int cy0 = ry + lh + 12 + Math.max(names.size(), 1) * (lh + 6) + 12;
 				Bo2Menus.raw(g, "JOIN CODE", rx, cy0, 0.85f, Bo2Menus.WHITE);
 				Bo2Menus.raw(g, Relay.code, rx + 30, cy0 + lh + 6, 1.6f, Bo2Menus.YELLOW);
-			} else if (host && !Relay.status.isEmpty()) {
-				int cy0 = ry + lh + 12 + Math.max(names.size(), 1) * (lh + 6) + 12;
-				Bo2Menus.raw(g, "ONLINE", rx, cy0, 0.85f, Bo2Menus.WHITE);
-				int yy = cy0 + lh + 6;
-				for (String line : Bo2Menus.wrap(Relay.status, width - 40 - rx, 0.75f)) { Bo2Menus.raw(g, line, rx, yy, 0.75f, 0xFFD2CEC6); yy += (int) (Bo2Menus.H(0.75f) * 1.2f); }
+			}
+			if (host && !Relay.status.isEmpty()) {
+				int cy0 = ry + lh + 12 + Math.max(names.size(), 1) * (lh + 6) + 12 + (Relay.code != null ? lh + 50 : 0);
+				if (Relay.code == null) Bo2Menus.raw(g, "ONLINE", rx, cy0, 0.85f, Bo2Menus.WHITE);
+				int yy = cy0 + (Relay.code == null ? lh + 6 : 0);
+				for (String line : Bo2Menus.wrap(Relay.status, width - 40 - rx, 0.75f)) { Bo2Menus.raw(g, line, rx, yy, 0.75f, Relay.code != null ? 0xFFFF9A4A : 0xFFD2CEC6); yy += (int) (Bo2Menus.H(0.75f) * 1.2f); }
 			}
 			String cap = secs > 0 ? "Game starting in " + secs : host ? "Waiting for players. Start when everyone is in" : "Waiting for the host to start the match";
 			if (secs > 0 && secs != lastSecs) { lastSecs = secs; MenuAudio.play("uin_timer"); }
