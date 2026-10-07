@@ -24,7 +24,7 @@ public final class AutoWorld {
 	private static boolean done;
 
 	public static void register() {
-		if (!Boolean.getBoolean("zombiecraft.autoplay")) return;
+		if (!Boolean.getBoolean("zombiecraft.autoplay") || System.getProperty("zombiecraft.debugJoin") != null) return;
 		ScreenEvents.AFTER_INIT.register((mc, screen, w, h) -> {
 			if (done || !(screen instanceof TitleScreen)) return;
 			done = true;

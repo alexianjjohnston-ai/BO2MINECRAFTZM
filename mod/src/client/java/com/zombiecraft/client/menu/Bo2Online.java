@@ -34,12 +34,25 @@ public final class Bo2Online {
 	static boolean hosting(Minecraft mc) { return mc.hasSingleplayerServer() && mc.getSingleplayerServer().isPublished(); }
 
 	public static void register() {
+		// dev: -Dzombiecraft.debugHost=true opens the autoplay world to LAN without auth; -Dzombiecraft.debugJoin=<address> joins one by itself
+		boolean debugHost = Boolean.getBoolean("zombiecraft.debugHost");
+		String debugJoin = System.getProperty("zombiecraft.debugJoin");
+		if (debugHost) hostPending = true;
+		if (debugJoin != null) {
+			boolean[] done = {false};
+			ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+				if (done[0] || mc.level != null || mc.getOverlay() != null || mc.screen == null) return;
+				done[0] = true;
+				ConnectScreen.startConnecting(mc.screen, mc, ServerAddress.parseString(debugJoin), new ServerData("Block Ops 2", debugJoin, ServerData.Type.OTHER), false, null);
+			});
+		}
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> {
 			if (!hostPending || !mc.hasSingleplayerServer()) return;
 			hostPending = false;
 			mc.execute(() -> {
 				var server = mc.getSingleplayerServer();
 				if (server == null) return;
+				if (debugHost) server.setUsesAuthentication(false);
 				int port = HttpUtil.isPortAvailable(DEFAULT_PORT) ? DEFAULT_PORT : HttpUtil.getAvailablePort();
 				if (server.publishServer(GameType.ADVENTURE, false, port)) showInvite = true;
 			});
