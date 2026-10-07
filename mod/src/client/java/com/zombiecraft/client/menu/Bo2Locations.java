@@ -400,6 +400,11 @@ final class Bo2Locations {
 			for (int i = 0; i < names.size(); i++)
 				Bo2Menus.raw(g, names.get(i), rx + 30, ry + lh + 8 + i * (lh + 6), 0.9f, names.get(i).equals(me) ? Bo2Menus.YELLOW : Bo2Menus.WHITE);
 
+			if (Relay.code != null) {
+				int cy0 = ry + lh + 12 + Math.max(names.size(), 1) * (lh + 6) + 12;
+				Bo2Menus.raw(g, "JOIN CODE", rx, cy0, 0.85f, Bo2Menus.WHITE);
+				Bo2Menus.raw(g, Relay.code, rx + 30, cy0 + lh + 6, 1.6f, Bo2Menus.YELLOW);
+			}
 			String cap = secs > 0 ? "Game starting in " + secs : host ? "Waiting for players. Start when everyone is in" : "Waiting for the host to start the match";
 			if (secs > 0 && secs != lastSecs) { lastSecs = secs; MenuAudio.play("uin_timer"); }
 			int capH = (int) Bo2Menus.H(1.0f), cx = x - 4, cw = (int) (width * 0.33);

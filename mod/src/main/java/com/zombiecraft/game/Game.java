@@ -69,6 +69,7 @@ public final class Game {
 		ServerPlayNetworking.registerGlobalReceiver(Payloads.StartMatch.TYPE, (payload, ctx) -> {
 			Game g = INSTANCE;
 			if (g != null && g.phase == Payloads.PHASE_LOBBY && g.lobbyCountdown == 0 && g.server.isSingleplayerOwner(ctx.player().getGameProfile())) {
+				com.zombiecraft.ZombiecraftMod.LOG.info("Block Ops 2: host pressed START MATCH");
 				g.lobbyCountdown = 60;
 				Cue.all("uin_lobby_join", g.level);
 			}

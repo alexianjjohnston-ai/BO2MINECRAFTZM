@@ -47,7 +47,7 @@ public final class Bo2Online {
 		if (Boolean.getBoolean("zombiecraft.debugLobby")) {
 			hostNext();
 			Thread t = new Thread(() -> {
-				try { Thread.sleep(45000); } catch (InterruptedException ignored) {}
+				try { Thread.sleep(100000); } catch (InterruptedException ignored) {}
 				Minecraft mc = Minecraft.getInstance();
 				mc.execute(() -> net.minecraft.client.Screenshot.grab(mc.gameDirectory, "zc-lobby.png", mc.getMainRenderTarget(), c -> {}));
 			}, "zc-dev-shot");
@@ -59,7 +59,9 @@ public final class Bo2Online {
 			ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 				if (done[0] || mc.level != null || mc.getOverlay() != null || mc.screen == null) return;
 				done[0] = true; lastAddress = debugJoin;
-				ConnectScreen.startConnecting(mc.screen, mc, ServerAddress.parseString(debugJoin), new ServerData("Block Ops 2", debugJoin, ServerData.Type.OTHER), false, null);
+					String target = debugJoin;
+					if (Relay.looksLikeCode(debugJoin)) try { target = "127.0.0.1:" + Relay.forward(debugJoin); } catch (java.io.IOException e) { return; }
+				ConnectScreen.startConnecting(mc.screen, mc, ServerAddress.parseString(target), new ServerData("Block Ops 2", target, ServerData.Type.OTHER), false, null);
 			});
 		}
 		net.fabricmc.fabric.api.client.screen.v1.ScreenEvents.AFTER_INIT.register((mc, screen, w, h) -> {
@@ -87,10 +89,10 @@ public final class Bo2Online {
 				int port = HttpUtil.isPortAvailable(DEFAULT_PORT) ? DEFAULT_PORT : HttpUtil.getAvailablePort();
 				boolean ok = server.publishServer(GameType.ADVENTURE, false, port);
 				com.zombiecraft.ZombiecraftMod.LOG.info("Block Ops 2 online: opened to LAN on port {}: {}", port, ok);
-				if (ok) showInvite = true;
+				if (ok) { showInvite = true; Relay.host(port); }
 			});
 		});
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> { hostPending = false; showInvite = false; lobbyHosting = false; com.zombiecraft.game.Game.lobbyNext = false; });
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> { hostPending = false; showInvite = false; lobbyHosting = false; com.zombiecraft.game.Game.lobbyNext = false; Relay.stop(); });
 		// the invite box waits for the loading screen to finish; a hosted lobby has its own screen (with INVITE FRIENDS), so no box first
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			if (showInvite && mc.player != null && mc.screen == null) { showInvite = false; if (!lobbyHosting) mc.setScreen(new Invite()); }
@@ -146,11 +148,12 @@ public final class Bo2Online {
 		MenuAudio.music();
 		Bo2Menus.background(g, s.width, s.height);
 		g.fillGradient(0, 0, s.width, s.height, 0x80000000, 0xB0000000);
+		if (Relay.lastError != null) Bo2Menus.raw(g, Relay.lastError, (int) (s.width * 0.16), (int) (s.height * 0.78), 1.0f, 0xFFFF5A4A);
 	}
 
 	/** What to forward, and where to get the address to share. */
 	static final class Invite extends MenuScreen {
-		Invite() { super("Online Game"); items = new String[] {"OPEN PLAYIT.GG", "COPY PORT", "CONTINUE"}; scale = 1.1f; }
+		Invite() { super("Online Game"); items = Relay.configured() != null ? new String[] {"COPY CODE", "OPEN PLAYIT.GG", "CONTINUE"} : new String[] {"OPEN PLAYIT.GG", "COPY PORT", "CONTINUE"}; scale = 1.1f; }
 
 		private int port() {
 			var s = Minecraft.getInstance().getSingleplayerServer();
@@ -159,6 +162,11 @@ public final class Bo2Online {
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
+			if (Relay.configured() != null && i < 2) {
+				if (i == 0 && Relay.code != null) mc.keyboardHandler.setClipboard(Relay.code);
+				else if (i == 1) net.minecraft.Util.getPlatform().openUri("https://playit.gg/account/tunnels");
+				return;
+			}
 			switch (i) {
 				case 0 -> net.minecraft.Util.getPlatform().openUri("https://playit.gg/account/tunnels");
 				case 1 -> mc.keyboardHandler.setClipboard(String.valueOf(port()));
@@ -174,7 +182,11 @@ public final class Bo2Online {
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			g.fillGradient(0, 0, width, height, 0xA0000000, 0xC0000000);
 			int bw = Math.max((int) (width * 0.5), 360), pad = 16;
-			String[] steps = {
+			String[] steps = Relay.configured() != null ? new String[] {
+				"Your game is open for friends. Join code: " + (Relay.code != null ? Relay.code : "connecting to the relay..."),
+				"Friends pick Join Game and type the code. No port forwarding needed.",
+				"A playit.gg tunnel to 127.0.0.1 port " + port() + " (TCP) also still works."
+			} : new String[] {
 				"Your game is open for friends on port " + port() + " (TCP).",
 				"1. Start the playit.gg agent on this PC and sign in.",
 				"2. Create a tunnel of type Minecraft Java (TCP) with local address 127.0.0.1 and local port " + port() + ".",
@@ -208,7 +220,11 @@ public final class Bo2Online {
 		private void connect() {
 			String a = addr.toString().trim();
 			if (a.isEmpty() || !ServerAddress.isValidAddress(a)) { MenuAudio.play("cac_cmn_deny"); return; }
-			lastAddress = a;
+			if (Relay.looksLikeCode(a)) {
+				if (Relay.configured() == null) { joinError = "Join codes need a relay. Add relay=host:port to config/zombiecraft.properties (the address of your relay.py), or enter the host's address instead."; MenuAudio.play("cac_cmn_deny"); return; }
+				try { a = "127.0.0.1:" + Relay.forward(a); } catch (java.io.IOException e) { joinError = "Could not start the join: " + e.getMessage(); return; }
+				lastAddress = addr.toString().trim().toUpperCase();
+			} else lastAddress = a;
 			MenuAudio.play("uin_lobby_join");
 			joinError = null;
 			Minecraft mc = Minecraft.getInstance();
@@ -241,7 +257,7 @@ public final class Bo2Online {
 			int x = (int) (width * 0.16);
 			Bo2Menus.text(g, "JOIN GAME", x, (int) (height * 0.07), 2.6f, Bo2Menus.WHITE);
 			int y = (int) (height * 0.07) + (int) Bo2Menus.H(2.6f) + 30;
-			Bo2Menus.text(g, "Host address (from playit.gg)", x, y, 1.0f, Bo2Menus.GREY);
+			Bo2Menus.text(g, "Join code, or host address", x, y, 1.0f, Bo2Menus.GREY);
 			y += (int) Bo2Menus.H(1.0f) + 10;
 			int bw = (int) (width * 0.5), bh = (int) Bo2Menus.H(1.3f) + 10;
 			g.fill(x - 4, y - 4, x + bw, y - 4 + bh, 0xB0000000);
@@ -249,7 +265,7 @@ public final class Bo2Online {
 			String shown = addr + ((System.currentTimeMillis() / 500) % 2 == 0 ? "_" : "");
 			Bo2Menus.raw(g, shown, x, y, 1.3f, Bo2Menus.WHITE);
 			y += bh + 10;
-			List<String> help = Bo2Menus.wrap("Paste the address your host got from playit.gg, for example name.joinmc.link or an address with a port. Everyone needs the same Block Ops 2 version.", bw, 0.8f);
+			List<String> help = Bo2Menus.wrap("Type the 6-character join code the host sees in the lobby. Or paste an address: what playit.gg shows the host, for example name.joinmc.link. Everyone needs the same Block Ops 2 version.", bw, 0.8f);
 			for (String l : help) { Bo2Menus.raw(g, l, x, y, 0.8f, 0xFFD2CEC6); y += (int) (Bo2Menus.H(0.8f) * 1.2f); }
 			if (joinError != null) {
 				y += 8;

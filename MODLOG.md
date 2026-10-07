@@ -248,3 +248,8 @@ Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulati
 - New map op `scenery` (like `import`, but air runs are skipped, so a mostly-sky file is cheap). `bo2_depot` pastes it at order -2 (sheet origin -120,-112, so the original lot sits under the play region), empties the play region (order -1), then the BO2 geometry import (0), props (50) and the barrier ring (90) go on top.
 - Checked in game with stand-in geometry: beyond the barrier ring there is terrain, grass, flowers and trees out into the fog, no void edge. Dev tour got four "outside" stops (ring sides, 12 up, looking away).
 - Still open for the depot: the real BO2 wall geometry (needs the map export), diagonal barricade 4, door models. Town is not started (depot first).
+
+## Join codes through a relay (2026-10-07)
+- `tools/relay/relay.py` (stdlib Python, you host it): the host's game registers (`HOST`) and gets a 6-char code; a joiner sends `JOIN <code>`, the relay asks the host for a data connection (`CONN id` -> `DATA id`) and pipes the two. `test_relay.py` passes.
+- Mod: `menu/Relay` (host registration when the world opens to LAN; loopback forwarder for joiners, so vanilla's connect screen just goes to 127.0.0.1). Address from `relay=host:port` in config/zombiecraft.properties (or -Dzombiecraft.relay). The lobby shows JOIN CODE; Join Game accepts a 6-character code or an address; INVITE FRIENDS has COPY CODE.
+- Verified with two real clients through a local relay: the second one joined the host's lobby by code and showed in its player list. Not done: a relay run on a public machine, a default relay address, starting the match with a joiner and playing it.
