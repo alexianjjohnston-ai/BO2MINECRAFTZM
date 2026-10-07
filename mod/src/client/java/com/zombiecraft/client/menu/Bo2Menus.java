@@ -29,6 +29,7 @@ public final class Bo2Menus {
 	private static final String LOADSCREEN = "loadscreen_transit_classic";
 
 	public static void register() {
+		Bo2Online.register();
 		boolean autoplay = Boolean.getBoolean("zombiecraft.autoplay");
 		ScreenEvents.AFTER_INIT.register((mc, screen, w, h) -> {
 			String dbg = System.getProperty("zombiecraft.debugOptions");
@@ -243,14 +244,15 @@ public final class Bo2Menus {
 		Lobby(Screen parent) {
 			super("Zombies");
 			this.parent = parent;
-			items = new String[] {"SOLO PLAY", "OPTIONS"};
+			items = new String[] {"SOLO PLAY", "HOST ONLINE GAME", "JOIN GAME", "OPTIONS"};
 		}
 
 		@Override protected void init() { x = (int) (width * 0.16); y0 = (int) (height * 0.07) + (int) H(2.6f) + 12; }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
-			if (i == 0) { MenuAudio.play("zmb_ui_globe_spin_start"); mc.setScreen(new MapSelect(this)); }
+			if (i == 0 || i == 1) { MenuAudio.play("zmb_ui_globe_spin_start"); mc.setScreen(new MapSelect(this, i == 1)); }
+			else if (i == 2) { MenuAudio.play("uin_lobby_join"); mc.setScreen(new Bo2Online.Join(this)); }
 			else mc.setScreen(new Bo2Options.Root(this));
 		}
 
@@ -265,8 +267,12 @@ public final class Bo2Menus {
 			planet(g, -(int) (width * 0.06), (int) (height * 0.82), (int) (height * 0.5), seconds() / 90f);
 			text(g, "ZOMBIES", x, (int) (height * 0.07), 2.6f, WHITE);
 			drawItems(g, mx, my);
-			String desc = sel == 0 ? "Survive unending waves of the undead. Earn points, buy weapons and see how many rounds you can last."
-					: "Change video, audio and controls.";
+			String desc = switch (sel) {
+				case 0 -> "Survive unending waves of the undead. Earn points, buy weapons and see how many rounds you can last.";
+				case 1 -> "Start a game and open it to friends online. You will be shown what to forward with playit.gg.";
+				case 2 -> "Join a friend's game with the address they got from playit.gg.";
+				default -> "Change video, audio and controls.";
+			};
 			int ty = y0 + items.length * step() + 14;
 			for (int k = 0; k < 4; k++) g.fill(x - 2, ty + 2 + k, x + 1 + k, ty + 3 + k, WHITE);
 			for (int k = 0; k < 3; k++) g.fill(x - 2, ty + 9 - k, x + 1 + k, ty + 10 - k, WHITE);
@@ -275,7 +281,7 @@ public final class Bo2Menus {
 				ty += (int) (H(0.9f) * 1.15f);
 			}
 			int rx = (int) (width * 0.56), ry = (int) (height * 0.12);
-			text(g, "1 Player (4 Max)", rx, ry, 1.0f, WHITE);
+			text(g, "Players (4 Max)", rx, ry, 1.0f, WHITE);
 			g.fill(rx - 4, ry + 20, width - 40, ry + 21, 0x50FFFFFF);
 			g.fill(rx, ry + 26, rx + 10, ry + 36, 0xFF55606A);
 			text(g, Minecraft.getInstance().getUser().getName(), rx + 16, ry + 24, 1.0f, YELLOW);
@@ -290,9 +296,10 @@ public final class Bo2Menus {
 		/** Marker centre as a fraction of the planet radius from its centre. */
 		private static final double[][] POS = {{-0.12, -0.02}, {0.42, 0.18}, {-0.5, -0.45}, {0.22, -0.55}, {-0.38, 0.5}, {0.1, 0.62}};
 		private final Screen parent;
+		private final boolean host;
 		private int sel, lastSel = -1;
 
-		MapSelect(Screen parent) { super(Component.literal("Select map")); this.parent = parent; }
+		MapSelect(Screen parent, boolean host) { super(Component.literal("Select map")); this.parent = parent; this.host = host; }
 
 		private int radius() { return (int) (height * 0.36); }
 		private int markerSize(int i) { return (int) (radius() * (i == 0 ? 0.3 : i == 1 ? 0.2 : 0.13)); }
@@ -300,7 +307,7 @@ public final class Bo2Menus {
 		private int my(int i) { return (int) (height / 2 + POS[i][1] * radius()); }
 
 		private void pick() {
-			if (sel == 0) { MenuAudio.play("zmb_ui_map_level_select"); AutoWorld.start(Minecraft.getInstance(), this); }
+			if (sel == 0) { MenuAudio.play("zmb_ui_map_level_select"); if (host) Bo2Online.hostNext(); AutoWorld.start(Minecraft.getInstance(), this); }
 			else MenuAudio.play("cac_cmn_deny");
 		}
 
@@ -342,15 +349,21 @@ public final class Bo2Menus {
 
 	/** In-game pause menu in the same style. */
 	static final class Pause extends MenuScreen {
-		Pause() { super("Paused"); items = new String[] {"RESUME GAME", "OPTIONS", "END GAME"}; }
+		Pause() {
+			super("Paused");
+			Minecraft mc = Minecraft.getInstance();
+			items = Bo2Online.hosting(mc) ? new String[] {"RESUME GAME", "INVITE INFO", "OPTIONS", "END GAME"}
+					: new String[] {"RESUME GAME", "OPTIONS", mc.isLocalServer() ? "END GAME" : "LEAVE GAME"};
+		}
 
 		@Override protected void init() { x = (int) (width * 0.1); y0 = (int) (height * 0.3); MenuAudio.play("uin_main_pause"); }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
-			switch (i) {
-				case 0 -> mc.setScreen(null);
-				case 1 -> mc.setScreen(new Bo2Options.Root(this));
+			switch (items[i]) {
+				case "RESUME GAME" -> mc.setScreen(null);
+				case "INVITE INFO" -> mc.setScreen(new Bo2Online.Invite());
+				case "OPTIONS" -> mc.setScreen(new Bo2Options.Root(this));
 				default -> mc.setScreen(new QuitDialog(this));
 			}
 		}
