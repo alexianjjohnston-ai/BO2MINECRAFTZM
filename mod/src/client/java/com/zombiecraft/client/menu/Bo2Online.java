@@ -77,7 +77,7 @@ public final class Bo2Online {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> {
 			MenuAudio.stopMusic();
 			joinError = null;
-			if (!mc.hasSingleplayerServer() && Relay.joinCode != null) net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.zombiecraft.net.Payloads.JoinCode(Relay.joinCode));
+			if (!mc.hasSingleplayerServer() && Relay.joinCode != null) { Relay.joinedAt = System.currentTimeMillis(); net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.zombiecraft.net.Payloads.JoinCode(Relay.joinCode)); }
 			if (!hostPending || !mc.hasSingleplayerServer()) {
 				com.zombiecraft.ZombiecraftMod.LOG.info("Block Ops 2 online: not opening to LAN (hostPending={}, singleplayerServer={})", hostPending, mc.hasSingleplayerServer());
 				return;
@@ -149,6 +149,10 @@ public final class Bo2Online {
 		MenuAudio.music();
 		Bo2Menus.background(g, s.width, s.height);
 		g.fillGradient(0, 0, s.width, s.height, 0x80000000, 0xB0000000);
+		if (Relay.joinedAt != 0 && System.currentTimeMillis() - Relay.joinedAt < 20_000) {
+			int y = (int) (s.height * 0.78);
+			for (String l : Bo2Menus.wrap("Disconnected right after joining. That is almost always a wrong or old join code: the host's code changes every lobby, so ask for the one on their lobby screen and try again.", (int) (s.width * 0.6), 1.0f)) { Bo2Menus.raw(g, l, (int) (s.width * 0.16), y, 1.0f, 0xFFFF9A4A); y += (int) (Bo2Menus.H(1.0f) * 1.2f); }
+		}
 		if (Relay.lastError != null) Bo2Menus.raw(g, Relay.lastError, (int) (s.width * 0.16), (int) (s.height * 0.78), 1.0f, 0xFFFF5A4A);
 	}
 

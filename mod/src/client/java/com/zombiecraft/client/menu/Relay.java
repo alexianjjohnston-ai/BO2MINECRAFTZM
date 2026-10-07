@@ -72,6 +72,8 @@ final class Relay {
 
 	/** The code this player typed, sent to the host once connected (the host's game refuses players without the current code). */
 	static volatile String joinCode;
+	/** When the code was sent: a disconnect soon after is almost always a wrong or outdated code. */
+	static volatile long joinedAt;
 
 	/** What to connect to for a typed join code (the host's tunnel; with a relay, a loopback forwarder through it). Null when the input is not a code. */
 	static String resolveJoin(String input) throws IOException {
