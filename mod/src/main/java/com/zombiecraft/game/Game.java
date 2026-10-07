@@ -182,6 +182,7 @@ public final class Game {
 		for (var p : Sheets.PAPS) tourAdd("pap " + p.id(), (p.x1() + p.x2()) / 2.0, (p.z1() + p.z2()) / 2.0, p.facing(), 4, 8);
 		for (var w : Sheets.WALLBUYS) tourAdd("wallbuy " + w.id() + " " + w.weaponId(), w.x(), w.z(), w.facing(), 3, 0);
 		for (var d : Sheets.DOORS) { var dir = d.x1() == d.x2() ? "east" : "south"; tourAdd("door " + d.id(), (d.x1() + d.x2()) / 2.0, (d.z1() + d.z2()) / 2.0, dir, 3.5, 0); }
+		for (var pr : Sheets.PROPS) if (pr.exact()) tourAdd("prop " + pr.id(), pr.x() - 0.5, pr.z() - 0.5, "south", 8, 12); // BO2-placed props: stand south of each, looking north
 		for (var w : Sheets.WINDOWS) {
 			boolean horiz = w.wall().equals("N") || w.wall().equals("S");
 			double cx = horiz ? w.a() + w.width() / 2.0 : w.fixed(), cz = horiz ? w.fixed() : w.a() + w.width() / 2.0;
@@ -205,7 +206,7 @@ public final class Game {
 		placeWallBuys();
 		box = new BoxSystem(this);
 		if (pap != null) pap.shutdown();
-		pap = new PapSystem(this);
+		pap = Sheets.PAPS.isEmpty() ? null : new PapSystem(this); // a map may have no Pack-a-Punch (Survival Bus Depot)
 		if (machines != null) machines.shutdown();
 		if (powerups != null) powerups.shutdown();
 		machines = new Machines(this);
@@ -470,7 +471,7 @@ public final class Game {
 			if (idx < names.length && (ph == 0 || ph == 60)) {
 				String n = names[idx];
 				double px = 0, py = 0, pz = 0; float yaw = 0;
-				if (n.equals("pap")) {
+				if (n.equals("pap") && pap != null) {
 					var d = pap.def();
 					var f = net.minecraft.core.Direction.valueOf(d.facing().toUpperCase());
 					px = origin.getX() + (d.x1() + d.x2()) / 2.0 + 0.5 + f.getStepX() * 4.0; pz = origin.getZ() + (d.z1() + d.z2()) / 2.0 + 0.5 + f.getStepZ() * 4.0;
@@ -506,7 +507,7 @@ public final class Game {
 		Projectiles.tick(this);
 		if (phase != Payloads.PHASE_GAMEOVER) {
 			box.tick();
-			pap.tick();
+			if (pap != null) pap.tick();
 			machines.tick();
 			powerups.tick();
 		}

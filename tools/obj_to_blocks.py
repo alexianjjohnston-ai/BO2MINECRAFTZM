@@ -160,7 +160,7 @@ def check(grid, palette):
     def cell(sx, y, sz):
         gx, gz = sx + 40 - x0, sz + 47 - z0
         if not (0 <= gx < grid.shape[2] and 0 <= gz < grid.shape[1] and 0 <= y + DEPTH < grid.shape[0]): return None
-        return grid[y + DEPTH, gz, gx] != 0
+        return bool(grid[y + DEPTH, gz, gx] != 0)
     bad = 0
     for w in ld('map_windows'):
         horiz = w['wall'] in 'NS'

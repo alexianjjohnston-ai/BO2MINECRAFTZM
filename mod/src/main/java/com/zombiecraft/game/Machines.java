@@ -50,6 +50,7 @@ public final class Machines {
 
 	public Machines(Game game) {
 		this.game = game; this.level = game.level;
+		power = Sheets.MACHINES.stream().noneMatch(m -> m.kind().equals("power")); // no switch on the map (Survival Bus Depot): power is on from the start, as in BO2
 		build();
 	}
 
