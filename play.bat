@@ -51,5 +51,5 @@ if not defined ZOMBIECRAFT_BO2_DIR (
 if defined ZOMBIECRAFT_BO2_DIR (echo [bo2] Found Black Ops II: %ZOMBIECRAFT_BO2_DIR%) else (echo [bo2] Not found by the launcher; the game will search all drives itself. Set ZOMBIECRAFT_BO2_DIR to force a path.)
 
 cd /d "%~dp0mod"
-call "%~dp0modgradlew.bat" runClient --console=plain
+call "%~dp0mod\gradlew.bat" runClient --console=plain
 pause
