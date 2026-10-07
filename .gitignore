@@ -11,4 +11,5 @@ assets_src/
 .jdk/
 .zc-version
 play.bat.new
-maps_local/
+maps_local/*
+!maps_local/depot.json.gz
