@@ -214,3 +214,11 @@ Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulati
 - **Gun "missed spots"**: surfaces with no texture are skipped (now logged once per model: only the hands lack their sleeve image, handled). The FAL's modelled-in M203 launcher (`..._attach_gl_*`, a big black slab in view) is no longer drawn.
 - **Textures**: BUS/STOP road paint removed (the square crop cut the letters), white concrete no longer an image atlas.
 - Not fixed: `start-pistol-8/32` bench step fails (m1911 reserve 24 vs 32), from another stream; HUD blood-streak drawn at screen left in every shot is another stream's overlay.
+
+## BO2 map flow: planet -> top-down Tranzit -> match lobby (2026-10-07)
+- Frames: reference screenshots (planet, top-down map, focused place with its photo + mode list, "BUS DEPOT / SURVIVAL" lobby with "Game starting in 3").
+- `menu/Bo2Locations`: `Select` shows `menu_zm_map_transit_large` cropped/stretched like BO2 with the five places (depot, town, power, diner, farm: hotspot fractions from the photos). Nothing is preselected; hovering counts only after the mouse moves. Focusing a place blurs the rest (offset copies + dim), shows its `menu_zm_map_transit_blit_*` photo and mode list (Bus Depot: TRANZIT locked, SURVIVAL). `Match` is the lobby: START MATCH (3 s countdown), ONLINE GAME: OFF/ON (hosting moved here from the Zombies menu; shows 4 Max), MAP; postcard with the place's loading picture, which the loading screen then also uses.
+- Only the Bus Depot is playable; the rest say COMING SOON. Playing it uses the converted Tranzit depot when extracted (`Sheets.useMap` is called from the lobby), the built-in depot otherwise. `MapBuilder` now clears a 121x101x30 box above the ground before building so switching maps in one world leaves nothing behind.
+- `UiAssets.VERSION` 7 (adds the five blit images): the menu art cache rebuilds once from the player's BO2 install.
+- Dev: `-PdevProps=debugOptions=locations|match,debugSel=<0..4|-1>` opens the screen and saves `screenshots/zc-<name>.png` after 4 s.
+- Not tested: actually starting a match from the menu (only the screens and the earlier dev-tour run of the map), hosting from the new toggle, mouse feel.

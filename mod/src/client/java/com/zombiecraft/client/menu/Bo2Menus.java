@@ -259,15 +259,15 @@ public final class Bo2Menus {
 		Lobby(Screen parent) {
 			super("Zombies");
 			this.parent = parent;
-			items = new String[] {"SOLO PLAY", "HOST ONLINE GAME", "JOIN GAME", "OPTIONS"};
+			items = new String[] {"PLAY", "JOIN GAME", "OPTIONS"};
 		}
 
 		@Override protected void init() { x = (int) (width * 0.16); y0 = (int) (height * 0.07) + (int) H(2.6f) + 12; }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
-			if (i == 0 || i == 1) { MenuAudio.play("zmb_ui_globe_spin_start"); mc.setScreen(new MapSelect(this, i == 1)); }
-			else if (i == 2) { MenuAudio.play("uin_lobby_join"); mc.setScreen(new Bo2Online.Join(this)); }
+			if (i == 0) { MenuAudio.play("zmb_ui_globe_spin_start"); mc.setScreen(new MapSelect(this, false)); }
+			else if (i == 1) { MenuAudio.play("uin_lobby_join"); mc.setScreen(new Bo2Online.Join(this)); }
 			else mc.setScreen(new Bo2Options.Root(this));
 		}
 
@@ -283,9 +283,8 @@ public final class Bo2Menus {
 			text(g, "ZOMBIES", x, (int) (height * 0.07), 2.6f, WHITE);
 			drawItems(g, mx, my);
 			String desc = switch (sel) {
-				case 0 -> "Survive unending waves of the undead. Earn points, buy weapons and see how many rounds you can last.";
-				case 1 -> "Start a game and open it to friends online. You will be shown what to forward with playit.gg.";
-				case 2 -> "Join a friend's game with the address they got from playit.gg.";
+				case 0 -> "Survive unending waves of the undead, alone or with friends online. Pick a place, then start the match.";
+				case 1 -> "Join a friend's game with the address they got from playit.gg.";
 				default -> "Change video, audio and controls.";
 			};
 			int ty = y0 + items.length * step() + 14;

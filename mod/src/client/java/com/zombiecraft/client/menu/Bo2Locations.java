@@ -70,6 +70,7 @@ final class Bo2Locations {
 		int sel = Integer.getInteger("zombiecraft.debugSel", -1);
 		Select s = new Select(planet, false);
 		s.loc = sel;
+		if (sel >= 0) s.mode = LOCS[sel].modes().size() - 1;
 		Screen out = which.equals("match") ? new Match(s, false, LOCS[Math.max(0, sel)], LOCS[Math.max(0, sel)].modes().get(LOCS[Math.max(0, sel)].modes().size() - 1)) : s;
 		Thread t = new Thread(() -> {
 			try { Thread.sleep(4000); } catch (InterruptedException ignored) {}
@@ -86,9 +87,10 @@ final class Bo2Locations {
 		private final Screen parent;
 		private final boolean host;
 		int loc = -1;
-		private int mode, lastLoc = -2, lastMode = -1;
+		int mode;
+		private int lastLoc = -2, lastMode = -1;
 		private final int[][] rows = new int[2][4];
-		private int px, py, pw, ph, tx, ty, tw;
+		private int px, py, pw, ph, tx, ty, tw, seenX = -1, seenY = -1;
 
 		Select(Screen parent, boolean host) { super(Component.literal("Select place")); this.parent = parent; this.host = host; }
 
@@ -146,8 +148,11 @@ final class Bo2Locations {
 		@Override public void render(GuiGraphics g, int mouseX, int mouseY, float dt) {
 			MenuAudio.music();
 			Loc l = cur();
+			// hovering only counts once the mouse has really moved (the cursor often rests on a place when the screen opens)
+			boolean moved = seenX >= 0 && (mouseX != seenX || mouseY != seenY);
+			seenX = mouseX; seenY = mouseY;
 			// moving over another place focuses it; moving over the open panel keeps it
-			if (!(l != null && in(mouseX, mouseY, Math.min(px, tx) - 6, py - 6, Math.max(px + pw, tx + tw) - Math.min(px, tx) + 12, ph + 90))) {
+			if (moved && !(l != null && in(mouseX, mouseY, Math.min(px, tx) - 6, py - 6, Math.max(px + pw, tx + tw) - Math.min(px, tx) + 12, ph + 90))) {
 				int h = hotspotAt(mouseX, mouseY);
 				if (h >= 0 && h != loc) { loc = h; mode = LOCS[h].modes().size() - 1; l = cur(); }
 			}
@@ -166,7 +171,7 @@ final class Bo2Locations {
 					String nm = m.name();
 					int w = Bo2Menus.tw(nm, 1.2f), hh = (int) Bo2Menus.H(1.2f);
 					rows[i][0] = tx; rows[i][1] = y - 3; rows[i][2] = w + 12; rows[i][3] = hh + 6;
-					if (mouseX >= tx && mouseX <= tx + w + 12 && mouseY >= y - 3 && mouseY <= y + hh + 3) mode = i;
+					if (moved && mouseX >= tx && mouseX <= tx + w + 12 && mouseY >= y - 3 && mouseY <= y + hh + 3) mode = i;
 					if (on) g.renderOutline(tx, y - 3, w + 12, hh + 6, Bo2Menus.ORANGE);
 					Bo2Menus.raw(g, nm, tx + 6, y, 1.2f, on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
 					if (!m.playable()) UiArt.draw(g, "pc_lock", tx + w + 18, y, hh, hh, 0xB0FFFFFF);
@@ -188,13 +193,15 @@ final class Bo2Locations {
 	// ------------------------------------------------------------------ match lobby
 	static final class Match extends Screen {
 		private final Screen parent;
-		private final boolean host;
+		private boolean host;
 		private final Loc loc;
 		private final Mode mode;
-		private final String[] items = {"START MATCH", "MAP"};
+		private final String[] items = {"START MATCH", "ONLINE GAME: OFF", "MAP"};
+		private String label(int i) { return i == 1 ? "ONLINE GAME: " + (host ? "ON" : "OFF") : items[i]; }
 		private int sel, lastSel = -1;
 		private long startAt;
 		private boolean launched;
+		private int seenX = -1, seenY = -1;
 
 		Match(Screen parent, boolean host, Loc loc, Mode mode) { super(Component.literal("Match")); this.parent = parent; this.host = host; this.loc = loc; this.mode = mode; }
 
@@ -202,12 +209,12 @@ final class Bo2Locations {
 		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
 
 		private int x() { return (int) (width * 0.05); }
-		private int y0() { return (int) (height * 0.07) + (int) Bo2Menus.H(2.0f) + 14; }
 		private int step() { return (int) (Bo2Menus.H(1.25f) * 1.25f); }
 
 		private void activate(int i) {
 			if (startAt != 0) return;
 			if (i == 0) { startAt = System.currentTimeMillis() + 3000; MenuAudio.play("uin_lobby_join"); }
+			else if (i == 1) { host = !host; MenuAudio.play("uin_main_nav"); }
 			else { MenuAudio.play("uin_cmn_backout"); Minecraft.getInstance().setScreen(parent); }
 		}
 
@@ -241,34 +248,49 @@ final class Bo2Locations {
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			MenuAudio.music();
 			topDown(g, width, height, true);
-			int x = x();
-			Bo2Menus.raw(g, loc.name() + " / " + mode.name(), x, (int) (height * 0.07), 2.0f, Bo2Menus.WHITE);
+			boolean moved = seenX >= 0 && (mx != seenX || my != seenY);
+			seenX = mx; seenY = my;
+			int x = x(), hintY = height - 26;
+			// the title shrinks to fit half the window so it can never run into the player list
+			String title = loc.name() + " / " + mode.name();
+			float ts = 2.0f;
+			while (ts > 1.0f && Bo2Menus.tw(title, ts) > width * 0.5) ts -= 0.1f;
+			Bo2Menus.raw(g, title, x, (int) (height * 0.07), ts, Bo2Menus.WHITE);
+			int y0 = (int) (height * 0.07) + (int) Bo2Menus.H(ts) + 14, step = step();
 			for (int i = 0; i < items.length; i++) {
-				int y = y0() + i * step(), w = Bo2Menus.tw(items[i], 1.25f);
-				if (startAt == 0 && mx >= x - 6 && mx <= x + w + 6 && my >= y - 3 && my <= y + step() - 3) sel = i;
+				int y = y0 + i * step, w = Bo2Menus.tw(label(i), 1.25f);
+				if (moved && startAt == 0 && mx >= x - 6 && mx <= x + w + 6 && my >= y - 3 && my <= y + step - 3) sel = i;
 				boolean on = i == sel;
-				if (on) g.renderOutline(x - 6, y - 3, w + 12, step() - 2, Bo2Menus.ORANGE);
-				Bo2Menus.raw(g, items[i], x, y, 1.25f, on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
+				if (on) g.renderOutline(x - 6, y - 3, w + 12, step - 2, Bo2Menus.ORANGE);
+				Bo2Menus.raw(g, label(i), x, y, 1.25f, on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
 			}
 			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("uin_main_nav"); lastSel = sel; }
-			int ty = y0() + items.length * step() + 6;
+			int ty = y0 + items.length * step + 6;
 			arrow(g, x - 2, ty + 3);
-			Bo2Menus.raw(g, sel == 0 ? "Begin the game." : "Select game mode and location.", x + 10, ty, 0.85f, 0xFFD2CEC6);
+			String desc = sel == 0 ? "Begin the game." : sel == 1 ? "Open the match to friends online, up to 4 players." : "Select game mode and location.";
+			for (String line : Bo2Menus.wrap(desc, (int) (width * 0.4), 0.85f)) {
+				Bo2Menus.raw(g, line, x + 10, ty, 0.85f, 0xFFD2CEC6);
+				ty += (int) (Bo2Menus.H(0.85f) * 1.15f);
+			}
 
-			int rx = (int) (width * 0.53), ry = (int) (height * 0.13);
-			Bo2Menus.raw(g, "1 Player (1 Max)", rx, ry, 0.85f, Bo2Menus.WHITE);
+			int rx = Math.max((int) (width * 0.55), x + Bo2Menus.tw(title, ts) + 24), ry = (int) (height * 0.13);
+			Bo2Menus.raw(g, "1 Player (" + (host ? 4 : 1) + " Max)", rx, ry, 0.85f, Bo2Menus.WHITE);
 			g.fill(rx - 4, ry + (int) Bo2Menus.H(0.85f) + 4, width - 40, ry + (int) Bo2Menus.H(0.85f) + 5, 0x40FFFFFF);
 			Bo2Menus.raw(g, Minecraft.getInstance().getUser().getName(), rx + 30, ry + (int) Bo2Menus.H(0.85f) + 8, 0.9f, Bo2Menus.YELLOW);
 
-			// the postcard of the match, with BO2's countdown above it
-			int cw = (int) (width * 0.33), ch = (int) (height * 0.27), cx = x - 4, cy = (int) (height * 0.62);
+			// the postcard of the match with BO2's countdown above it: bottom-anchored above the hint, shrunk so it never reaches the text above
 			String cap = "Ready for the match";
 			if (startAt != 0) {
 				long left = startAt - System.currentTimeMillis();
 				if (left <= 0) launch();
 				cap = "Game starting in " + Math.max(1, (left + 999) / 1000);
 			}
-			Bo2Menus.raw(g, cap, cx, cy - (int) Bo2Menus.H(1.0f) - 8, 1.0f, Bo2Menus.WHITE);
+			int capH = (int) Bo2Menus.H(1.0f), cx = x - 4, cw = (int) (width * 0.33);
+			int bottom = hintY - 14;
+			int ch = Math.min((int) (height * 0.27), bottom - (ty + 10 + capH + 8));
+			if (ch < 40) { ch = 40; } // very small windows: the card wins over the description gap
+			int cy = bottom - ch;
+			Bo2Menus.raw(g, cap, cx, cy - capH - 8, 1.0f, Bo2Menus.WHITE);
 			g.fill(cx - 3, cy - 3, cx + cw + 3, cy + ch + 3, 0xFFA8A8A8);
 			g.fill(cx, cy, cx + cw, cy + ch, 0xFF000000);
 			String img = loc.loadscreen();
@@ -278,10 +300,10 @@ final class Bo2Locations {
 				UiArt.strip(g, img, cx + 2, cy + 2, cw - 4, ch - 4, (iw - rw) / 2, 0, rw, ih, 0xFFFFFFFF);
 			}
 			g.fillGradient(cx + 2, cy + ch - 44, cx + cw - 2, cy + ch - 2, 0x00000000, 0xC0000000);
-			String l1 = "GREEN RUN", l2 = loc.name() + " / " + mode.name();
+			String l1 = "GREEN RUN", l2 = title;
 			Bo2Menus.raw(g, l1, cx + cw - 10 - Bo2Menus.tw(l1, 0.8f), cy + ch - 34, 0.8f, Bo2Menus.WHITE);
 			Bo2Menus.raw(g, l2, cx + cw - 10 - Bo2Menus.tw(l2, 0.7f), cy + ch - 20, 0.7f, Bo2Menus.WHITE);
-			Bo2Menus.hint(g, "ESC", "Back", x, height - 26);
+			Bo2Menus.hint(g, "ESC", "Back", x, hintY);
 		}
 	}
 }
