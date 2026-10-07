@@ -8,3 +8,6 @@ dist/
 .claude/
 
 assets_src/
+.jdk/
+.zc-version
+play.bat.new

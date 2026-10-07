@@ -61,3 +61,20 @@ try {
         Write-Host '[oat] Installed.'
     }
 } catch { Write-Host "[oat] Could not get OpenAssetTools ($($_.Exception.Message)). Models and menu art will use plain shapes." }
+
+# Java 25 runs the build tool only. Installed beside the game (no admin rights) when no JDK 25 is on the PC.
+try {
+    $have = @("$env:JAVA_HOME") + (Get-ChildItem 'C:\Program Files\Java', 'C:\Program Files\Eclipse Adoptium', 'C:\Program Files\Microsoft', (Join-Path $root '.jdk') -Directory -Filter 'jdk-25*' -ErrorAction SilentlyContinue | ForEach-Object FullName)
+    $ok = $have | Where-Object { $_ -and (Test-Path (Join-Path $_ 'bin\java.exe')) -and ((Split-Path $_ -Leaf) -like 'jdk-25*' -or (Select-String -Path (Join-Path $_ 'release') -Pattern 'JAVA_VERSION="25' -Quiet -ErrorAction SilentlyContinue)) }
+    if ($ok) { Write-Host '[java] JDK 25 ready.' }
+    else {
+        Write-Host '[java] Downloading JDK 25 (about 200 MB)...'
+        $jdk = Join-Path $root '.jdk'
+        New-Item -ItemType Directory -Force -Path $jdk | Out-Null
+        $zip = Join-Path $env:TEMP 'jdk25.zip'
+        Invoke-WebRequest 'https://api.adoptium.net/v3/binary/latest/25/ga/windows/x64/jdk/hotspot/normal/eclipse' -OutFile $zip -UseBasicParsing
+        Expand-Archive $zip -DestinationPath $jdk -Force
+        Remove-Item $zip -Force
+        Write-Host '[java] Installed.'
+    }
+} catch { Write-Host "[java] Could not install JDK 25 ($($_.Exception.Message))." }
