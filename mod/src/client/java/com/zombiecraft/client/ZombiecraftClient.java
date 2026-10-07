@@ -65,6 +65,12 @@ public class ZombiecraftClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.CueStop.TYPE, (payload, ctx) -> CuePlayer.stop(payload.cue()));
 
 		ClientTickEvents.START_CLIENT_TICK.register(ZombiecraftClient::pollInput);
+		// the narrator never turns on: no option, no Ctrl+B hotkey, and a saved "on" is switched back off
+		ClientTickEvents.START_CLIENT_TICK.register(mc -> {
+			var o = mc.options;
+			if (o.narrator().get() != net.minecraft.client.NarratorStatus.OFF) o.narrator().set(net.minecraft.client.NarratorStatus.OFF);
+			if (o.narratorHotkey().get()) o.narratorHotkey().set(false);
+		});
 		// dev: -Dzombiecraft.debugEndGame=true leaves the match from inside after a while, to check the screen that follows
 		if (Boolean.getBoolean("zombiecraft.debugEndGame")) {
 			int[] ticks = {0};
