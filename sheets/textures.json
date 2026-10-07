@@ -312,22 +312,6 @@
   "note": "plank door"
  },
  {
-  "id": "*:zombiecraft:road_bus",
-  "map": "*",
-  "texture": "zombiecraft:road_bus",
-  "bo2": "decal_signage_road_bus_c",
-  "opaque": true,
-  "note": "BUS painted on the road"
- },
- {
-  "id": "*:zombiecraft:road_stop",
-  "map": "*",
-  "texture": "zombiecraft:road_stop",
-  "bo2": "decal_signage_road_stop_c",
-  "opaque": true,
-  "note": "STOP painted on the road"
- },
- {
   "id": "*:zombiecraft:bench",
   "map": "*",
   "texture": "zombiecraft:bench",
@@ -474,8 +458,9 @@
   "id": "*:minecraft:white_concrete",
   "map": "*",
   "texture": "minecraft:white_concrete",
-  "bo2": "decal_grunge_painted05_c",
-  "opaque": true
+  "bo2": "decal_grunge_painted04_c",
+  "opaque": true,
+  "tint": "#EDEDE6"
  },
  {
   "id": "*:minecraft:yellow_concrete",

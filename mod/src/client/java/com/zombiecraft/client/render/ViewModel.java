@@ -120,10 +120,13 @@ public final class ViewModel {
 		float frame;
 		float reload = GunFeedback.isReloading() ? GunFeedback.reloadProgress(partialTick) : -1f;
 		float shotAge = GunFeedback.shotAgeTicks(partialTick) / 20f, equipAge = GunFeedback.equipAgeTicks(partialTick) / 20f;
-		XAnim fire = clip(m, "fire"), pull = clip(m, "pullout");
+		XAnim fire = clip(m, "fire"), pull = clip(m, "pullout"), drink = weaponId.startsWith("bottle_") ? clip(m, "drink") : null;
 		XAnim reloadClip = reload < 0f ? null : clip(m, GunFeedback.reloadWasEmpty() ? "reload_empty" : "reload");
 		if (reload >= 0f && reloadClip == null) reloadClip = clip(m, GunFeedback.reloadWasEmpty() ? "reload" : "reload_empty"); // some guns have only one reload clip
-		if (reloadClip != null) {
+		if (drink != null) {
+			a = drink;
+			frame = Math.min(a.numFrames, GunFeedback.drinkSeconds() * a.frameRate);
+		} else if (reloadClip != null) {
 			a = reloadClip;
 			frame = reload * a.numFrames;
 		} else if (fire != null && shotAge >= 0f && shotAge < fire.lengthSeconds()) {

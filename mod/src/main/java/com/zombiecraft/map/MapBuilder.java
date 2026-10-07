@@ -23,6 +23,12 @@ public final class MapBuilder {
 		Map<String, BlockState> cache = new HashMap<>();
 		List<MapOp> ops = Sheets.MAP_OPS.stream().sorted(Comparator.comparingInt(MapOp::order)).toList();
 		int placed = 0;
+		// a world that already holds another map (picked in the menu) must not keep pieces of it: clear a generous box first
+		BlockState air = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+		for (int x = -60; x <= 60; x++) for (int y = 1; y <= 30; y++) for (int z = -50; z <= 50; z++) {
+			BlockPos p = origin.offset(x, y, z);
+			if (!level.getBlockState(p).isAir()) level.setBlock(p, air, FLAGS);
+		}
 		for (MapOp o : ops) {
 			boolean imp = o.op().equals("import"); // its "block" is a map file name, not a block
 			BlockState a = imp ? null : cache.computeIfAbsent(o.block(), s -> Barrier.parse(level, s));

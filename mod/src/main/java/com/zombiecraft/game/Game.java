@@ -163,6 +163,30 @@ public final class Game {
 		}
 	}
 
+	private final List<double[]> tourViews = new ArrayList<>();
+	private final List<String> tourNames = new ArrayList<>();
+
+	private void tourAdd(String name, double x, double z, String facing, double dist, double pitch) {
+		var d = net.minecraft.core.Direction.valueOf(facing.toUpperCase());
+		tourViews.add(new double[] {x + 0.5 + d.getStepX() * dist, z + 0.5 + d.getStepZ() * dist, Machines.yawOf(d.getOpposite().getName()), pitch});
+		tourNames.add(name);
+	}
+
+	private void tourBuild() {
+		tourAdd("spawn", 2, -7, "south", 0, 0); tourViews.set(0, new double[] {2.5, -6.5, 180, 0});
+		for (var m : Sheets.MACHINES) tourAdd("machine " + m.id(), m.x(), m.z(), m.facing(), 3.2, 8);
+		for (var b : Sheets.BOXES) tourAdd("box " + b.id(), b.x(), b.z(), b.facing(), 3.5, 12);
+		for (var p : Sheets.PAPS) tourAdd("pap " + p.id(), (p.x1() + p.x2()) / 2.0, (p.z1() + p.z2()) / 2.0, p.facing(), 4, 8);
+		for (var w : Sheets.WALLBUYS) tourAdd("wallbuy " + w.id() + " " + w.weaponId(), w.x(), w.z(), w.facing(), 3, 0);
+		for (var d : Sheets.DOORS) { var dir = d.x1() == d.x2() ? "east" : "south"; tourAdd("door " + d.id(), (d.x1() + d.x2()) / 2.0, (d.z1() + d.z2()) / 2.0, dir, 3.5, 0); }
+		for (var w : Sheets.WINDOWS) {
+			boolean horiz = w.wall().equals("N") || w.wall().equals("S");
+			double cx = horiz ? w.a() + w.width() / 2.0 : w.fixed(), cz = horiz ? w.fixed() : w.a() + w.width() / 2.0;
+			String inside = switch (w.wall()) { case "N" -> "south"; case "S" -> "north"; case "E" -> "west"; default -> "east"; };
+			tourAdd("window " + w.id(), cx - 0.5, cz - 0.5, inside, 3, 0);
+		}
+	}
+
 	public void start() {
 		level = server.overworld();
 		int surface = level.getHeight(Heightmap.Types.WORLD_SURFACE, 0, 0);
@@ -347,20 +371,20 @@ public final class Game {
 			float yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
 			for (ServerPlayer p : level.players()) p.teleportTo(level, px, cp.getY(), pz, Set.of(), yaw, 22f, true);
 		}
-		// dev: -Dzombiecraft.debugTour=true visits a few map viewpoints {x, z, yaw} (sheet frame) and screenshots each (map look checks)
+		// dev: -Dzombiecraft.debugTour=true stands in front of every machine, box, Pack-a-Punch, wall gun, door and window in turn and screenshots each
+		// (tour_N.png; the list with N is printed as [tour]); the doors are opened before the door views
 		if (Boolean.getBoolean("zombiecraft.debugTour") && tick - startedAt >= 60 && (tick - startedAt) % 40 % 30 == 0) {
+			if (tourViews.isEmpty()) tourBuild();
 			boolean snap = (tick - startedAt) % 40 == 30;
 			int i = (int) ((tick - startedAt - (snap ? 30 : 0)) / 40) - 2;
-			double[][] views = {{2, -7, 180}, {-6, -7, -90}, {-7, -3, 180}, {-6, -6, 90}, {8, -16, 0}, {0, -16, 180}, {-14, -3, 90}, {-12, -6, 90}};
-			if (i >= 0 && i < views.length) for (ServerPlayer p : level.players()) {
+			if (i >= 0 && i < tourViews.size()) for (ServerPlayer p : level.players()) {
+				double[] v = tourViews.get(i);
 				if (snap) ServerPlayNetworking.send(p, new Payloads.Shot("tour_" + i));
-				else if (i == 3) { doors.openAll(); p.teleportTo(level, origin.getX() + views[i][0] + 0.5, origin.getY() + 1, origin.getZ() + views[i][1] + 0.5, Set.of(), (float) views[i][2], 0f, true); }
-				else if (i == 7) {   // a player cannot stand in a torn window (the clip block), the zombie nearby is not affected
-					Barrier w = barrierFor("w2"); while (w.tear()) { }
-					p.teleportTo(level, w.center.x, w.center.y + 1, w.center.z, Set.of(), 0f, 0f, true);
-					System.out.println("[tour] player fits in torn window: " + level.noCollision(p) + " (expect false)");
+				else {
+					if (tourNames.get(i).startsWith("door") && i > 0 && !tourNames.get(i - 1).startsWith("door")) doors.openAll();
+					p.teleportTo(level, origin.getX() + v[0], origin.getY() + 1, origin.getZ() + v[1], Set.of(), (float) v[2], (float) v[3], true);
+					System.out.println("[tour] " + i + " " + tourNames.get(i));
 				}
-				else p.teleportTo(level, origin.getX() + views[i][0] + 0.5, origin.getY() + 1, origin.getZ() + views[i][1] + 0.5, Set.of(), (float) views[i][2], 0f, true);
 			}
 		}
 		// dev: -Dzombiecraft.debugZombies=true puts three free zombies in front of the player, then hits and kills one (screenshots)

@@ -30,6 +30,11 @@ public final class ImportedMap {
 
 	private record File(int[] size, int groundRow, List<String> palette, int[][] rle) {}
 
+	/** True when the player has extracted this map (menus only offer the imported maps then). */
+	public static boolean available(String name) {
+		try { find(name); return true; } catch (IllegalStateException e) { return false; }
+	}
+
 	private static Path find(String name) {
 		Path game = FabricLoader.getInstance().getGameDir();
 		List<Path> dirs = new ArrayList<>();
@@ -42,7 +47,7 @@ public final class ImportedMap {
 			if (Files.isRegularFile(f)) return f;
 		}
 		throw new IllegalStateException("Map file " + name + ".json.gz not found. Run tools/extract_tranzit.py on your Tranzit Reimagined download and put the result in "
-				+ dirs.get(dirs.size() - 2) + " (searched: " + dirs + ")");
+				+ game.resolve("config").resolve("zombiecraft").resolve("maps") + " (searched: " + dirs + ")");
 	}
 
 	/** Pastes the map so that its grass layer is y=0 and its (0, 0) corner lands on (ox, oz) of the sheet frame. Returns the number of blocks set. */

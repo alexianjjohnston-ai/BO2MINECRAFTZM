@@ -69,9 +69,10 @@ for i, (x1, z1, x2, z2) in enumerate([(28, 39, 28, 39), (28, 43, 28, 43), (28, 4
 fill('roof', ROOF, 20, 7, 33, 56, 7, 53, 'building', 'roof', order=27)
 # flush fluorescent panels under the roof, each with a dim light block below it (dark and moody, still readable)
 for i, (x1, z1, x2, z2) in enumerate([(32, 39, 36, 39), (40, 39, 44, 39), (48, 39, 52, 39), (32, 43, 36, 43), (40, 43, 44, 43), (48, 43, 52, 43),
-                                      (24, 38, 24, 41), (24, 46, 24, 50), (32, 49, 36, 49), (44, 49, 48, 49)]):
+                                      (24, 38, 24, 41), (24, 46, 24, 50), (32, 49, 36, 49), (44, 49, 48, 49),
+                                      (26, 35, 26, 37), (26, 43, 26, 45), (36, 36, 39, 36), (53, 36, 53, 40), (53, 49, 54, 49), (40, 51, 43, 51), (30, 36, 30, 40)]):
     fill(f'strip{i}', 'zombiecraft:light_panel', x1, 6, z1, x2, 6, z2, 'building', 'ceiling light panel', order=29)
-    fill(f'glow{i}', 'light[level=8]', (x1 + x2) // 2, 5, (z1 + z2) // 2, (x1 + x2) // 2, 5, (z1 + z2) // 2, 'building', 'light source under the panel', order=29)
+    fill(f'glow{i}', 'light[level=13]', (x1 + x2) // 2, 5, (z1 + z2) // 2, (x1 + x2) // 2, 5, (z1 + z2) // 2, 'building', 'light source under the panel', order=29)
 fill('canopy', 'dark_oak_slab[type=top]', 22, 6, 29, 54, 6, 32, 'depot', 'entrance canopy', order=28)
 op('canopy_posts', 'grid', 'zombiecraft:pillar_round', 22, 1, 29, 54, 5, 29, 'depot', 'canopy posts (round pillars)', order=27, step=8)
 
@@ -147,8 +148,6 @@ for i, (bx, bz, c) in enumerate([(22, 27, 'brown'), (52, 30, 'gray'), (62, 24, '
 for i, (bx, bz) in enumerate([(8, 30), (10, 60), (68, 48), (72, 62), (6, 38), (30, 62), (60, 62)]):
     fill(f'tree{i}', 'dark_oak_log', bx, 1, bz, bx, 4, bz, 'town', 'bare tree', order=86)
     fill(f'crown{i}', 'dark_oak_fence', bx - 1, 5, bz - 1, bx + 1, 5, bz + 1, 'town', 'bare branches', order=86)
-fill('road_bus', 'zombiecraft:road_bus', 30, 0, 24, 30, 0, 24, 'road', 'BUS painted on the road', order=87)
-fill('road_stop', 'zombiecraft:road_stop', 31, 0, 24, 31, 0, 24, 'road', 'STOP painted on the road', order=87)
 put('stop_bench', 'bench', 30, 28, 'north', n=4, dx=1, group='road', order=87)
 put('stop_sign', 'bus_stop_sign', 34, 28, 'north', group='road', order=87)
 for i, bx in enumerate((18, 40, 64)):

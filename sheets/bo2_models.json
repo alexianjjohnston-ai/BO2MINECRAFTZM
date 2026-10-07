@@ -291,28 +291,32 @@
   "group": "perkbottle",
   "xmodel": "t6_wpn_zmb_perk_bottle_jugg_view",
   "world": "t6_wpn_zmb_perk_bottle_jugg_world",
-  "note": ""
+  "note": "",
+  "anim": "zombie_perksacola"
  },
  {
   "id": "bottle_speed",
   "group": "perkbottle",
   "xmodel": "t6_wpn_zmb_perk_bottle_sleight_view",
   "world": "t6_wpn_zmb_perk_bottle_sleight_world",
-  "note": ""
+  "note": "",
+  "anim": "zombie_perksacola"
  },
  {
   "id": "bottle_doubletap",
   "group": "perkbottle",
   "xmodel": "t6_wpn_zmb_perk_bottle_doubletap_view",
   "world": "t6_wpn_zmb_perk_bottle_doubletap_world",
-  "note": ""
+  "note": "",
+  "anim": "zombie_perksacola"
  },
  {
   "id": "bottle_revive",
   "group": "perkbottle",
   "xmodel": "t6_wpn_zmb_perk_bottle_revive_view",
   "world": "t6_wpn_zmb_perk_bottle_revive_world",
-  "note": ""
+  "note": "",
+  "anim": "zombie_perksacola"
  },
  {
   "id": "powerup_max_ammo",

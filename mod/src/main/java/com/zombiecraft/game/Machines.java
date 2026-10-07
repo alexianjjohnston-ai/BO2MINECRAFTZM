@@ -102,7 +102,7 @@ public final class Machines {
 			level.setBlock(b, Blocks.BARRIER.defaultBlockState(), 3);
 			level.setBlock(b.above(), Blocks.BARRIER.defaultBlockState(), 3);
 			if (level.getBlockState(b.above(2)).isAir() || level.getBlockState(b.above(2)).is(Blocks.LIGHT))
-				level.setBlock(b.above(2), on ? Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 11) : Blocks.AIR.defaultBlockState(), 3);
+				level.setBlock(b.above(2), Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, on ? 12 : 9), 3);
 			prop.setPowered(on);
 			return;
 		}

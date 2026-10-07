@@ -15,6 +15,7 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 		int kind;
 		boolean powered, busy;
 		float yaw, sinceSec, scale;
+		int lit;
 		String weapon = "";
 		int papState;
 		float papSec;
@@ -34,6 +35,10 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 
 	@Override public void extractRenderState(ZcProp e, State s, float partialTick) {
 		super.extractRenderState(e, s, partialTick);
+		// the machines stand with their back in the wall (light 0 there): light them from the air in front of them instead
+		double ang = Math.toRadians(e.getYRot());
+		var lp = net.minecraft.core.BlockPos.containing(e.getX() - Math.sin(ang) * 0.9, e.getY() + 1.0, e.getZ() + Math.cos(ang) * 0.9);
+		s.lit = net.minecraft.client.renderer.LightTexture.pack(e.level().getBrightness(net.minecraft.world.level.LightLayer.BLOCK, lp), e.level().getBrightness(net.minecraft.world.level.LightLayer.SKY, lp));
 		s.kind = e.getEntityData().get(ZcProp.KIND);
 		s.powered = e.getEntityData().get(ZcProp.POWERED);
 		s.busy = e.getEntityData().get(ZcProp.BUSY);
@@ -135,7 +140,8 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 		ps.popPose();
 	}
 
-	@Override public void render(State s, PoseStack ps, MultiBufferSource buf, int light) {
+	@Override public void render(State s, PoseStack ps, MultiBufferSource buf, int entityLight) {
+		int light = s.lit;
 		if (s.kind == ZcProp.SCENERY) { renderScenery(s, ps, buf, light); return; }
 		if (s.kind >= ZcProp.WALLGUN) { renderGun(s, ps, buf, light); return; }
 		if (s.kind >= ZcProp.AMMO) { renderPowerup(s, ps, buf); return; }

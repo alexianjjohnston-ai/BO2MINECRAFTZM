@@ -67,6 +67,7 @@ public final class Bo2Mesh {
 			for (int i = 0; i < tex.length; i++) {
 				XModel.Material mat = m.materials.get(m.surfaces.get(i).material);
 				tex[i] = texture(mat.texture());
+				if (tex[i] == null) ZombiecraftMod.LOG.warn("Block Ops 2 model {}: surface {} has no texture (material {}, image {})", name, i, mat.name(), mat.texture());
 			}
 			l = new Loaded(m, tex);
 		} catch (IOException | RuntimeException e) {
@@ -154,6 +155,8 @@ public final class Bo2Mesh {
 			XModel.Surface surf = m.surfaces.get(s);
 			// "objective" materials (the box's question marks) have a black texture and are lit by colour constants: full-bright additive gold, pulsing
 			boolean glow = m.materials.get(surf.material).name() != null && m.materials.get(surf.material).name().endsWith("_obj");
+			// attachments modelled into the view meshes (the FAL's M203 launcher) are hidden in BO2 until equipped
+			if (m.materials.get(surf.material).name() != null && m.materials.get(surf.material).name().contains("_attach_gl")) continue;
 			boolean flat = halo != 0;
 			ResourceLocation tex = glow || flat ? white() : l.tex[s];
 			if (tex == null) continue;

@@ -28,8 +28,8 @@ public final class Bo2Menus {
 	static final int ORANGE = 0xFFF08A1C, WHITE = 0xFFF2EEE6, GREY = 0xFF9A958C, YELLOW = 0xFFF5D547, GOLD = 0xFFE0A82E;
 	private static final long T0 = System.nanoTime();
 	private static long loadStart, loadSeen;
-	/** The only map is the Diner, so its postcard is the only loading picture. */
-	private static final String LOADSCREEN = "loadscreen_transit_classic";
+	/** Loading picture and place name of the match being started (set by the match lobby). */
+	static String loadScreen = "loadscreen_transit_classic", loadPlace = "NORTHERN HEMISPHERE";
 
 	public static void register() {
 		Bo2Online.register();
@@ -40,7 +40,7 @@ public final class Bo2Menus {
 					// dev: -Dzombiecraft.debugOptions=title|root|settings|controls opens that Options page straight away
 					mc.execute(() -> {
 						Screen t = new Title(), root = new Bo2Options.Root(t);
-						mc.setScreen(switch (dbg) { case "settings" -> new Bo2Options.Settings(root); case "controls" -> new Bo2Options.Controls(root); case "title" -> t; case "quit" -> new QuitDialog(t); default -> root; });
+						mc.setScreen(switch (dbg) { case "settings" -> new Bo2Options.Settings(root); case "controls" -> new Bo2Options.Controls(root); case "title" -> t; case "quit" -> new QuitDialog(t); case "locations", "match" -> Bo2Locations.dev(dbg, t); default -> root; });
 					});
 				} else if (screen instanceof TitleScreen && (!autoplay || afterGame)) {
 				mc.execute(() -> mc.setScreen(new Title()));
@@ -155,11 +155,11 @@ public final class Bo2Menus {
 		if (now - loadSeen > 2_000_000_000L) loadStart = now;
 		loadSeen = now;
 		float t = (now - loadStart) / 1e9f;
-		boolean art = UiArt.cover(g, LOADSCREEN, w, h);
+		boolean art = UiArt.cover(g, loadScreen, w, h);
 		if (art) g.fillGradient(0, 0, w, 60, 0xB0000000, 0x00000000);
 		else background(g, w, h);
 		text(g, "GREEN RUN", 14, 12, 1.2f, ORANGE);
-		text(g, "NORTHERN HEMISPHERE", 14, 28, 0.8f, GREY);
+		text(g, loadPlace, 14, 28, 0.8f, GREY);
 		text(g, "SURVIVAL", 14, 40, 0.8f, GREY);
 		if (!art) postcard(g, w, h);
 		// progress line + status
@@ -322,7 +322,7 @@ public final class Bo2Menus {
 		private int my(int i) { return (int) (height / 2 + POS[i][1] * radius()); }
 
 		private void pick() {
-			if (sel == 0) { MenuAudio.play("zmb_ui_map_level_select"); if (host) Bo2Online.hostNext(); AutoWorld.start(Minecraft.getInstance(), this); }
+			if (sel == 0) { MenuAudio.play("zmb_ui_map_level_select"); Minecraft.getInstance().setScreen(new Bo2Locations.Select(this, host)); }
 			else MenuAudio.play("cac_cmn_deny");
 		}
 

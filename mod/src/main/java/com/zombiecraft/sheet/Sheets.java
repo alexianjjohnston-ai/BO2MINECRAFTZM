@@ -17,7 +17,7 @@ public final class Sheets {
 	private static final Gson GSON = new Gson();
 
 	/** Which map's sheets to use: {@code -Dzombiecraft.map=tranzit_depot} or {@code map=tranzit_depot} in config/zombiecraft.properties. Empty = the built-in Bus Depot. */
-	public static final String MAP = mapId();
+	public static String MAP = mapId();
 
 	private static String mapId() {
 		String v = System.getProperty("zombiecraft.map", "");
@@ -56,16 +56,16 @@ public final class Sheets {
 	public static final List<WeaponDef> WEAPONS = load("weapons.json", WeaponDef.class);
 	public static final List<BoxPoolRow> BOX_POOL = load("box_pool.json", BoxPoolRow.class);
 	public static final List<BoxRule> BOX_RULES = load("box_rules.json", BoxRule.class);
-	public static final List<MapOp> MAP_OPS = load("map_ops.json", MapOp.class);
-	public static final List<WindowDef> WINDOWS = load("map_windows.json", WindowDef.class);
-	public static final List<SpawnDef> SPAWNS = load("map_spawns.json", SpawnDef.class);
-	public static final List<WallBuyDef> WALLBUYS = load("map_wallbuys.json", WallBuyDef.class);
-	public static final List<BoxDef> BOXES = load("map_boxes.json", BoxDef.class);
-	public static final List<DoorDef> DOORS = load("map_doors.json", DoorDef.class);
-	public static final List<MachineDef> MACHINES = load("map_machines.json", MachineDef.class);
-	public static final List<PapDef> PAPS = load("map_pap.json", PapDef.class);
-	public static final List<MapProp> PROPS = load("map_props.json", MapProp.class);
-	public static final List<PlayerSpawn> PLAYER_SPAWNS = load("map_player.json", PlayerSpawn.class);
+	public static List<MapOp> MAP_OPS = load("map_ops.json", MapOp.class);
+	public static List<WindowDef> WINDOWS = load("map_windows.json", WindowDef.class);
+	public static List<SpawnDef> SPAWNS = load("map_spawns.json", SpawnDef.class);
+	public static List<WallBuyDef> WALLBUYS = load("map_wallbuys.json", WallBuyDef.class);
+	public static List<BoxDef> BOXES = load("map_boxes.json", BoxDef.class);
+	public static List<DoorDef> DOORS = load("map_doors.json", DoorDef.class);
+	public static List<MachineDef> MACHINES = load("map_machines.json", MachineDef.class);
+	public static List<PapDef> PAPS = load("map_pap.json", PapDef.class);
+	public static List<MapProp> PROPS = load("map_props.json", MapProp.class);
+	public static List<PlayerSpawn> PLAYER_SPAWNS = load("map_player.json", PlayerSpawn.class);
 	public static final List<CueDef> CUES = load("audio.json", CueDef.class);
 	public static final List<CueFile> CUE_FILES = load("audio_files.json", CueFile.class);
 	public static final List<TextureDef> TEXTURES = load("textures.json", TextureDef.class);
@@ -86,6 +86,23 @@ public final class Sheets {
 		for (CueFile f : CUE_FILES) FILES_BY_CUE.computeIfAbsent(f.cue(), k -> new ArrayList<>()).add(f);
 		for (WindowDef w : WINDOWS) WINDOW_BY_ID.put(w.id(), w);
 		for (ZombieTier z : ZOMBIES) TIER_BY_ID.put(z.id(), z);
+	}
+
+	/** Switches to another map's sheets ("" = the built-in Bus Depot). Call before a game starts (menu pick or dev switch); the loaded game reads the lists afresh. */
+	public static void useMap(String id) {
+		MAP = id == null ? "" : id.trim();
+		MAP_OPS = load("map_ops.json", MapOp.class);
+		WINDOWS = load("map_windows.json", WindowDef.class);
+		SPAWNS = load("map_spawns.json", SpawnDef.class);
+		WALLBUYS = load("map_wallbuys.json", WallBuyDef.class);
+		BOXES = load("map_boxes.json", BoxDef.class);
+		DOORS = load("map_doors.json", DoorDef.class);
+		MACHINES = load("map_machines.json", MachineDef.class);
+		PAPS = load("map_pap.json", PapDef.class);
+		PROPS = load("map_props.json", MapProp.class);
+		PLAYER_SPAWNS = load("map_player.json", PlayerSpawn.class);
+		WINDOW_BY_ID.clear();
+		for (WindowDef w : WINDOWS) WINDOW_BY_ID.put(w.id(), w);
 	}
 
 	/** A number from systems.json. Unknown keys fail loudly: the preflight also scans the code for these keys. */
