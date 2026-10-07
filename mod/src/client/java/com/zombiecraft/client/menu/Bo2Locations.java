@@ -89,6 +89,18 @@ final class Bo2Locations {
 		}, "zc-dev-shot");
 		t.setDaemon(true);
 		t.start();
+		// dev: -Dzombiecraft.debugToggleOnline=true presses ONLINE GAME on the match screen after 6 s and saves zc-lobby-toggle.png once the lobby is up
+		if (Boolean.getBoolean("zombiecraft.debugToggleOnline") && out instanceof Match m) {
+			Thread t2 = new Thread(() -> {
+				Minecraft mc = Minecraft.getInstance();
+				try { Thread.sleep(6000); } catch (InterruptedException ignored) {}
+				mc.execute(() -> m.activate(1));
+				try { Thread.sleep(50000); } catch (InterruptedException ignored) {}
+				mc.execute(() -> net.minecraft.client.Screenshot.grab(mc.gameDirectory, "zc-lobby-toggle.png", mc.getMainRenderTarget(), c -> {}));
+			}, "zc-dev-toggle");
+			t2.setDaemon(true);
+			t2.start();
+		}
 		return out;
 	}
 
@@ -222,10 +234,10 @@ final class Bo2Locations {
 		private int x() { return (int) (width * 0.05); }
 		private int step() { return (int) (Bo2Menus.H(1.25f) * 1.25f); }
 
-		private void activate(int i) {
+		void activate(int i) {
 			if (startAt != 0) return;
 			if (i == 0) { startAt = System.currentTimeMillis() + 3000; MenuAudio.play("uin_lobby_join"); }
-			else if (i == 1) { host = !host; if (host) Relay.reserve(); else Relay.reserved = null; MenuAudio.play("uin_main_nav"); }
+			else if (i == 1) { host = true; Relay.reserve(); MenuAudio.play("uin_lobby_join"); launch(); } // online: the lobby opens at once so friends can join with the code
 			else { MenuAudio.play("uin_cmn_backout"); Minecraft.getInstance().setScreen(parent); }
 		}
 
@@ -279,7 +291,7 @@ final class Bo2Locations {
 			int ty = y0 + items.length * step + 6;
 			arrow(g, x - 2, ty + 3);
 			String desc = sel == 0 ? (host ? "Open the lobby. Friends join it, then you start the match." : "Begin the game.")
-					: sel == 1 ? "Open a lobby friends can join online before the match starts, up to 4 players." : "Select game mode and location.";
+					: sel == 1 ? "Open the lobby now. Friends join it with the code, then you start the match from there. Up to 4 players." : "Select game mode and location.";
 			for (String line : Bo2Menus.wrap(desc, (int) (width * 0.4), 0.85f)) {
 				Bo2Menus.raw(g, line, x + 10, ty, 0.85f, 0xFFD2CEC6);
 				ty += (int) (Bo2Menus.H(0.85f) * 1.15f);
