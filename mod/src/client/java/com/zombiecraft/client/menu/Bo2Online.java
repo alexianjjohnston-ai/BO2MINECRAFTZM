@@ -64,14 +64,19 @@ public final class Bo2Online {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> {
 			MenuAudio.stopMusic();
 			joinError = null;
-			if (!hostPending || !mc.hasSingleplayerServer()) return;
+			if (!hostPending || !mc.hasSingleplayerServer()) {
+				com.zombiecraft.ZombiecraftMod.LOG.info("Block Ops 2 online: not opening to LAN (hostPending={}, singleplayerServer={})", hostPending, mc.hasSingleplayerServer());
+				return;
+			}
 			hostPending = false;
 			mc.execute(() -> {
 				var server = mc.getSingleplayerServer();
 				if (server == null) return;
 				if (debugHost) server.setUsesAuthentication(false);
 				int port = HttpUtil.isPortAvailable(DEFAULT_PORT) ? DEFAULT_PORT : HttpUtil.getAvailablePort();
-				if (server.publishServer(GameType.ADVENTURE, false, port)) showInvite = true;
+				boolean ok = server.publishServer(GameType.ADVENTURE, false, port);
+				com.zombiecraft.ZombiecraftMod.LOG.info("Block Ops 2 online: opened to LAN on port {}: {}", port, ok);
+				if (ok) showInvite = true;
 			});
 		});
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> { hostPending = false; showInvite = false; });
