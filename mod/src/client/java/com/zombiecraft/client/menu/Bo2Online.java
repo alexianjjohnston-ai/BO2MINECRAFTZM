@@ -27,6 +27,11 @@ public final class Bo2Online {
 	private static final int DEFAULT_PORT = 25565;
 	private static boolean hostPending, showInvite;
 	private static String lastAddress = "";
+	/** Shown on the Join screen after a connection failed or timed out. */
+	private static String joinError;
+	private static final long TIMEOUT_MS = 30_000;
+	private static Screen connectingScreen;
+	private static long connectStart;
 
 	/** Called from map select when the player chose to host: the world is opened to LAN as soon as they are in it. */
 	static void hostNext() { hostPending = true; }
@@ -47,6 +52,8 @@ public final class Bo2Online {
 			});
 		}
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> {
+			MenuAudio.stopMusic();
+			joinError = null;
 			if (!hostPending || !mc.hasSingleplayerServer()) return;
 			hostPending = false;
 			mc.execute(() -> {
@@ -62,6 +69,54 @@ public final class Bo2Online {
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			if (showInvite && mc.player != null && mc.screen == null) { showInvite = false; mc.setScreen(new Invite()); }
 		});
+	}
+
+	/** The BO2 look for vanilla's "Connecting to the server" screen (drawn from ZcConnectScreenMixin): address, time spent, hints, and a timeout back to Join Game with a message. */
+	public static void connecting(GuiGraphics g, Screen s) {
+		MenuAudio.music();
+		if (s != connectingScreen) { connectingScreen = s; connectStart = System.currentTimeMillis(); }
+		long ms = System.currentTimeMillis() - connectStart;
+		int w = s.width, h = s.height;
+		Bo2Menus.background(g, w, h);
+		g.fillGradient(0, 0, w, h, 0x80000000, 0xB0000000);
+		int x = (int) (w * 0.16), y = (int) (h * 0.2);
+		Bo2Menus.text(g, "CONNECTING", x, y, 2.6f, Bo2Menus.WHITE);
+		y += (int) Bo2Menus.H(2.6f) + 24;
+		Bo2Menus.raw(g, lastAddress.isEmpty() ? "Host" : lastAddress, x, y, 1.3f, Bo2Menus.ORANGE);
+		y += (int) Bo2Menus.H(1.3f) + 14;
+		int left = (int) Math.max(0, (TIMEOUT_MS - ms + 999) / 1000);
+		String dots = ".".repeat((int) (ms / 400 % 4));
+		Bo2Menus.raw(g, "Reaching the host" + dots + "  " + (ms / 1000) + "s", x, y, 1.0f, 0xFFD2CEC6);
+		y += (int) Bo2Menus.H(1.0f) + 10;
+		int bw = (int) (w * 0.4);
+		g.fill(x, y, x + bw, y + 4, 0x40FFFFFF);
+		g.fill(x, y, x + (int) (bw * Math.min(1f, ms / (float) TIMEOUT_MS)), y + 4, Bo2Menus.ORANGE);
+		y += 18;
+		if (ms > 8000) {
+			for (String l : Bo2Menus.wrap("Still trying. Check that the host turned ONLINE GAME on before starting the match, that the playit.gg agent is running, and that this address is exactly what playit shows. Giving up in " + left + "s.", bw + 80, 0.8f)) {
+				Bo2Menus.raw(g, l, x, y, 0.8f, 0xFFD2CEC6);
+				y += (int) (Bo2Menus.H(0.8f) * 1.2f);
+			}
+		}
+		Bo2Menus.hint(g, "ESC", "Cancel", x, h - 26);
+		if (ms > TIMEOUT_MS) {
+			joinError = "Could not reach " + (lastAddress.isEmpty() ? "the host" : lastAddress) + " after " + TIMEOUT_MS / 1000 + " seconds. The host may not be online, the tunnel may be off, or the address may be wrong.";
+			cancel(s);
+		}
+	}
+
+	/** Same as pressing the Cancel button of vanilla's connecting screen. */
+	public static void cancel(Screen s) {
+		connectingScreen = null;
+		for (var c : s.children()) if (c instanceof net.minecraft.client.gui.components.Button b) { b.onPress(); return; }
+		Minecraft.getInstance().setScreen(new net.minecraft.client.gui.screens.TitleScreen());
+	}
+
+	/** A failed or dropped connection (vanilla's disconnected screen) gets the BO2 backdrop and music behind its message. */
+	public static void disconnected(GuiGraphics g, Screen s) {
+		MenuAudio.music();
+		Bo2Menus.background(g, s.width, s.height);
+		g.fillGradient(0, 0, s.width, s.height, 0x80000000, 0xB0000000);
 	}
 
 	/** What to forward, and where to get the address to share. */
@@ -126,13 +181,13 @@ public final class Bo2Online {
 			if (a.isEmpty() || !ServerAddress.isValidAddress(a)) { MenuAudio.play("cac_cmn_deny"); return; }
 			lastAddress = a;
 			MenuAudio.play("uin_lobby_join");
-			MenuAudio.stopMusic();
+			joinError = null;
 			Minecraft mc = Minecraft.getInstance();
 			ConnectScreen.startConnecting(this, mc, ServerAddress.parseString(a), new ServerData("Block Ops 2", a, ServerData.Type.OTHER), false, null);
 		}
 
 		@Override public boolean charTyped(char c, int mods) {
-			if (c > 32 && c < 127 && addr.length() < 120) addr.append(c);
+			if (c > 32 && c < 127 && addr.length() < 120) { addr.append(c); joinError = null; }
 			return true;
 		}
 
@@ -167,6 +222,10 @@ public final class Bo2Online {
 			y += bh + 10;
 			List<String> help = Bo2Menus.wrap("Paste the address your host got from playit.gg, for example name.joinmc.link or an address with a port. Everyone needs the same Block Ops 2 version.", bw, 0.8f);
 			for (String l : help) { Bo2Menus.raw(g, l, x, y, 0.8f, 0xFFD2CEC6); y += (int) (Bo2Menus.H(0.8f) * 1.2f); }
+			if (joinError != null) {
+				y += 8;
+				for (String l : Bo2Menus.wrap(joinError, bw, 0.85f)) { Bo2Menus.raw(g, l, x, y, 0.85f, 0xFFFF5A4A); y += (int) (Bo2Menus.H(0.85f) * 1.2f); }
+			}
 			int hx = x;
 			hx += Bo2Menus.hint(g, "ENTER", "Connect", hx, height - 26);
 			hx += Bo2Menus.hint(g, "CTRL V", "Paste", hx, height - 26);

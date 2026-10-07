@@ -1,0 +1,36 @@
+[
+ {
+  "id": "bo2_depot",
+  "order": 0,
+  "op": "import",
+  "block": "bo2_depot",
+  "block2": null,
+  "x1": -40,
+  "y1": 0,
+  "z1": -32,
+  "x2": -40,
+  "y2": 0,
+  "z2": -32,
+  "stepX": 1,
+  "stepZ": 1,
+  "group": "ground",
+  "note": "Bus Depot geometry from the player's own BO2 map export (tools/obj_to_blocks.py); x/z = where its corner lands in the sheet frame"
+ },
+ {
+  "id": "barrier_ring",
+  "order": 90,
+  "op": "walls",
+  "block": "minecraft:barrier",
+  "block2": null,
+  "x1": -39,
+  "y1": 1,
+  "z1": -31,
+  "x2": 31,
+  "y2": 14,
+  "z2": 32,
+  "stepX": 1,
+  "stepZ": 1,
+  "group": "ground",
+  "note": "invisible wall round the playable area so nobody walks off the cut"
+ }
+]

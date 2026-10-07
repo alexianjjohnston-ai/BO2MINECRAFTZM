@@ -1,0 +1,47 @@
+[
+ {
+  "id": "door_750",
+  "cost": 750,
+  "x1": -4,
+  "y1": 1,
+  "z1": -1,
+  "x2": 0,
+  "y2": 2,
+  "z2": -1,
+  "block": "zombiecraft:door_metal",
+  "opens": "ext",
+  "cue": "zmb_power_door",
+  "label": "Bus Station",
+  "room": "hall"
+ },
+ {
+  "id": "door_west_a",
+  "cost": 99999,
+  "x1": -10,
+  "y1": 1,
+  "z1": -8,
+  "x2": -10,
+  "y2": 2,
+  "z2": -5,
+  "block": "zombiecraft:door_metal",
+  "opens": "side",
+  "cue": "zmb_power_door",
+  "label": "Needs power",
+  "room": "hall"
+ },
+ {
+  "id": "door_west_b",
+  "cost": 99999,
+  "x1": -15,
+  "y1": 1,
+  "z1": 1,
+  "x2": -12,
+  "y2": 2,
+  "z2": 1,
+  "block": "zombiecraft:door_metal",
+  "opens": "side",
+  "cue": "zmb_power_door",
+  "label": "Needs power",
+  "room": "ext"
+ }
+]

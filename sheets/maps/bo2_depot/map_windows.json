@@ -1,0 +1,93 @@
+[
+ {
+  "id": "w1",
+  "wall": "N",
+  "fixed": -13,
+  "a": -8,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "hall",
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
+ },
+ {
+  "id": "w2",
+  "wall": "N",
+  "fixed": -17,
+  "a": 7,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "hall",
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
+ },
+ {
+  "id": "w3",
+  "wall": "N",
+  "fixed": -2,
+  "a": 12,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "ext",
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
+ },
+ {
+  "id": "w4",
+  "wall": "N",
+  "fixed": -6,
+  "a": 8,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "hall",
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
+ },
+ {
+  "id": "w5",
+  "wall": "S",
+  "fixed": -2,
+  "a": -7,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "side",
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
+ },
+ {
+  "id": "w6",
+  "wall": "S",
+  "fixed": 25,
+  "a": -5,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "ext",
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
+ },
+ {
+  "id": "w7",
+  "wall": "S",
+  "fixed": 23,
+  "a": 2,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "ext",
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
+ }
+]

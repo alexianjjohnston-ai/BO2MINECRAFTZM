@@ -44,8 +44,14 @@ final class Bo2Locations {
 					new Mode("SURVIVAL", "Survive in the Farm with limited wall weapons, perks, and the Mystery Box.", false))),
 	};
 
-	/** Sheet id of the map a place plays on ("" = the built-in Bus Depot). The converted Tranzit Reimagined depot is used when the player has extracted it. */
-	static String sheetMap(Loc l) { return ImportedMap.available("depot") ? "tranzit_depot" : ""; }
+	/**
+	 * Sheet id of the map a place plays on ("" = the built-in Bus Depot). Best first: the BO2-exact depot (needs the player's own map export converted by
+	 * tools/obj_to_blocks.py), then the converted Tranzit Reimagined depot, then the built-in one.
+	 */
+	static String sheetMap(Loc l) {
+		if (ImportedMap.available("bo2_depot")) return "bo2_depot";
+		return ImportedMap.available("depot") ? "tranzit_depot" : "";
+	}
 
 	/** The top-down view; blurred (offset copies, dimmed) when something is focused, like BO2. */
 	static void topDown(GuiGraphics g, int w, int h, boolean blur) {
