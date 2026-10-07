@@ -10,6 +10,7 @@ public final class Footsteps {
 	private static double dist;
 
 	public static void tick(Minecraft mc) {
+		MenuAudio.tick(com.zombiecraft.client.menu.Bo2Menus.loadingShown());
 		mc.getMusicManager().stopPlaying(); // Minecraft's own music never plays: the BO2 tracks are ours
 		var p = mc.player;
 		if (p == null || !ZcHud.usesWeaponHud(mc)) { dist = 0; return; }

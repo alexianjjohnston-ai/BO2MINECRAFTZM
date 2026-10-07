@@ -737,6 +737,17 @@
   "frames": 5853138
  },
  {
+  "id": "mus_load_zm_transit#0",
+  "cue": "mus_load_zm_transit",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 4180183083,
+  "size": 1870256,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 1058432
+ },
+ {
   "id": "mus_perks_packa_sting#0",
   "cue": "mus_perks_packa_sting",
   "bank": "zmb_common.all.sabs",

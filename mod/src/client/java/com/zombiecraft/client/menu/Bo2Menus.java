@@ -123,7 +123,11 @@ public final class Bo2Menus {
 	}
 
 	/** Called in place of the vanilla world-loading screens' own drawing. */
+	/** True while the BO2 loading screen was drawn within the last half second. */
+	public static boolean loadingShown() { return System.nanoTime() - loadSeen < 500_000_000L; }
+
 	public static void loading(GuiGraphics g, int w, int h) {
+		MenuAudio.loadingMusic();
 		long now = System.nanoTime();
 		if (now - loadSeen > 2_000_000_000L) loadStart = now;
 		loadSeen = now;

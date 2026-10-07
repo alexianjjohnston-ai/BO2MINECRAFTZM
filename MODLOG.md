@@ -133,3 +133,5 @@ Menu music = BO2 `mus_zombie_splash_screen` (restarted when it ends, stopped whe
 Menu music is now the real BO2 front-end theme (`mus_fe_main` = mus_bo2_theme_ambient, from spl_frontend.all.sabs; loops). Vanilla Minecraft music is stopped every tick; the local player and all zombies are silent (vanilla step/hurt/ambient sounds), so only BO2 cues play.
 Added: player footsteps (fly_step_walk/run_plr_ceramic), zombie footsteps (fly_step_*_npc_ceramic), diner ambience (amb_diner_l/r + light hum loops, random creaks/rustles near players). Quieter: child laugh, zombie groans (also less frequent).
 Alias map note: dev alias_map_transit.json now also reads spl_frontend (out5) and uses the full install (D:/New folder (2)), since D:/SteamLibrary lacks the spl_* banks.
+
+Loading screen music: `mus_load_zm_transit` (BO2's Tranzit loading track, lovesong_for_the_damned, from zmb_code_post_gfx.all.sabs) plays while the BO2 loading screen is shown and stops when it ends.

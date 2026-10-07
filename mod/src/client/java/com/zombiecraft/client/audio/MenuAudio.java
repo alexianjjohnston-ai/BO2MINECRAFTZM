@@ -29,6 +29,19 @@ public final class MenuAudio {
 		if (m != null && !m.playing(MUSIC)) play(MUSIC);
 	}
 
+	/** The Tranzit loading-screen track, kept playing for as long as the BO2 loading screen is drawn. */
+	private static final String LOADING = "mus_load_zm_transit";
+
+	public static void loadingMusic() {
+		CueMixer m = CueMixer.INSTANCE;
+		if (m != null && !m.playing(LOADING)) play(LOADING);
+	}
+
+	/** Called every client tick: stops the loading track once the loading screen is gone. */
+	public static void tick(boolean loadingShown) {
+		if (!loadingShown && CueMixer.INSTANCE != null && CueMixer.INSTANCE.playing(LOADING)) CueMixer.INSTANCE.stop(LOADING);
+	}
+
 	public static void stopMusic() {
 		if (CueMixer.INSTANCE != null) CueMixer.INSTANCE.stop(MUSIC);
 	}

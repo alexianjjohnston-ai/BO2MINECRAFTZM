@@ -370,6 +370,16 @@
   "fallback": "minecraft:music_disc.chirp"
  },
  {
+  "cue": "mus_load_zm_transit",
+  "category": "music",
+  "soundSource": "MUSIC",
+  "volume": 0.8,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:music_disc.chirp"
+ },
+ {
   "cue": "mus_perks_packa_sting",
   "category": "music",
   "soundSource": "MASTER",
