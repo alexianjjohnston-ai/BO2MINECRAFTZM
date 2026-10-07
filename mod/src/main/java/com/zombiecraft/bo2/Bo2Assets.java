@@ -24,7 +24,7 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 3;
+	public static final int VERSION = 4;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
 	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit"};
@@ -32,7 +32,8 @@ public final class Bo2Assets {
 	/** Animations copied into the cache (compiled xanim files are small). The renderer picks them by these names. */
 	public static final String[] ANIMS = {"ai_zombie_walk_v1", "ai_zombie_walk_v2", "ai_zombie_walk_v3", "ai_zombie_walk_v4",
 			"ai_zombie_run_v2", "ai_zombie_run_v3", "ai_zombie_sprint_v1", "ai_zombie_sprint_v2", "ai_zombie_attack_v1", "ai_zombie_attack_v2",
-			"ai_zombie_boardtear_aligned_m_1_pull", "ai_zombie_barricade_enter_m_v1", "ch_dazed_a_death", "ch_dazed_b_death"};
+			"ai_zombie_boardtear_aligned_m_1_pull", "ai_zombie_barricade_enter_m_v1", "ch_dazed_a_death", "ch_dazed_b_death",
+			"o_zombie_magic_box_open", "o_zombie_magic_box_close", "o_zombie_magic_box_leave", "o_zombie_magic_box_arrive"};
 
 	public static Path cacheDir(Path gameDir) { return gameDir.resolve("zombiecraft").resolve("bo2"); }
 

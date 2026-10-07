@@ -9,6 +9,8 @@ import java.util.UUID;
 public final class PlayerGame {
 	public final UUID id;
 	public int points;
+	/** Scoreboard stats (BO2 tab screen). */
+	public int kills, headshots, downs, revives;
 	public final Gun[] guns = new Gun[2];
 
 	/** Server tick at which the next shot is allowed. */

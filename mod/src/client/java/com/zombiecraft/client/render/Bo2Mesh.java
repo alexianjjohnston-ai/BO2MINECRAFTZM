@@ -74,6 +74,39 @@ public final class Bo2Mesh {
 		return l;
 	}
 
+	private static final Map<String, com.zombiecraft.bo2.XAnim> ANIMS = new HashMap<>();
+
+	/** An animation from the local cache, or null. */
+	public static com.zombiecraft.bo2.XAnim anim(String name) {
+		if (!ModelCache.ready()) return null;
+		if (ANIMS.containsKey(name)) return ANIMS.get(name);
+		com.zombiecraft.bo2.XAnim a = null;
+		try { a = com.zombiecraft.bo2.XAnim.read(Bo2Assets.cacheDir(gameDir()).resolve("anims").resolve(name)); }
+		catch (IOException | RuntimeException e) { ZombiecraftMod.LOG.warn("Block Ops 2 animation {} not available: {}", name, e.toString()); }
+		ANIMS.put(name, a);
+		return a;
+	}
+
+	/** 0..1, the slow pulse shared by every glowing part of the Mystery Box. */
+	public static float pulse() { return 0.5f + 0.5f * (float) Math.sin((System.nanoTime() % 100_000_000_000L) / 1e9 * 2.2); }
+
+	private static ResourceLocation white;
+
+	private static ResourceLocation white() {
+		if (white == null) {
+			NativeImage img = new NativeImage(2, 2, false);
+			for (int y = 0; y < 2; y++) for (int x = 0; x < 2; x++) img.setPixel(x, y, 0xFFFFFFFF);
+			white = ResourceLocation.fromNamespaceAndPath("zombiecraft", "bo2white");
+			Minecraft.getInstance().getTextureManager().register(white, new DynamicTexture(img));
+		}
+		return white;
+	}
+
+	/** Kept for callers that draw glowing props: glowing surfaces are handled inside {@link #draw}. */
+	public static void drawGlowing(Loaded l, Pose pose, PoseStack ps, MultiBufferSource buf, int light, float scale, int axes) {
+		draw(l, pose, ps, buf, light, scale, axes);
+	}
+
 	private static ResourceLocation texture(String dds) {
 		if (dds == null || dds.isEmpty()) return null;
 		if (TEXTURES.containsKey(dds)) return TEXTURES.get(dds);
@@ -105,10 +138,18 @@ public final class Bo2Mesh {
 		PoseStack.Pose p = ps.last();
 		float[] n = new float[3];
 		for (int s = 0; s < m.surfaces.size(); s++) {
-			ResourceLocation tex = l.tex[s];
-			if (tex == null) continue;
 			XModel.Surface surf = m.surfaces.get(s);
-			VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(tex));
+			// "objective" materials (the box's question marks) have a black texture and are lit by colour constants: full-bright additive gold, pulsing
+			boolean glow = m.materials.get(surf.material).name() != null && m.materials.get(surf.material).name().endsWith("_obj");
+			ResourceLocation tex = glow ? white() : l.tex[s];
+			if (tex == null) continue;
+			VertexConsumer vc = buf.getBuffer(glow ? RenderType.entityTranslucentEmissive(tex) : RenderType.entityCutoutNoCull(tex));
+			float pulse = pulse();
+			int cr = glow ? (int) (8 + 247 * pulse) : 255, cg = glow ? (int) (8 + 207 * pulse) : 255, cb = glow ? (int) (8 + 0 * pulse) : 255;
+			// lit parts of the powered machines ("..._on", "..._moving") are self-lit by the game and stay bright in the dark
+			String mn = m.materials.get(surf.material).name();
+			boolean selfLit = mn != null && (mn.endsWith("_on") || mn.endsWith("_moving"));
+			int lv = glow || selfLit ? 0xF000F0 : light;
 			for (int c = 0; c + 2 < surf.cornerCount(); c += 3) {
 				for (int k = 0; k < 4; k++) {
 					int ci = c + Math.min(k, 2), v = surf.vert[ci];
@@ -120,8 +161,8 @@ public final class Bo2Mesh {
 					else if (axes == 2) { px = -y; py = z; pz = -x; qx = -ny; qy = nz; qz = -nx; }
 					else if (axes == 3) { px = -x; py = z; pz = y; qx = -nx; qy = nz; qz = ny; }
 					else { px = y; py = z; pz = x; qx = ny; qy = nz; qz = nx; }
-					vc.addVertex(p, px * scale, py * scale, pz * scale).setColor(255, 255, 255, 255)
-							.setUv(surf.uv[ci * 2], surf.uv[ci * 2 + 1]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(p, qx, qy, qz);
+					vc.addVertex(p, px * scale, py * scale, pz * scale).setColor(cr, cg, cb, 255)
+							.setUv(surf.uv[ci * 2], surf.uv[ci * 2 + 1]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(lv).setNormal(p, qx, qy, qz);
 				}
 			}
 		}

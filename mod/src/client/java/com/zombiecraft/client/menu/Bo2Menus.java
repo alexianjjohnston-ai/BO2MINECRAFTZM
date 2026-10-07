@@ -335,7 +335,7 @@ public final class Bo2Menus {
 
 	/** In-game pause menu in the same style. */
 	static final class Pause extends MenuScreen {
-		Pause() { super("Paused"); items = new String[] {"RESUME GAME", "OPTIONS", "LEAVE GAME"}; }
+		Pause() { super("Paused"); items = new String[] {"RESUME GAME", "OPTIONS", "END GAME"}; }
 
 		@Override protected void init() { x = (int) (width * 0.1); y0 = (int) (height * 0.3); MenuAudio.play("uin_main_pause"); }
 
@@ -344,13 +344,7 @@ public final class Bo2Menus {
 			switch (i) {
 				case 0 -> mc.setScreen(null);
 				case 1 -> mc.setScreen(new OptionsScreen(this, mc.options));
-				default -> {
-					boolean local = mc.isLocalServer();
-					mc.level.disconnect();
-					if (local) mc.disconnect(new GenericMessageScreen(Component.translatable("menu.savingLevel")));
-					else mc.disconnect();
-					mc.setScreen(new TitleScreen());
-				}
+				default -> mc.setScreen(new QuitDialog(this));
 			}
 		}
 
@@ -368,6 +362,46 @@ public final class Bo2Menus {
 			text(g, "CONTROLS", cx, cy - line - 6, 1.3f, WHITE);
 			String[][] keys = {{"RIGHT CLICK", "Shoot"}, {"R", "Reload"}, {"LEFT CLICK", "Knife"}, {"F", "Buy / Open / Hold to repair"}};
 			for (String[] k : keys) { hint(g, k[0], k[1], cx, cy); cy += line; }
+		}
+	}
+
+	/** BO2's "Quit Game" confirmation: framed box, Yes / No (No is the default). */
+	static final class QuitDialog extends MenuScreen {
+		private final Screen parent;
+
+		QuitDialog(Screen parent) { super("Quit Game"); this.parent = parent; items = new String[] {"Yes", "No"}; sel = 1; scale = 1.1f; }
+
+		@Override void activate(int i) {
+			Minecraft mc = Minecraft.getInstance();
+			if (i == 1) { MenuAudio.play("uin_cmn_backout"); mc.setScreen(parent); return; }
+			boolean local = mc.isLocalServer();
+			mc.level.disconnect();
+			if (local) mc.disconnect(new GenericMessageScreen(Component.translatable("menu.savingLevel")));
+			else mc.disconnect();
+			mc.setScreen(new TitleScreen());
+		}
+
+		@Override public boolean keyPressed(int key, int scan, int mods) {
+			if (key == GLFW.GLFW_KEY_ESCAPE) { activate(1); return true; }
+			return super.keyPressed(key, scan, mods);
+		}
+
+		@Override public boolean isPauseScreen() { return true; }
+
+		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
+			g.fillGradient(0, 0, width, height, 0xA0000000, 0xC0000000);
+			int bw = (int) (width * 0.28), bh = (int) (height * 0.3), bx = (width - bw) / 2, by = (height - bh) / 2;
+			g.fill(bx - 3, by - 3, bx + bw + 3, by + bh + 3, 0xFF6A645C);
+			g.fill(bx, by, bx + bw, by + bh, 0xF0141210);
+			text(g, "Quit Game", bx + 14, by + 10, 1.5f, WHITE);
+			int ty = by + 10 + (int) H(1.5f) + 6;
+			for (String line : wrap("If you leave, you will lose all progress. Are you sure you want to leave the game?", bw - 28, 0.75f)) {
+				text(g, line, bx + 14, ty, 0.75f, 0xFFD2CEC6);
+				ty += (int) (H(0.75f) * 1.15f);
+			}
+			x = bx + 14; y0 = by + bh - 2 * step() - 12;
+			drawItems(g, mx, my);
+			hint(g, "ESC", "Back", bx, by + bh + 10);
 		}
 	}
 }

@@ -31,6 +31,8 @@ public final class Rows {
 
 	public record WallBuyDef(String id, String weaponId, int x, int y, int z, String facing, String room) {}
 
+	public record DoorDef(String id, int cost, int x1, int y1, int z1, int x2, int y2, int z2, String block, String opens, String cue, String label, String room) {}
+
 	public record MachineDef(String id, String kind, String perk, int x, int y, int z, String facing, String room) {}
 	public record BoxDef(String id, int x, int y, int z, String facing, boolean initial, String room) {}
 

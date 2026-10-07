@@ -13,6 +13,11 @@ def L(bx, bz):
 
 ops = []
 
+# ---- one palette so nothing clashes: weathered stone and dark wood
+WALL, WAINSCOT, TRIM, ROOF = 'stone_bricks', 'polished_andesite', 'dark_oak_planks', 'deepslate_bricks'
+FLOOR_A, FLOOR_B, FLOOR_C, GROUND = 'polished_andesite', 'andesite', 'stone', 'stone'
+LIGHT, METAL, GLASS = 'shroomlight', 'iron_block', 'black_stained_glass'
+
 
 def mc(b):
     return b if ':' in b.split('[')[0] else 'minecraft:' + b
@@ -35,39 +40,39 @@ ops.append(dict(id='clear', order=0, op='fill', block='minecraft:air', block2=No
 fill('grass', 'grass_block', 0, 0, 17, 80, 0, 77, 'ground', 'ground layer', order=1)
 fill('road', 'black_concrete', 0, 0, 20, 80, 0, 26, 'road', 'the bus road', order=2)
 op('road_line', 'checker', 'yellow_concrete', 0, 0, 23, 80, 0, 23, 'road', 'centre line', order=3, block2='black_concrete')
-fill('sidewalk', 'light_gray_concrete', 0, 0, 27, 80, 0, 28, 'road', 'kerb', order=4)
-fill('plaza', 'light_gray_concrete', 14, 0, 29, 62, 0, 32, 'depot', 'forecourt in front of the depot', order=5)
-fill('apron_w', 'light_gray_concrete', 12, 0, 33, 19, 0, 55, 'depot', 'west side lot', order=6)
-fill('apron_e', 'light_gray_concrete', 57, 0, 33, 63, 0, 55, 'depot', 'east side lot', order=7)
-fill('apron_s', 'light_gray_concrete', 12, 0, 54, 63, 0, 57, 'depot', 'south walkway behind the depot', order=8)
+fill('sidewalk', FLOOR_B, 0, 0, 27, 80, 0, 28, 'road', 'kerb', order=4)
+fill('plaza', GROUND, 14, 0, 29, 62, 0, 32, 'depot', 'forecourt in front of the depot', order=5)
+fill('apron_w', GROUND, 12, 0, 33, 19, 0, 55, 'depot', 'west side lot', order=6)
+fill('apron_e', GROUND, 57, 0, 33, 63, 0, 55, 'depot', 'east side lot', order=7)
+fill('apron_s', GROUND, 12, 0, 54, 63, 0, 57, 'depot', 'south walkway behind the depot', order=8)
 
 # ---- floors
-op('floor_lobby', 'checker', 'smooth_stone', 29, 0, 34, 55, 0, 45, 'lobby', 'tiled waiting hall', order=10, block2='light_gray_concrete')
-fill('floor_back', 'gray_concrete', 29, 0, 47, 55, 0, 52, 'back', 'back room', order=11)
-fill('floor_wing', 'gray_concrete', 21, 0, 34, 27, 0, 52, 'wing', 'west wing', order=12)
-fill('floor_mid', 'gray_concrete', 28, 0, 34, 28, 0, 52, 'wing', 'wall footing', order=13)
-fill('floor_part', 'gray_concrete', 29, 0, 46, 55, 0, 46, 'back', 'partition footing', order=14)
+op('floor_lobby', 'checker', FLOOR_A, 29, 0, 34, 55, 0, 45, 'lobby', 'tiled waiting hall', order=10, block2=FLOOR_B)
+fill('floor_back', FLOOR_C, 29, 0, 47, 55, 0, 52, 'back', 'back room', order=11)
+fill('floor_wing', FLOOR_C, 21, 0, 34, 27, 0, 52, 'wing', 'west wing', order=12)
+fill('floor_mid', FLOOR_C, 28, 0, 34, 28, 0, 52, 'wing', 'wall footing', order=13)
+fill('floor_part', FLOOR_C, 29, 0, 46, 55, 0, 46, 'back', 'partition footing', order=14)
 
 # ---- the building shell: outer walls, west-wing wall (x=28), partition (z=46)
-op('shell', 'walls', 'light_gray_concrete', 20, 1, 33, 56, 6, 53, 'building', 'outer walls', order=20)
-op('shell_trim', 'walls', 'red_concrete', 20, 6, 33, 56, 6, 53, 'building', 'red roof trim', order=21)
-fill('wing_wall', 'light_gray_concrete', 28, 1, 34, 28, 6, 52, 'building', 'wall between the west wing and the hall', order=22)
-fill('partition', 'light_gray_concrete', 29, 1, 46, 55, 6, 46, 'building', 'wall between the waiting hall and the back room', order=23)
+op('shell', 'walls', WALL, 20, 1, 33, 56, 6, 53, 'building', 'outer walls', order=20)
+op('shell_wainscot', 'walls', WAINSCOT, 20, 1, 33, 56, 1, 53, 'building', 'stone base course', order=21)
+op('shell_trim', 'walls', TRIM, 20, 6, 33, 56, 6, 53, 'building', 'wooden eaves', order=21)
+fill('wing_wall', WALL, 28, 1, 34, 28, 6, 52, 'building', 'wall between the west wing and the hall', order=22)
+fill('partition', WALL, 29, 1, 46, 55, 6, 46, 'building', 'wall between the waiting hall and the back room', order=23)
 fill('door_b', 'air', 28, 1, 40, 28, 4, 42, 'building', 'opening to the west wing (BO2 electric door B)', order=24)
 fill('door_a', 'air', 28, 1, 47, 28, 4, 49, 'building', 'opening to the west wing from the back room (door A)', order=25)
 fill('door_750', 'air', 37, 1, 46, 40, 4, 46, 'building', 'the 750 door between the hall and the back room', order=26)
-fill('roof', 'smooth_stone', 20, 7, 33, 56, 7, 53, 'building', 'flat roof', order=27)
-op('lights', 'grid', 'sea_lantern', 22, 7, 35, 54, 7, 51, 'building', 'ceiling lights', order=28, step=4)
-op('lamps', 'grid', 'sea_lantern', 22, 6, 35, 54, 6, 51, 'building', 'light panels under the roof', order=29, step=4)
+fill('roof', ROOF, 20, 7, 33, 56, 7, 53, 'building', 'roof', order=27)
+op('lamps', 'grid', LIGHT, 23, 6, 36, 53, 6, 51, 'building', 'ceiling lamps', order=29, step=5)
+fill('canopy', 'dark_oak_slab[type=top]', 22, 6, 29, 54, 6, 32, 'depot', 'entrance canopy', order=28)
+op('canopy_posts', 'grid', 'dark_oak_fence', 22, 1, 29, 54, 5, 29, 'depot', 'canopy posts', order=27, step=8)
 
 # ---- props
-fill('ticket_counter', 'quartz_block', 40, 1, 36, 48, 1, 36, 'lobby', 'ticket counter', order=40)
-fill('ticket_top', 'quartz_slab[type=bottom]', 40, 2, 36, 48, 2, 36, 'lobby', 'ticket counter top', order=41)
+fill('ticket_counter', 'polished_andesite', 40, 1, 36, 48, 1, 36, 'lobby', 'ticket counter', order=40)
+fill('ticket_top', 'dark_oak_slab[type=bottom]', 40, 2, 36, 48, 2, 36, 'lobby', 'ticket counter top', order=41)
 fill('bench_w', 'dark_oak_slab[type=bottom]', 31, 1, 41, 35, 1, 41, 'lobby', 'waiting bench', order=42)
 fill('bench_e', 'dark_oak_slab[type=bottom]', 50, 1, 41, 54, 1, 41, 'lobby', 'waiting bench', order=43)
-fill('lockers', 'blue_terracotta', 21, 1, 43, 21, 2, 45, 'wing', 'lockers', order=44)
-fill('revive_body', 'light_blue_concrete', 41, 1, 47, 42, 3, 47, 'back', 'Quick Revive machine (zm_perk_machine at bx 42, bz 48)', order=45)
-fill('revive_top', 'sea_lantern', 41, 4, 47, 42, 4, 47, 'back', 'Quick Revive light', order=46)
+fill('lockers', METAL, 21, 1, 43, 21, 2, 45, 'wing', 'lockers', order=44)
 fill('pap_frame', 'light_blue_concrete', 22, 1, 34, 24, 3, 35, 'pap', 'Pack-a-Punch (placed in the depot so the game loop works)', order=47)
 fill('pap_glass', 'light_blue_stained_glass', 22, 2, 36, 24, 3, 36, 'pap', 'Pack-a-Punch front glass', order=48)
 fill('pap_top', 'sea_lantern', 22, 4, 34, 24, 4, 35, 'pap', 'Pack-a-Punch light', order=49)
@@ -76,7 +81,7 @@ fill('turbine_table', 'smooth_stone', 25, 1, 50, 27, 1, 51, 'wing', 'turbine bui
 # ---- the bus (parked on the road at the west end, where the bus entry points are)
 fill('bus_body', 'light_gray_concrete', 14, 1, 21, 24, 3, 25, 'bus', 'bus shell', order=60)
 fill('bus_hollow', 'air', 15, 1, 22, 23, 2, 24, 'bus', 'bus interior', order=61)
-op('bus_windows', 'grid', 'black_stained_glass', 15, 2, 21, 23, 2, 25, 'bus', 'bus windows', order=62, step=2)
+op('bus_windows', 'grid', GLASS, 15, 2, 21, 23, 2, 25, 'bus', 'bus windows', order=62, step=2)
 fill('bus_stripe', 'green_concrete', 14, 1, 21, 24, 1, 25, 'bus', 'lower stripe', order=63)
 fill('bus_roof', 'light_gray_concrete', 14, 4, 21, 24, 4, 25, 'bus', 'bus roof', order=64)
 
@@ -87,7 +92,7 @@ fill('pit_fence', 'iron_bars', 35, 1, 59, 51, 2, 59, 'pit', 'fence in front of t
 fill('pit_fence_w', 'iron_bars', 35, 1, 60, 35, 2, 68, 'pit', 'fence', order=73)
 fill('pit_fence_e', 'iron_bars', 51, 1, 60, 51, 2, 68, 'pit', 'fence', order=74)
 fill('pit_fence_s', 'iron_bars', 35, 1, 69, 51, 2, 69, 'pit', 'fence', order=75)
-fill('pit_path', 'light_gray_concrete', 35, 0, 58, 51, 0, 58, 'pit', 'path in front of the fence', order=76)
+fill('pit_path', FLOOR_B, 35, 0, 58, 51, 0, 58, 'pit', 'path in front of the fence', order=76)
 
 
 # ---- windows (the seven BO2 depot barricades) -> map_windows / map_spawns
@@ -117,12 +122,24 @@ for id, weapon, bx, bz, facing, room in [('wb1', 'rottweil72', 37, 34, 'south', 
                                           ('wb3', 'ak74u', 21, 48, 'east', 'wing'), ('wb4', 'mp5k', 38, 52, 'north', 'back')]:
     x, z = L(bx, bz)
     wall.append(dict(id=id, weaponId=weapon, x=x, y=2, z=z, facing=facing, room=room))
-b1 = L(48, 47)
-b2 = L(55, 43)
-boxes = [dict(id='bx1', x=b1[0], y=1, z=b1[1], facing='south', initial=True, room='back'),
-         dict(id='bx2', x=b2[0], y=1, z=b2[1], facing='west', initial=False, room='lobby')]
+def at(bx, bz): return L(bx, bz)
+b1 = at(30, 37)   # lobby box, 2 blocks off the wing wall so the 3-wide box model never clips into it
+b2 = at(50, 48)   # back-room box, 2 blocks off the partition
+boxes = [dict(id='bx1', x=b1[0], y=1, z=b1[1], facing='east', initial=True, room='lobby'),
+         dict(id='bx2', x=b2[0], y=1, z=b2[1], facing='south', initial=False, room='back')]
+def machine(id, kind, perk, bx, bz, facing, room):
+    x, z = at(bx, bz); return dict(id=id, kind=kind, perk=perk, x=x, y=1, z=z, facing=facing, room=room)
+machines = [machine('m_power', 'power', '', 21, 46, 'east', 'wing'), machine('m_jug', 'perk', 'jug', 55, 43, 'west', 'lobby'),
+            machine('m_speed', 'perk', 'speed', 55, 51, 'west', 'back'), machine('m_doubletap', 'perk', 'doubletap', 50, 52, 'north', 'back'),
+            machine('m_revive', 'perk', 'revive', 42, 47, 'south', 'back')]
+def door(id, cost, bx1, bz1, bx2, bz2, block, opens, cue, label):
+    a, b = at(bx1, bz1), at(bx2, bz2)
+    return dict(id=id, cost=cost, x1=a[0], y1=1, z1=a[1], x2=b[0], y2=4, z2=b[1], block=mc(block), opens=opens, cue=cue, label=label, room='lobby')
+doors = [door('door_750', 750, 37, 46, 40, 46, 'dark_oak_planks', 'back', 'zmb_small_wood_door', 'Back Room'),
+         door('door_b', 1000, 28, 40, 28, 42, METAL, 'wing', 'zmb_power_door', 'West Wing'),
+         door('door_a', 1000, 28, 47, 28, 49, METAL, 'wing', 'zmb_power_door', 'West Wing')]
 p1 = L(22, 34)
-p2 = L(24, 35)
+p2 = L(24, 36)   # include the front glass so targeting/model replacement covers the whole machine
 pap = [dict(id='pap1', x1=p1[0], y1=1, z1=p1[1], x2=p2[0], y2=4, z2=p2[1], facing='south', room='wing')]
 ps = L(42, 40)
 player = [dict(id='spawn', x=ps[0], y=1, z=ps[1], yaw=0.0, room='lobby')]
@@ -139,6 +156,8 @@ dump('map_windows.json', windows)
 dump('map_spawns.json', spawns)
 dump('map_wallbuys.json', wall)
 dump('map_boxes.json', boxes)
+dump('map_machines.json', machines)
+dump('map_doors.json', doors)
 dump('map_pap.json', pap)
 dump('map_player.json', player)
 print(len(ops), 'ops,', len(windows), 'windows,', len(spawns), 'spawns')

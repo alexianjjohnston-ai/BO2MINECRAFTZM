@@ -46,6 +46,12 @@ loom {
 				vmArg "-Dzombiecraft.autoplay=true"
 				runDir "run/feel-bench"
 			}
+			if (project.hasProperty("papBench")) {
+				vmArg "-Dzombiecraft.papBench=true"
+				vmArg "-Dzombiecraft.autoplay=true"
+				if (project.hasProperty("papBenchHold")) vmArg "-Dzombiecraft.papBenchHold=true"
+				runDir "run/pap-bench"
+			}
 		}
 	}
 }

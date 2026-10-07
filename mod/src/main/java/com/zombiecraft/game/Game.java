@@ -41,6 +41,7 @@ public final class Game {
 	public BoxSystem box;
 	public PapSystem pap;
 	public Machines machines;
+	public Doors doors;
 	public PowerUps powerups;
 	/** Points the whole team has earned this game (drives power-up drops). */
 	public int teamEarned;
@@ -139,10 +140,12 @@ public final class Game {
 		for (var w : Sheets.WINDOWS) { Barrier b = new Barrier(level, origin, w); b.build(); barriers.add(b); }
 		placeWallBuys();
 		box = new BoxSystem(this);
+		if (pap != null) pap.shutdown();
 		pap = new PapSystem(this);
 		if (machines != null) machines.shutdown();
 		if (powerups != null) powerups.shutdown();
 		machines = new Machines(this);
+		doors = new Doors(this);
 		powerups = new PowerUps(this);
 		teamEarned = 0;
 		scheduled.clear();
@@ -186,7 +189,7 @@ public final class Game {
 			int facing = switch (w.facing()) { case "north" -> 2; case "south" -> 3; case "west" -> 4; default -> 5; };
 			double x = origin.getX() + w.x() + 0.5, y = origin.getY() + w.y() + 0.5, z = origin.getZ() + w.z() + 0.5;
 			var weapon = Sheets.weapon(w.weaponId());
-			cmd(String.format(Locale.ROOT, "summon item_frame %.2f %.2f %.2f {Facing:%db,Fixed:1b,Invulnerable:1b,Silent:1b,ItemDropChance:0f,Item:{id:\"zombiecraft:%s\",count:1},Tags:[\"zc\",\"zc_wb:%s\"]}",
+			cmd(String.format(Locale.ROOT, "summon item_frame %.2f %.2f %.2f {Facing:%db,Fixed:1b,Invisible:1b,Invulnerable:1b,Silent:1b,ItemDropChance:0f,Item:{id:\"zombiecraft:%s\",count:1},Tags:[\"zc\",\"zc_wb:%s\"]}",
 					x, y, z, facing, w.weaponId(), w.id()));
 			cmd(String.format(Locale.ROOT, "summon text_display %.2f %.2f %.2f {text:'{\"text\":\"%s  [%d]\",\"color\":\"gold\"}',billboard:\"center\",alignment:\"center\",Tags:[\"zc\"]}",
 					x, y + 0.9, z, weapon.name(), weapon.wallCost()));
@@ -214,7 +217,8 @@ public final class Game {
 
 	private void spawnZombie() {
 		RoundRow row = Sheets.round(round);
-		SpawnDef s = Sheets.SPAWNS.get(rng.nextInt(Sheets.SPAWNS.size()));
+		List<SpawnDef> usable = Sheets.SPAWNS.stream().filter(sp -> doors == null || doors.windowOpen(sp.window())).toList();
+		SpawnDef s = usable.get(rng.nextInt(usable.size()));
 		int roll = rng.nextInt(100);
 		String tier = roll < row.walkPct() ? "walk" : roll < row.walkPct() + row.runPct() ? "run" : "sprint";
 		ZcZombie z = new ZcZombie(ZcEntities.ZOMBIE, level);
@@ -247,6 +251,7 @@ public final class Game {
 		phase = Payloads.PHASE_GAMEOVER;
 		for (ServerPlayer player : level.players()) WeaponSystem.cancelReload(player, pg(player));
 		roundsSurvived = round;
+		pg(p).downs++;
 		gameOverTicks = Sheets.sysInt("game_over_delay_s") * 20;
 		p.setHealth(p.getMaxHealth());
 		p.setInvulnerable(true);
@@ -254,6 +259,7 @@ public final class Game {
 		Cue.ui("mus_zombie_game_over", p);
 		for (String c : AMBIENCE) Cue.stopAll(c, level);
 		machines.shutdown();
+		if (pap != null) pap.shutdown();
 		powerups.shutdown();
 		cmd("kill @e[type=zombiecraft:zombie]");
 		alive.clear();
@@ -280,6 +286,41 @@ public final class Game {
 				if (p.position().distanceToSqr(origin.getX() + sp.x(), origin.getY() + sp.y(), origin.getZ() + sp.z()) > 25 * 25)
 					p.teleportTo(level, origin.getX() + sp.x() + 0.5, origin.getY() + sp.y(), origin.getZ() + sp.z() + 0.5, Set.of(), (float) sp.yaw(), 0f, true);
 		}
+		// dev: -Dzombiecraft.debugBox=true stands the player in front of the Mystery Box looking at it (for screenshots)
+		if (Boolean.getBoolean("zombiecraft.debugBox") && tick - startedAt == 60 && box != null) {
+			net.minecraft.core.Direction f = net.minecraft.core.Direction.valueOf(box.loc().facing().toUpperCase());
+			var cp = box.chestPos();
+			double px = cp.getX() + 0.5 + f.getStepX() * 2.6, pz = cp.getZ() + 0.5 + f.getStepZ() * 2.6;
+			float yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
+			for (ServerPlayer p : level.players()) p.teleportTo(level, px, cp.getY(), pz, Set.of(), yaw, 22f, true);
+		}
+		// dev: -Dzombiecraft.debugView=jug,speed,doubletap,revive,power,pap visits each in turn (100 ticks apiece) and saves a screenshot;
+		// -Dzombiecraft.debugPower=true turns the power on first
+		String view = System.getProperty("zombiecraft.debugView");
+		if (view != null && machines != null && tick - startedAt >= 60) {
+			String[] names = view.split(",");
+			long rel = tick - startedAt - 60; int idx = (int) (rel / 100), ph = (int) (rel % 100);
+			if (idx < names.length && (ph == 0 || ph == 60)) {
+				String n = names[idx];
+				double px = 0, py = 0, pz = 0; float yaw = 0;
+				if (n.equals("pap")) {
+					var d = pap.def();
+					var f = net.minecraft.core.Direction.valueOf(d.facing().toUpperCase());
+					px = origin.getX() + (d.x1() + d.x2()) / 2.0 + 0.5 + f.getStepX() * 4.0; pz = origin.getZ() + (d.z1() + d.z2()) / 2.0 + 0.5 + f.getStepZ() * 4.0;
+					py = origin.getY() + d.y1(); yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
+				} else for (var md : Sheets.MACHINES) if (md.perk().equals(n) || md.kind().equals(n)) {
+					var f = net.minecraft.core.Direction.valueOf(md.facing().toUpperCase());
+					px = origin.getX() + md.x() + 0.5 + f.getStepX() * 3.0; pz = origin.getZ() + md.z() + 0.5 + f.getStepZ() * 3.0;
+					py = origin.getY() + md.y(); yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
+				}
+				for (ServerPlayer p : level.players()) {
+					if (ph == 0) p.teleportTo(level, px, py, pz, Set.of(), yaw, 8f, true);
+					else net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("view_" + n));
+				}
+			}
+		}
+		if (Boolean.getBoolean("zombiecraft.debugPower") && machines != null && !machines.power && tick - startedAt == 40)
+			for (var md : Sheets.MACHINES) if (md.kind().equals("power")) for (ServerPlayer p : level.players()) machines.use(md, p, pg(p));
 		switch (phase) {
 			case Payloads.PHASE_COUNTDOWN -> { if (--countdown <= 0) beginRound(1); }
 			case Payloads.PHASE_ACTIVE -> {
@@ -327,6 +368,7 @@ public final class Game {
 		ServerPlayNetworking.send(p, new Payloads.StateSync(phase, round, pg.points, g == null ? -1 : g.mag, g == null ? 0 : g.reserve,
 				g == null ? "" : g.displayName(), pg.prompt, pg.messageTicks > 0 ? pg.message : "", pg.interactable,
 				zombiesToSpawn + alive.size(), sec, roundsSurvived,
-				pg.perks | (machines.power ? 256 : 0), powerups.instaTicks / 20, powerups.doubleTicks / 20));
+				pg.perks | (machines.power ? 256 : 0), powerups.instaTicks / 20, powerups.doubleTicks / 20,
+				pg.kills, pg.headshots, pg.downs, pg.revives));
 	}
 }

@@ -1,6 +1,7 @@
 package com.zombiecraft.game;
 
 import com.zombiecraft.game.PlayerGame.Gun;
+import com.zombiecraft.sheet.Rows.DoorDef;
 import com.zombiecraft.sheet.Rows.MachineDef;
 import com.zombiecraft.sheet.Rows.WallBuyDef;
 import com.zombiecraft.sheet.Rows.WeaponDef;
@@ -9,11 +10,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Optional;
 
@@ -21,10 +27,11 @@ import java.util.Optional;
 public final class Interactions {
 	private Interactions() {}
 
-	enum Kind { NONE, WALLBUY, BOX, PAP, MACHINE, BARRIER }
+	enum Kind { NONE, WALLBUY, BOX, PAP, MACHINE, BARRIER, DOOR }
 
-	record Target(Kind kind, WallBuyDef wallbuy, Barrier barrier, MachineDef machine) {
-		Target(Kind kind, WallBuyDef wallbuy, Barrier barrier) { this(kind, wallbuy, barrier, null); }
+	record Target(Kind kind, WallBuyDef wallbuy, Barrier barrier, MachineDef machine, DoorDef door) {
+		Target(Kind kind, WallBuyDef wallbuy, Barrier barrier) { this(kind, wallbuy, barrier, null, null); }
+		Target(Kind kind, WallBuyDef wallbuy, Barrier barrier, MachineDef machine) { this(kind, wallbuy, barrier, machine, null); }
 		static final Target NONE = new Target(Kind.NONE, null, null);
 	}
 
@@ -42,15 +49,17 @@ public final class Interactions {
 		}
 		BlockHitResult bh = level.clip(new ClipContext(eye, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, p));
 		double blockD = bh.getType() == HitResult.Type.MISS ? Double.MAX_VALUE : bh.getLocation().distanceTo(eye);
-		if (bestFrame != null && bestD <= blockD + 0.3) {
+		double papD = papDistance(g, p, eye, end);
+		if (bestFrame != null && bestD <= blockD + 0.3 && bestD <= papD) {
 			String tag = bestFrame.getTags().stream().filter(t -> t.startsWith("zc_wb:")).findFirst().orElse("");
 			String id = tag.substring("zc_wb:".length());
 			for (WallBuyDef w : Sheets.WALLBUYS) if (w.id().equals(id)) return new Target(Kind.WALLBUY, w, null);
 		}
+		if (papD < Double.MAX_VALUE) return new Target(Kind.PAP, null, null);
 		if (bh.getType() == HitResult.Type.BLOCK) {
 			BlockPos bp = bh.getBlockPos();
 			if (g.box != null && g.box.state != BoxSystem.State.GONE && bp.equals(g.box.chestPos())) return new Target(Kind.BOX, null, null);
-			if (g.pap != null && g.pap.contains(bp)) return new Target(Kind.PAP, null, null);
+			if (g.doors != null) { DoorDef dd = g.doors.at(bp); if (dd != null) return new Target(Kind.DOOR, null, null, null, dd); }
 			if (g.machines != null) { MachineDef md = g.machines.at(bp); if (md != null) return new Target(Kind.MACHINE, null, null, md); }
 		}
 		// windows: any damaged window within reach on the inside, wherever the player is looking
@@ -66,6 +75,25 @@ public final class Interactions {
 		}
 		if (nearest != null) return new Target(Kind.BARRIER, null, nearest);
 		return Target.NONE;
+	}
+
+	/** Target the visible machine, ignoring only its own coarse barrier collision. */
+	private static double papDistance(Game g, ServerPlayer p, Vec3 eye, Vec3 end) {
+		if (g.pap == null) return Double.MAX_VALUE;
+		AABB bounds = g.pap.targetBounds();
+		Optional<Vec3> hit = bounds.contains(eye) ? Optional.of(eye) : bounds.clip(eye, end);
+		if (hit.isEmpty()) return Double.MAX_VALUE;
+		double distance = hit.get().distanceTo(eye);
+		BlockHitResult obstruction = g.level.clip(new ClipContext(eye, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, p) {
+			@Override
+			public VoxelShape getBlockShape(BlockState state, BlockGetter world, BlockPos pos) {
+				if (state.is(Blocks.BARRIER) && g.pap.contains(pos)) return Shapes.empty();
+				return super.getBlockShape(state, world, pos);
+			}
+		});
+		if (obstruction.getType() == HitResult.Type.BLOCK && obstruction.getLocation().distanceTo(eye) + 1e-6 < distance)
+			return Double.MAX_VALUE;
+		return distance;
 	}
 
 	/** Called every tick for every player: prompt, and act on F. */
@@ -89,6 +117,10 @@ public final class Interactions {
 			case PAP -> {
 				pg.prompt = g.pap.promptFor(p, pg);
 				if (edge) g.pap.use(p, pg);
+			}
+			case DOOR -> {
+				pg.prompt = g.doors.promptFor(t.door, pg);
+				if (edge) g.doors.use(t.door, p, pg);
 			}
 			case MACHINE -> {
 				pg.prompt = g.machines.promptFor(t.machine, pg);

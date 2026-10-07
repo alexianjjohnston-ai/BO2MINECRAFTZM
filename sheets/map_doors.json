@@ -1,0 +1,47 @@
+[
+ {
+  "id": "door_750",
+  "cost": 750,
+  "x1": -3,
+  "y1": 1,
+  "z1": -1,
+  "x2": 0,
+  "y2": 4,
+  "z2": -1,
+  "block": "minecraft:dark_oak_planks",
+  "opens": "back",
+  "cue": "zmb_small_wood_door",
+  "label": "Back Room",
+  "room": "lobby"
+ },
+ {
+  "id": "door_b",
+  "cost": 1000,
+  "x1": -12,
+  "y1": 1,
+  "z1": -7,
+  "x2": -12,
+  "y2": 4,
+  "z2": -5,
+  "block": "minecraft:iron_block",
+  "opens": "wing",
+  "cue": "zmb_power_door",
+  "label": "West Wing",
+  "room": "lobby"
+ },
+ {
+  "id": "door_a",
+  "cost": 1000,
+  "x1": -12,
+  "y1": 1,
+  "z1": 0,
+  "x2": -12,
+  "y2": 4,
+  "z2": 2,
+  "block": "minecraft:iron_block",
+  "opens": "wing",
+  "cue": "zmb_power_door",
+  "label": "West Wing",
+  "room": "lobby"
+ }
+]

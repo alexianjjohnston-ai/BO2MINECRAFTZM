@@ -1,5 +1,7 @@
 package com.zombiecraft.game;
 
+import com.zombiecraft.entity.ZcEntities;
+import com.zombiecraft.entity.ZcProp;
 import com.zombiecraft.sheet.Rows.MachineDef;
 import com.zombiecraft.sheet.Sheets;
 import net.minecraft.core.BlockPos;
@@ -10,7 +12,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * The power switch and the perk machines. Power starts off; until it is on the perk machines and Pack-a-Punch refuse to work.
@@ -58,21 +62,53 @@ public final class Machines {
 
 	private Vec3 center(MachineDef d) { BlockPos b = pos(d); return new Vec3(b.getX() + 0.5, b.getY() + 1.0, b.getZ() + 0.5); }
 
+	private final Map<String, ZcProp> props = new HashMap<>();
+
+	/** Yaw that makes a prop's front face the given direction (0 is south). */
+	static float yawOf(String facing) {
+		return switch (facing) { case "west" -> 90f; case "north" -> 180f; case "east" -> -90f; default -> 0f; };
+	}
+
 	/** Places every machine (unpowered) and its sign. */
 	private void build() {
 		game.cmd("kill @e[tag=zc_machine]");
 		for (MachineDef d : Sheets.MACHINES) {
+			if (LocalAssets.models) spawnProp(d);
 			paint(d, false);
 			Vec3 c = center(d);
 			String name = d.kind().equals("power") ? "Power Switch" : Perk.of(d.perk()).title + "  [" + Perk.of(d.perk()).cost + "]";
 			game.cmd(String.format(Locale.ROOT, "summon text_display %.2f %.2f %.2f {text:'{\"text\":\"%s\",\"color\":\"%s\"}',billboard:\"center\",alignment:\"center\",Tags:[\"zc\",\"zc_machine\"]}",
-					c.x, c.y + 1.4, c.z, name, d.kind().equals("power") ? "yellow" : "aqua"));
+					c.x, c.y + (LocalAssets.models ? 1.9 : 1.4), c.z, name, d.kind().equals("power") ? "yellow" : "aqua"));
 		}
+	}
+
+	/** The BO2 model of the machine, standing on the back face of its block and facing out. */
+	private void spawnProp(MachineDef d) {
+		BlockPos b = pos(d);
+		net.minecraft.core.Direction f = net.minecraft.core.Direction.valueOf(d.facing().toUpperCase());
+		ZcProp e = new ZcProp(ZcEntities.PROP, level);
+		e.moveTo(b.getX() + 0.5 - f.getStepX() * 0.5, b.getY(), b.getZ() + 0.5 - f.getStepZ() * 0.5, yawOf(d.facing()), 0f);
+		e.setYRot(yawOf(d.facing()));
+		e.addTag("zc"); e.addTag("zc_machine");
+		int kind = d.kind().equals("power") ? ZcProp.SWITCH : switch (d.perk()) { case "speed" -> ZcProp.SPEED; case "doubletap" -> ZcProp.DOUBLETAP; case "revive" -> ZcProp.REVIVE; default -> ZcProp.JUG; };
+		e.getEntityData().set(ZcProp.KIND, kind);
+		level.addFreshEntity(e);
+		props.put(d.id(), e);
 	}
 
 	/** Dark when off; lit in the perk's colour (or a lamp for the switch) when on. */
 	private void paint(MachineDef d, boolean on) {
 		BlockPos b = pos(d);
+		ZcProp prop = props.get(d.id());
+		if (prop != null) {
+			// the model is the visible part; invisible barriers keep it solid and targetable, and a light block shows it is on
+			level.setBlock(b, Blocks.BARRIER.defaultBlockState(), 3);
+			level.setBlock(b.above(), Blocks.BARRIER.defaultBlockState(), 3);
+			if (level.getBlockState(b.above(2)).isAir() || level.getBlockState(b.above(2)).is(Blocks.LIGHT))
+				level.setBlock(b.above(2), on ? Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 11) : Blocks.AIR.defaultBlockState(), 3);
+			prop.setPowered(on);
+			return;
+		}
 		if (d.kind().equals("power")) {
 			level.setBlock(b, Blocks.IRON_BLOCK.defaultBlockState(), 3);
 			level.setBlock(b.above(), (on ? Blocks.REDSTONE_BLOCK : Blocks.BLACK_CONCRETE).defaultBlockState(), 3);
@@ -146,6 +182,8 @@ public final class Machines {
 	public boolean revive(ServerPlayer p, PlayerGame pg) {
 		if ((pg.perks & (1 << Perk.REVIVE.bit)) == 0) return false;
 		pg.perks &= ~(1 << Perk.REVIVE.bit);
+		pg.downs++;
+		pg.revives++;
 		p.setHealth(p.getMaxHealth());
 		pg.shieldUntil = game.tick + 80;
 		Cue.ui("mus_perks_revive_sting", p);

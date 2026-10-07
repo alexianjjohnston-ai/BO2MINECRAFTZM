@@ -11,6 +11,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.LightBlock;
+import com.zombiecraft.entity.ZcBox;
+import com.zombiecraft.entity.ZcEntities;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
@@ -39,32 +42,72 @@ public final class BoxSystem {
 
 	private Vec3 center() { BlockPos p = chestPos(); return new Vec3(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5); }
 
+	private ZcBox boxEntity;
+	private boolean sideBlocks;
+
+	/** Unit vector along the box's width (it is wide across its facing). */
+	private int[] wide(Direction d) { return d == Direction.EAST || d == Direction.WEST ? new int[] {0, 1} : new int[] {1, 0}; }
+
 	private void placeChest() {
 		Direction d = Direction.valueOf(loc().facing().toUpperCase());
 		if (LocalAssets.models) {
-			// the box mesh is drawn by an item display; an invisible barrier keeps the collision and the hit test
-			level.setBlock(chestPos(), Blocks.BARRIER.defaultBlockState(), 3);
+			// the box mesh (an entity that plays the lid animations) stands on cinder-block feet; an invisible barrier keeps the hit test
+			BlockPos cp = chestPos();
+			int[] w = wide(d);
+			BlockPos left = cp.offset(w[0], 0, w[1]), right = cp.offset(-w[0], 0, -w[1]);
+			boolean roomy = level.getBlockState(left).isAir() && level.getBlockState(right).isAir();
+			level.setBlock(cp, Blocks.BARRIER.defaultBlockState(), 3);
+			level.setBlock(cp.above(), Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 12), 3);
+			sideBlocks = roomy;
+			if (roomy) { level.setBlock(left, Blocks.BARRIER.defaultBlockState(), 3); level.setBlock(right, Blocks.BARRIER.defaultBlockState(), 3); }
 			Vec3 c = center();
 			float yaw = switch (d) { case SOUTH -> 0f; case WEST -> 90f; case NORTH -> 180f; default -> -90f; };
-			game.cmd(String.format(Locale.ROOT, "summon item_display %.2f %.2f %.2f {item:{id:\"zombiecraft:mystery_box\",count:1},item_display:\"none\",Rotation:[%.1ff,0f],Tags:[\"zc\",\"zc_boxmodel\"]}", c.x, c.y, c.z, yaw));
+			boxEntity = new ZcBox(ZcEntities.BOX, level);
+			boxEntity.moveTo(c.x, c.y - 0.5, c.z, yaw, 0f);
+			boxEntity.setYRot(yaw);
+			boxEntity.addTag("zc");
+			boxEntity.getEntityData().set(ZcBox.SCALE, roomy ? 0.0241f : 0.0165f);
+			level.addFreshEntity(boxEntity);
+			boxEntity.play(moves > 0 ? ZcBox.ARRIVE : ZcBox.IDLE);
+			for (int i = -1; i <= 1; i++) {
+				double fx = c.x + w[0] * i * (roomy ? 0.85 : 0.5), fz = c.z + w[1] * i * (roomy ? 0.85 : 0.5);
+				double sx = w[0] == 1 ? 0.4 : 0.56, sz = w[0] == 1 ? 0.56 : 0.4;
+				game.cmd(String.format(Locale.ROOT, "summon block_display %.2f %.2f %.2f {block_state:{Name:\"minecraft:light_gray_concrete\"},Tags:[\"zc\",\"zc_boxfeet\"],transformation:{translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[%.2ff,0.34f,%.2ff],right_rotation:[0f,0f,0f,1f]}}",
+						fx - sx / 2, c.y - 0.5, fz - sz / 2, sx, sz));
+			}
 		} else {
 			level.setBlock(chestPos(), Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, d), 3);
 		}
 	}
 
 	private void removeChest() {
-		level.setBlock(chestPos(), Blocks.AIR.defaultBlockState(), 3);
-		game.cmd("kill @e[tag=zc_boxmodel]");
+		Direction d = Direction.valueOf(loc().facing().toUpperCase());
+		BlockPos cp = chestPos();
+		level.setBlock(cp, Blocks.AIR.defaultBlockState(), 3);
+		if (boxEntity != null) {
+			level.setBlock(cp.above(), Blocks.AIR.defaultBlockState(), 3);
+			if (sideBlocks) {
+				int[] w = wide(d);
+				level.setBlock(cp.offset(w[0], 0, w[1]), Blocks.AIR.defaultBlockState(), 3);
+				level.setBlock(cp.offset(-w[0], 0, -w[1]), Blocks.AIR.defaultBlockState(), 3);
+			}
+			boxEntity.discard();
+			boxEntity = null;
+			game.cmd("kill @e[tag=zc_boxfeet]");
+		}
 	}
 
-	private void lid(boolean open) { level.blockEvent(chestPos(), Blocks.CHEST, 1, open ? 1 : 0); }
+	private void lid(boolean open) {
+		if (boxEntity != null) boxEntity.play(open ? ZcBox.OPEN : ZcBox.CLOSE);
+		else level.blockEvent(chestPos(), Blocks.CHEST, 1, open ? 1 : 0);
+	}
 
 	private void display(String weapon) {
 		Vec3 c = center();
 		game.cmd("kill @e[tag=zc_boxdisp]");
 		game.cmd(String.format(Locale.ROOT,
 				"summon item_display %.2f %.2f %.2f {item:{id:\"zombiecraft:%s\",count:1},billboard:\"center\",Tags:[\"zc\",\"zc_boxdisp\"],transformation:{translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[1.6f,1.6f,1.6f],right_rotation:[0f,0f,0f,1f]}}",
-				c.x, c.y + 1.1, c.z, weapon));
+				c.x, c.y + 1.3, c.z, weapon));
 	}
 
 	private void showItem(String id) {
@@ -151,11 +194,17 @@ public final class BoxSystem {
 				if (--timer <= 0) {
 					PlayerGame pg = game.players.get(user);
 					if (pg != null) pg.points += Sheets.sysInt("box_cost");
-					lid(false);
 					clearDisplay();
 					Cue.at("zmb_box_move", level, center());
-					Cue.at("zmb_box_poof", level, center());
-					removeChest();
+					if (boxEntity != null) {
+						boxEntity.play(ZcBox.LEAVE);
+						level.setBlock(chestPos(), Blocks.AIR.defaultBlockState(), 3);
+						game.later(60, () -> { Cue.at("zmb_box_poof", level, center()); removeChest(); });
+					} else {
+						lid(false);
+						Cue.at("zmb_box_poof", level, center());
+						removeChest();
+					}
 					state = State.GONE; timer = 100;
 				}
 			}

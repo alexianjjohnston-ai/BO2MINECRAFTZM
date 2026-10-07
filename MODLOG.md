@@ -111,8 +111,9 @@ through a window, round end -> round 2, game over -> restart. Bugs fixed on the 
 level.players()), first spawn outside the map. Run it: `cd mod && ./gradlew runClient -Pbench` (results in mod/run/zc-bench.txt, screenshots in mod/run/screenshots).
 Dev tip: set `pauseOnLostFocus:false` in mod/run/options.txt or the integrated server pauses whenever the window is not focused.
 
-## Next
-Finish the BO2 zombie renderer on branch `bo2-visuals` (models, textures, anims are readable; renderer not wired). Then: bigger map, power/perks/power-ups, 3D guns, box model.
+## Next (updated 2026-10-07)
+Done since: zombie renderer, Bus Depot map, doors/zones, ZcProp machines, animated Pack-a-Punch. Self-tests: `-Pbench` 33/33, `-PpapBench` 19/19.
+Plan: (1) menus match the Plutonium reference screenshots (leaderboards, theater, options, tab scoreboard, game over); (2) PaP intake visual, depot look/lighting; (3) co-op, dogs, more perks and maps. Video reference needs ffmpeg to extract frames.
 
 ## UI with real BO2 art (2026-10-06)
 Menus and HUD use art converted on the player's PC from their own install (`bo2/UiAssets`, cache `zombiecraft/bo2/ui/`, needs OAT Unlinker like the models). Falls back to plain drawing without it.
@@ -140,3 +141,8 @@ Loading screen music: `mus_load_zm_transit` (BO2's Tranzit loading track, loveso
 Sheet `map_machines.json` (power switch + 4 perk machines; spots chosen from the map checker's voxel model, preflight checks them). `Machines`: power starts off; perk machines and Pack-a-Punch refuse until it is on. Perks per the BO2 scripts: Juggernog 2500 (health x2.5), Speed Cola 3000 (reload x0.5), Double Tap 2000 (fire time x0.75), Quick Revive 500 (solo self-revive, 3 buys per game). `PowerUps`: drop queue from team earned points (500+2000, x1.14 each), max 4 per round, 30 s lifetime; Max Ammo, Insta-Kill (30 s), Double Points (30 s), Nuke (+400), Carpenter (+200, repairs all). 27 new BO2 cues (power on, machine hum, jingles, stings, drink, power-up spawn/grab/loops, nuke, carpenter).
 Self-test (bench) gained perk/power/power-up steps: all pass. Older steps (wall-buy, Pack-a-Punch, window-repair points) fail because another session replaced the diner with the Bus Depot map; the Pack-a-Punch step now times out instead of hanging.
 Mystery Box mesh: BO2 box front is local +y (scripts put its trigger there), scaled to 1.6 blocks wide so it no longer pokes through walls. Fixed `item_display` transformation key (`translation`).
+
+## Mystery Box, animated (2026-10-06)
+The box is now an entity (`ZcBox`, renderer `ZcBoxRenderer`) drawn from the local p6_anim_zm_magic_box model, skinned with the real lid animations (o_zombie_magic_box_open/close/leave/arrive; bone j_hinge), at about real size (2.3 blocks wide, 1.6 where the spot is narrow), raised on cinder-block feet, with a full-bright pass for the glowing question marks and a light block above it. Open/close follow the BoxSystem states; on a teddy the box plays its leave animation before it moves. Front of the model is local +y (per the BO2 scripts' trigger offset). Not yet checked by eye: orientation, size against the map's walls, glow threshold.
+
+Box glow, found by looking at it in game: the question marks are separate geometry on an additive "objective" material with a black texture (colour from constants), so they were first drawn black and then culled by the additive render type. Now drawn with a non-culling emissive type in pulsing gold, plus a soft halo over the lid and a glow on the floor. Dev: `-Dzombiecraft.debugBox=true` (with autoplay) stands the player in front of the box.

@@ -1328,5 +1328,25 @@
   "loop": false,
   "variants": 2,
   "fallback": "minecraft:entity.zombie.ambient"
+ },
+ {
+  "cue": "zmb_power_door",
+  "category": "world",
+  "soundSource": "MASTER",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.iron_door.open"
+ },
+ {
+  "cue": "zmb_small_wood_door",
+  "category": "world",
+  "soundSource": "MASTER",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.wooden_door.open"
  }
 ]
