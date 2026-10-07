@@ -71,7 +71,7 @@ public final class ZcItemModels {
 			ps.translate(side * VIEW_X, VIEW_Y, VIEW_Z);
 			sway(ps);
 			Bo2Mesh.draw(l, null, ps, buf, light, Bo2Mesh.INCH * VIEW_SCALE, 2);
-			var def = Sheets.weapon(key);
+			var def = Sheets.WEAPONS.stream().filter(w -> w.id().equals(key)).findFirst().orElse(null);
 			if (def != null) Hands.draw(ps, buf, light, l, def.kind(), Bo2Mesh.INCH * VIEW_SCALE);
 		} else if (key.equals("mystery_box")) {
 			// the BO2 box is 2.4 blocks wide with its front on local +y (the scripts put its trigger there): scaled down to fit

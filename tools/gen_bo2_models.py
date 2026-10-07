@@ -44,6 +44,9 @@ for perk, stem in (("jugg", "jugg"), ("speed", "sleight"), ("doubletap", "double
 for perk, stem in (("jugg", "jugg"), ("speed", "sleight"), ("doubletap", "doubletap"), ("revive", "revive")):
     add(f"bottle_{perk}", "perkbottle", f"t6_wpn_zmb_perk_bottle_{stem}_view", f"t6_wpn_zmb_perk_bottle_{stem}_world")
 
+for pid, stem in (("max_ammo", "zombie_ammocan"), ("insta_kill", "zombie_skull"), ("double_points", "zombie_x2_icon"), ("nuke", "zombie_bomb"), ("carpenter", "zombie_carpenter")):
+    add(f"powerup_{pid}", "prop", stem)
+
 for p in ("engineer", "farmgirl", "oldman", "reporter"):
     add(f"player_{p}", "player", f"c_zom_player_{p}_fb")
 

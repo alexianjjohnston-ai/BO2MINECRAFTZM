@@ -268,7 +268,7 @@ public final class Bench {
 					sub = 2;
 				} else if (g.phase == Payloads.PHASE_ACTIVE) {
 					log(g.round == 2 && g.zombiesToSpawn + g.alive.size() == Sheets.round(2).zombies(), "round-2", "round=" + g.round + " zombies=" + (g.zombiesToSpawn + g.alive.size()) + " expected " + Sheets.round(2).zombies());
-					shot(p, "13_round2");
+					shot(p, "13_round2"); g.later(30, () -> shot(p, "13b_round_tally"));
 					next(8, 40);
 				}
 			}
@@ -292,7 +292,7 @@ public final class Bench {
 						sub = 1;
 					}
 					case 1 -> { g.machines.use(power, p, pg); log(g.machines.power, "power-on", "power=" + g.machines.power); sub = 2; }
-					case 2 -> { g.machines.use(jug, p, pg); sub = 3; until = g.tick + 70; }
+					case 2 -> { g.machines.use(jug, p, pg); g.later(10, () -> shot(p, "16_drink_up")); g.later(26, () -> shot(p, "17_drink_tip")); sub = 3; until = g.tick + 70; }
 					case 3 -> {
 						log((pg.perks & 1) != 0 && p.getMaxHealth() > Sheets.sys("player_max_health") * 2.4 && pg.points == 17500, "perk-jug", "perks=" + pg.perks + " maxHealth=" + p.getMaxHealth() + " points=" + pg.points);
 						g.machines.use(speed, p, pg); sub = 4; until = g.tick + 70;

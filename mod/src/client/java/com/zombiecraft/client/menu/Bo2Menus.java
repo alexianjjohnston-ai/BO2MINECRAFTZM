@@ -31,7 +31,14 @@ public final class Bo2Menus {
 	public static void register() {
 		boolean autoplay = Boolean.getBoolean("zombiecraft.autoplay");
 		ScreenEvents.AFTER_INIT.register((mc, screen, w, h) -> {
-			if (screen instanceof TitleScreen && !autoplay) {
+			String dbg = System.getProperty("zombiecraft.debugOptions");
+				if (screen instanceof TitleScreen && dbg != null) {
+					// dev: -Dzombiecraft.debugOptions=title|root|settings|controls opens that Options page straight away
+					mc.execute(() -> {
+						Screen t = new Title(), root = new Bo2Options.Root(t);
+						mc.setScreen(switch (dbg) { case "settings" -> new Bo2Options.Settings(root); case "controls" -> new Bo2Options.Controls(root); case "title" -> t; default -> root; });
+					});
+				} else if (screen instanceof TitleScreen && !autoplay) {
 				mc.execute(() -> mc.setScreen(new Title()));
 			} else if (screen instanceof PauseScreen ps && ps.showsPauseMenu()) {
 				mc.execute(() -> mc.setScreen(new Pause()));
@@ -210,7 +217,7 @@ public final class Bo2Menus {
 			Minecraft mc = Minecraft.getInstance();
 			switch (i) {
 				case 0 -> { MenuAudio.play("uin_lobby_join"); mc.setScreen(new Lobby(this)); }
-				case 1 -> mc.setScreen(new OptionsScreen(this, mc.options));
+				case 1 -> mc.setScreen(new Bo2Options.Root(this));
 				default -> mc.stop();
 			}
 		}
@@ -244,7 +251,7 @@ public final class Bo2Menus {
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
 			if (i == 0) { MenuAudio.play("zmb_ui_globe_spin_start"); mc.setScreen(new MapSelect(this)); }
-			else mc.setScreen(new OptionsScreen(this, mc.options));
+			else mc.setScreen(new Bo2Options.Root(this));
 		}
 
 		@Override public boolean keyPressed(int key, int scan, int mods) {
@@ -343,7 +350,7 @@ public final class Bo2Menus {
 			Minecraft mc = Minecraft.getInstance();
 			switch (i) {
 				case 0 -> mc.setScreen(null);
-				case 1 -> mc.setScreen(new OptionsScreen(this, mc.options));
+				case 1 -> mc.setScreen(new Bo2Options.Root(this));
 				default -> mc.setScreen(new QuitDialog(this));
 			}
 		}

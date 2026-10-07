@@ -101,6 +101,5 @@ public final class Doors {
 			forEach(o, pos -> level.setBlock(pos, air, FLAGS));
 		}
 		for (String id : opened) game.cmd("kill @e[tag=zcd_" + id + "]");
-		for (ServerPlayer pl : level.players()) game.pg(pl).say("Door opened", 50);
 	}
 }

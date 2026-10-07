@@ -33,6 +33,8 @@ public final class PlayerGame {
 	/** Bit per perk (see Machines.Perk), Quick Revive purchases so far, drinking in progress, and a safety window after a revive. */
 	public int perks, revivesBought;
 	public boolean drinking;
+	/** Which perk bottle is in hand while drinking (Machines.Perk bit). */
+	public int drinkPerk;
 	public long shieldUntil;
 
 	public String message = "";

@@ -273,6 +273,41 @@
   "note": ""
  },
  {
+  "id": "powerup_max_ammo",
+  "group": "prop",
+  "xmodel": "zombie_ammocan",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "powerup_insta_kill",
+  "group": "prop",
+  "xmodel": "zombie_skull",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "powerup_double_points",
+  "group": "prop",
+  "xmodel": "zombie_x2_icon",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "powerup_nuke",
+  "group": "prop",
+  "xmodel": "zombie_bomb",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "powerup_carpenter",
+  "group": "prop",
+  "xmodel": "zombie_carpenter",
+  "world": "",
+  "note": ""
+ },
+ {
   "id": "player_engineer",
   "group": "player",
   "xmodel": "c_zom_player_engineer_fb",

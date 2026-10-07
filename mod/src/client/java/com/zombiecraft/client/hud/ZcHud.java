@@ -148,10 +148,46 @@ public final class ZcHud {
 	}
 
 	/** Round tallies from BO2's own chalk-mark images, tinted blood red: groups of five, then the remainder. */
-	private static void tally(GuiGraphics g, int n, int x, int y, int size) {
-		int step = size * 3 / 4, groups = n / 5, rest = n % 5;
-		for (int i = 0; i < groups; i++) UiArt.draw(g, "chalkmarks_5", x + i * step, y, size, size, 0xFFB01010);
-		if (rest > 0) UiArt.draw(g, "chalkmarks_" + rest, x + groups * step, y, size, size, 0xFFB01010);
+	private static void tally(GuiGraphics g, int n, int x, int y, int size) { tally(g, n, x, y, size, 1f); }
+
+	private static void tally(GuiGraphics g, int n, int x, int y, int size, float alpha) {
+		int step = size * 3 / 4, groups = n / 5, rest = n % 5, color = ((int) (255 * alpha) << 24) | 0xB01010;
+		for (int i = 0; i < groups; i++) UiArt.draw(g, "chalkmarks_5", x + i * step, y, size, size, color);
+		if (rest > 0) UiArt.draw(g, "chalkmarks_" + rest, x + groups * step, y, size, size, color);
+	}
+
+	private static float lerp(float a, float b, float t) { return a + (b - a) * t; }
+	private static float ease(float t) { t = Math.max(0f, Math.min(1f, t)); return t * t * (3f - 2f * t); }
+
+	private static int lastRound = -1;
+	private static long roundAnimStart;
+	private static final float ROUND_ANIM_SECONDS = 5f;
+
+	/**
+	 * BO2's round change: the new chalk tally fades in large in the middle of the screen, holds, then shrinks into the
+	 * bottom-left corner. No text. Returns true while the animation owns the tally.
+	 */
+	private static boolean roundTally(GuiGraphics g, Font font, int round, int w, int h, int cornerSize) {
+		if (round != lastRound) {
+			if (round > 0 && lastRound >= 0) roundAnimStart = System.nanoTime();
+			lastRound = round;
+		}
+		float t = (System.nanoTime() - roundAnimStart) / 1e9f / ROUND_ANIM_SECONDS;
+		if (roundAnimStart == 0 || t >= 1f || round <= 0) return false;
+		float fade = ease(t / 0.12f), move = ease((t - 0.55f) / 0.35f);
+		if (round > 10) {
+			float scale = lerp(14f, 4f, move);
+			int ph = (int) (9 * scale * 1.3f), px = (int) lerp(w / 2, 14 + UiFont.width(String.valueOf(round), 9f * 4f * 1.3f) / 2, move);
+			int py = (int) lerp(h / 2 - ph / 2, h - 14 - (int) (9 * 4f * 1.3f), move);
+			text(g, font, String.valueOf(round), px, py, scale, ((int) (255 * fade) << 24) | 0xB01010, true);
+			return true;
+		}
+		int size = (int) lerp(h * 0.62f, cornerSize, move), step = size * 3 / 4, groups = round / 5, rest = round % 5;
+		int totalW = groups * step + (rest > 0 ? size : size / 4);
+		int x = (int) lerp(w / 2 - totalW / 2, 6, move), y = (int) lerp(h / 2 - size / 2, h - cornerSize - 6, move);
+		tally(g, round, x, y, size, fade);
+		if (move < 1f && round > 1) tally(g, round - 1, 6, h - cornerSize - 6, cornerSize, 1f - move);
+		return true;
 	}
 
 	private static void text(GuiGraphics g, Font font, String s, int x, int y, float scale, int color, boolean centered) {
@@ -212,8 +248,10 @@ public final class ZcHud {
 
 		// round tallies bottom left (a number once past round 10)
 		int tallySize = Math.max(32, h / 6);
-		if (s.round() > 10) text(g, font, String.valueOf(s.round()), 14, h - 14 - (int) (9 * 4f * 1.3f), 4f, 0xFFB01010, false);
-		else if (s.round() > 0) tally(g, s.round(), 6, h - tallySize - 6, tallySize);
+		if (!roundTally(g, font, s.round(), w, h, tallySize)) {
+			if (s.round() > 10) text(g, font, String.valueOf(s.round()), 14, h - 14 - (int) (9 * 4f * 1.3f), 4f, 0xFFB01010, false);
+			else if (s.round() > 0) tally(g, s.round(), 6, h - tallySize - 6, tallySize);
+		}
 
 		// bottom right, stacked up from the ammo line so nothing overlaps: blood splat, points, +points, ammo
 		float ammoScale = 2.2f, pointsScale = 1.9f, popScale = 1.2f;
@@ -251,12 +289,20 @@ public final class ZcHud {
 			UiArt.draw(g, perkIcons[b], ix, h - 40, 32, 32);
 			ix += 34;
 		}
-		int ty = (int) (h * 0.12);
-		if (s.instaSec() > 0) { text(g, font, "INSTA-KILL  " + s.instaSec(), w / 2, ty, 1.3f, 0xFFFF5050, true); ty += 18; }
-		if (s.doubleSec() > 0) text(g, font, "DOUBLE POINTS  " + s.doubleSec(), w / 2, ty, 1.3f, 0xFFFFE060, true);
+		// active power-ups: BO2's own icon with the seconds left, in a row above the perks
+		int[] secs = {s.instaSec(), s.doubleSec()};
+		String[] puIcons = {"specialty_instakill_zombies", "specialty_doublepoints_zombies"};
+		int active = (secs[0] > 0 ? 1 : 0) + (secs[1] > 0 ? 1 : 0), px = w / 2 - active * 22;
+		for (int i = 0; i < 2; i++) {
+			if (secs[i] <= 0) continue;
+			boolean blink = secs[i] <= 5 && (System.currentTimeMillis() / 250) % 2 == 0;
+			if (!blink && !UiArt.draw(g, puIcons[i], px, h - 84, 40, 40)) text(g, font, i == 0 ? "INSTA" : "x2", px + 20, h - 80, 1f, 0xFFFFFFFF, true);
+			text(g, font, String.valueOf(secs[i]), px + 20, h - 44, 0.8f, 0xFFFFFFFF, true);
+			px += 44;
+		}
 
 		// banners
-		if (!s.message().isEmpty()) text(g, font, s.message(), w / 2, h / 4 + 24, 3f, 0xFFD8A020, true);
+		if (!s.message().isEmpty()) text(g, font, s.message(), w / 2, h / 2 + 24, 1.2f, 0xFFFFFFFF, true);
 
 		scoreboard(g, mc, s);
 

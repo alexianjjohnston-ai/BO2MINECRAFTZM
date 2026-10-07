@@ -18,6 +18,7 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 	}
 
 	private static final String[] OFF = {"zombie_vending_jugg", "zombie_vending_sleight", "zombie_vending_doubletap2", "zombie_vending_revive", "p6_anim_zm_buildable_pap", "p6_zm_buildable_pswitch_body"};
+	private static final String[] POWERUP = {"zombie_ammocan", "zombie_skull", "zombie_x2_icon", "zombie_bomb", "zombie_carpenter"};
 	private static final String[] ON = {"zombie_vending_jugg_on", "zombie_vending_sleight_on", "zombie_vending_doubletap2_on", "zombie_vending_revive_on", "p6_anim_zm_buildable_pap_on", "p6_zm_buildable_pswitch_body"};
 	/** Blocks per BO2 inch: a machine is about 2.2 blocks tall. */
 	public static final float SCALE = 0.0225f;
@@ -37,7 +38,24 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 		s.sinceSec = (e.level().getGameTime() - e.getEntityData().get(ZcProp.SINCE) + partialTick) / 20f;
 	}
 
+	/** A power-up: the BO2 model, lit from within, spinning and bobbing above the spot (hidden on the blink frames). */
+	private void renderPowerup(State s, PoseStack ps, MultiBufferSource buf) {
+		if (s.busy) return;
+		Bo2Mesh.Loaded l = Bo2Mesh.get(POWERUP[s.kind - ZcProp.AMMO]);
+		if (l == null) return;
+		float t = (System.nanoTime() % 100_000_000_000L) / 1e9f;
+		float size = Math.max(l.maxX - l.minX, Math.max(l.maxY - l.minY, l.maxZ - l.minZ));
+		float sc = 0.7f / Math.max(1f, size);
+		ps.pushPose();
+		ps.translate(0f, 0.15f + Math.sin(t * 2.2f) * 0.08f, 0f);
+		ps.mulPose(Axis.YP.rotationDegrees(t * 90f));
+		ps.translate(-l.cx * sc, -l.cz * sc, l.cy * sc);
+		Bo2Mesh.draw(l, null, ps, buf, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT, sc, 1);
+		ps.popPose();
+	}
+
 	@Override public void render(State s, PoseStack ps, MultiBufferSource buf, int light) {
+		if (s.kind >= ZcProp.AMMO) { renderPowerup(s, ps, buf); return; }
 		int k = Math.max(0, Math.min(OFF.length - 1, s.kind));
 		Bo2Mesh.Loaded l = Bo2Mesh.get(s.powered ? ON[k] : OFF[k]);
 		if (l == null) return;
