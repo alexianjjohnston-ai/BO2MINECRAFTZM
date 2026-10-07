@@ -234,6 +234,7 @@ public final class PapBench {
 			case 20 -> {
 				check(g.pap.state == PapSystem.State.IDLE && pg.guns[0] == null && pg.points == 1000
 						&& visualState(g, 0) && noFloatingDisplay(g), "pickup-timeout-cleanup", detail(g, pg));
+				g.machines.power = true; faceMachine(g, p);
 				WeaponSystem.give(p, pg, 0, "m14", false); pg.points = cost + 1000; next(g, 21, 5);
 			}
 			case 21 -> { pg.interactHeld = true; next(g, 22, 4); }

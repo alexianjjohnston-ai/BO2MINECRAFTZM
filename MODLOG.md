@@ -111,8 +111,9 @@ through a window, round end -> round 2, game over -> restart. Bugs fixed on the 
 level.players()), first spawn outside the map. Run it: `cd mod && ./gradlew runClient -Pbench` (results in mod/run/zc-bench.txt, screenshots in mod/run/screenshots).
 Dev tip: set `pauseOnLostFocus:false` in mod/run/options.txt or the integrated server pauses whenever the window is not focused.
 
-## Next
-Finish the BO2 zombie renderer on branch `bo2-visuals` (models, textures, anims are readable; renderer not wired). Then: bigger map, power/perks/power-ups, 3D guns, box model.
+## Next (updated 2026-10-07)
+Done since: zombie renderer, Bus Depot map, doors/zones, ZcProp machines, animated Pack-a-Punch. Self-tests: `-Pbench` 33/33, `-PpapBench` 19/19.
+Plan: (1) menus match the Plutonium reference screenshots (leaderboards, theater, options, tab scoreboard, game over); (2) PaP intake visual, depot look/lighting; (3) co-op, dogs, more perks and maps. Video reference needs ffmpeg to extract frames.
 
 ## UI with real BO2 art (2026-10-06)
 Menus and HUD use art converted on the player's PC from their own install (`bo2/UiAssets`, cache `zombiecraft/bo2/ui/`, needs OAT Unlinker like the models). Falls back to plain drawing without it.

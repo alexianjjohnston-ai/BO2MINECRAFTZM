@@ -1,6 +1,6 @@
 # Block Ops 2 (Black Ops Zombies in Minecraft)
 
-Round-based Zombies survival inside Minecraft: Java Edition (Fabric, 1.21.4), in a blocky Tranzit-style diner.
+Round-based Zombies survival inside Minecraft: Java Edition (Fabric, 1.21.4), in a blocky Tranzit Bus Depot.
 Unofficial fan project, not affiliated with Activision, Treyarch, Mojang or Microsoft.
 
 **BO2 files are never included or modified.** Sounds are read, read-only, from *your own* Black Ops II install the first time you play
