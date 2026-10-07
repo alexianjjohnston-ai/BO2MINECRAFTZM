@@ -165,7 +165,7 @@ public final class ZcHud {
 		if (s.phase() != Payloads.PHASE_GAMEOVER && !mc.options.keyPlayerList.isDown()) return;
 		Font font = mc.font;
 		int w = g.guiWidth(), h = g.guiHeight();
-		int pw = Math.min(w - 40, 560), x0 = (w - pw) / 2, y0 = (int) (h * 0.32), rowH = 18, rows = 4;
+		int pw = Math.min(w - 40, 560), x0 = (w - pw) / 2, y0 = (int) (h * (s.phase() == Payloads.PHASE_GAMEOVER ? 0.45 : 0.32)), rowH = 18, rows = 4;
 		int nameX = x0 + (int) (pw * 0.2);
 		int[] colX = new int[5];
 		for (int i = 0; i < 5; i++) colX[i] = x0 + (int) (pw * (0.58 + 0.08 * i));
@@ -202,8 +202,8 @@ public final class ZcHud {
 
 		if (s.phase() == Payloads.PHASE_GAMEOVER) {
 			// BO2: white, upper centre, over the red death tint
-			text(g, font, "GAME OVER", w / 2, h / 5, 3f, 0xFFFFFFFF, true);
-			text(g, font, "You Survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " Round" : " Rounds"), w / 2, h / 5 + 42, 1.5f, 0xFFFFFFFF, true);
+			text(g, font, "GAME OVER", w / 2, h / 8, 3f, 0xFFFFFFFF, true);
+			text(g, font, "You Survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " Round" : " Rounds"), w / 2, h / 8 + 42, 1.5f, 0xFFFFFFFF, true);
 			scoreboard(g, mc, s);
 			return;
 		}
