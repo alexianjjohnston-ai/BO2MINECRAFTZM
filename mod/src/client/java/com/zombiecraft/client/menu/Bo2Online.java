@@ -86,7 +86,7 @@ public final class Bo2Online {
 			mc.execute(() -> {
 				var server = mc.getSingleplayerServer();
 				if (server == null) return;
-				if (debugHost) server.setUsesAuthentication(false);
+				server.setUsesAuthentication(false); // players run dev/offline accounts that Mojang's session check would refuse ("Invalid session"); the join code is the gate
 				int port = HttpUtil.isPortAvailable(DEFAULT_PORT) ? DEFAULT_PORT : HttpUtil.getAvailablePort();
 				boolean ok = server.publishServer(GameType.ADVENTURE, false, port);
 				com.zombiecraft.ZombiecraftMod.LOG.info("Block Ops 2 online: opened to LAN on port {}: {}", port, ok);
