@@ -138,7 +138,7 @@ public final class Machines {
 		Cue.ui("evt_perk_bottle_open", p);
 		Cue.ui(perk.sting, p);
 		WeaponSystem.cancelReload(p, pg);
-		pg.fireCooldown = game.tick + DRINK_TICKS;
+		pg.fireCooldown = DRINK_TICKS * 0.05; // fireCooldown is in seconds
 		game.later(DRINK_TICKS - 12, () -> Cue.ui("evt_perk_swallow", p));
 		game.later(DRINK_TICKS, () -> grant(p, pg, perk));
 	}

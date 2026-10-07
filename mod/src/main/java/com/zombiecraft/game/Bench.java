@@ -86,6 +86,7 @@ public final class Bench {
 				if (g.phase == Payloads.PHASE_ACTIVE) {
 					p.setInvulnerable(true);
 					log(g.round == 1 && g.zombiesToSpawn + g.alive.size() == Sheets.round(1).zombies(), "round-start", "round=" + g.round + " zombies=" + (g.zombiesToSpawn + g.alive.size()) + " expected=" + Sheets.round(1).zombies());
+					var g0 = pg.guns[0]; log(g0 != null && g0.mag == 8 && g0.reserve == 32, "start-pistol-8/32", "m1911 ammo=" + (g0 == null ? "none" : g0.mag + "/" + g0.reserve));
 					shot(p, "01_round1");
 					next(1, 60);
 				}
@@ -93,7 +94,7 @@ public final class Bench {
 			case 1 -> { // shooting a free zombie in front of the player
 				if (sub == 0) {
 					g.zombiesToSpawn = Math.max(g.zombiesToSpawn, 1); // keep the round open
-					Vec3 pos = abs(g, -21.5, 1, -10.5);
+					Vec3 pos = abs(g, 2, 1, -7);
 					ZcZombie z = new ZcZombie(ZcEntities.ZOMBIE, g.level);
 					Vec3 zp = abs(g, -21.5, 1, -6.5);
 					z.moveTo(zp.x, zp.y, zp.z, 180f, 0f);
@@ -135,6 +136,7 @@ public final class Bench {
 					log(has && pg.points == 1000 - Sheets.weapon(wb.weaponId()).wallCost(), "wallbuy-gun", wb.weaponId() + " owned=" + has + " points=" + pg.points + " (expect " + (1000 - Sheets.weapon(wb.weaponId()).wallCost()) + ")");
 					shot(p, "03_wallbuy");
 					int slot = WeaponSystem.slotHolding(pg, wb.weaponId());
+					if (slot >= 0) { var bg = pg.guns[slot]; log(bg.reserve == bg.base().startReserve(), "start-ammo", bg.weapon + " reserve=" + bg.reserve + " (expect " + bg.base().startReserve() + ")"); }
 					if (slot >= 0) { pg.guns[slot].mag = 0; pg.guns[slot].reserve = 0; }
 					sub = 3; until = g.tick + 5;
 				} else if (sub == 3) { face(p, stand, frame); pg.interactHeld = true; sub = 4; until = g.tick + 3; }
@@ -295,6 +297,7 @@ public final class Bench {
 					case 2 -> { g.machines.use(jug, p, pg); g.later(10, () -> shot(p, "16_drink_up")); g.later(26, () -> shot(p, "17_drink_tip")); sub = 3; until = g.tick + 70; }
 					case 3 -> {
 						log((pg.perks & 1) != 0 && p.getMaxHealth() > Sheets.sys("player_max_health") * 2.4 && pg.points == 17500, "perk-jug", "perks=" + pg.perks + " maxHealth=" + p.getMaxHealth() + " points=" + pg.points);
+						log(pg.fireCooldown <= 0 && !pg.drinking, "perk-can-fire-after-drink", "fireCooldown=" + pg.fireCooldown + " drinking=" + pg.drinking);
 						g.machines.use(speed, p, pg); sub = 4; until = g.tick + 70;
 					}
 					case 4 -> {

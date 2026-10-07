@@ -170,3 +170,11 @@ Built so new maps are data, not code:
 - Hit direction: `Payloads.HitDirection` sent when a zombie hurts a player; `ZcHud` draws a red arc on a ring round the crosshair that fades in 2 s. A short warm light bloom is drawn when firing.
 - Existing and kept: hit marker (white/gold headshot/red kill), red low-health edge, `tag_flash` muzzle flash.
 - Not done / not verified by eye: zombie close-up textures, eyes, torn clothes, climb/tear animation review, spawn presentation, crawlers, counts. Compiles; not run in game.
+
+## Gameplay rules (workstream A, first pass, 2026-10-07)
+- Bug "cannot shoot after drinking a perk": `Machines.use` set `fireCooldown = game.tick + 50`, but `fireCooldown` is in seconds (it drops 0.05 per tick), so the gun was locked for an hour. Now `DRINK_TICKS * 0.05`. Bench step `perk-can-fire-after-drink`.
+- Start ammo: BO2 `givestartammo` uses the weapon file's `startAmmo`, not `maxAmmo` (M1911: clip 8, startAmmo 4 mags = 32, max 80). New column `weapons.startReserve`; every freshly given non-PaP gun starts with it (`Gun` ctor), refills and Max Ammo still use `reserve`. Only the M1911 differs among current guns (FAL/Saiga/RPD/Executioner have no dump, so start = max). Bench `start-pistol-8/32`, `start-ammo`.
+- Ammo for a Pack-a-Punched gun at its wall-buy costs a flat 4500 (`systems.pap_ammo_cost`, from `_zm_weapons.gsc`); normal guns stay half the wall price.
+- Checked against scripts and already right: kill 50 / head +50 / neck +20 / torso +10 / melee +80, hit 10, box 950, PaP 5000, board points cap.
+- Bench: the zombie-through-window step used old diner coordinates (player now parked at the map spawn); full bench green on the Bus Depot (41 pass, 0 fail).
+- Not yet done in A: rounds 1-10 hand playthrough, stuck-zombie teleport/respawn, bounds/exploit checks, Max Ammo/nuke/carpenter numbers vs scripts, drop rates, down/revive numbers, `-PpapBench`.

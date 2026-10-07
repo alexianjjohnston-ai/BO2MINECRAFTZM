@@ -256,6 +256,14 @@
   "note": "ammo refill from a wall costs half the gun"
  },
  {
+  "id": "pap_ammo_cost",
+  "value": 4500,
+  "unit": "pts",
+  "source": "_zm_weapons.gsc wallbuy: has_upgrade -> ammo_cost = 4500",
+  "status": "script",
+  "note": "refilling a Pack-a-Punched gun at its wall-buy"
+ },
+ {
   "id": "first_round_delay_s",
   "value": 15,
   "unit": "s",
