@@ -380,7 +380,7 @@ public final class Bo2Menus {
 			// the controls, shown here instead of as a banner over the game
 			int cx = (int) (width * 0.58), cy = y0, line = (int) (H(1.0f) * 1.5f);
 			text(g, "CONTROLS", cx, cy - line - 6, 1.3f, WHITE);
-			String[][] keys = {{"RIGHT CLICK", "Shoot"}, {"R", "Reload"}, {"LEFT CLICK", "Knife"}, {"F", "Buy / Open / Hold to repair"}};
+			String[][] keys = {{"RIGHT CLICK", "Shoot"}, {"R", "Reload"}, {"LEFT CLICK", "Knife"}, {"F", "Buy / Open / Hold to repair or revive"}, {"SHIFT", "Crouch"}, {"Z", "Prone"}};
 			for (String[] k : keys) { hint(g, k[0], k[1], cx, cy); cy += line; }
 		}
 	}

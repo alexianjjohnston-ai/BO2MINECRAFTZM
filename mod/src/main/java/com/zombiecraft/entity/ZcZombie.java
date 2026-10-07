@@ -80,9 +80,16 @@ public class ZcZombie extends Zombie {
 		targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, false));
 	}
 
+	/** Downed players are left alone: the horde goes for whoever is still standing. */
+	@Override public boolean canAttack(net.minecraft.world.entity.LivingEntity target) {
+		if (target instanceof net.minecraft.server.level.ServerPlayer sp && com.zombiecraft.game.Revive.isDowned(sp)) return false;
+		return super.canAttack(target);
+	}
+
 	@Override public void aiStep() {
 		super.aiStep();
 		if (level().isClientSide) return;
+		if (getTarget() instanceof net.minecraft.server.level.ServerPlayer sp && com.zombiecraft.game.Revive.isDowned(sp)) setTarget(null);
 		entityData.set(DATA_ANIM, (byte) (stage | (tier.equals("walk") ? 0 : tier.equals("run") ? 1 : 2) << 2));
 		if (isAlive() && --vocalTimer <= 0 && level() instanceof ServerLevel sl) {
 			ZombieTier t = Sheets.tier(tier);

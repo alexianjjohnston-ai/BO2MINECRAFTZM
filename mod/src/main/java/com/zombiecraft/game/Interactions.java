@@ -98,6 +98,14 @@ public final class Interactions {
 
 	/** Called every tick for every player: prompt, and act on F. */
 	public static void update(Game g, ServerPlayer p, PlayerGame pg) {
+		// a downed teammate in reach comes first: hold F to revive (progress is run in Revive.tickAll)
+		ServerPlayer down = Revive.reviveTarget(g, p);
+		if (down != null) {
+			pg.interactable = true;
+			pg.prompt = "Hold F to revive " + down.getGameProfile().getName();
+			pg.prevInteract = pg.interactHeld;
+			return;
+		}
 		Target t = find(g, p);
 		pg.interactable = t.kind != Kind.NONE;
 		boolean edge = pg.interactHeld && !pg.prevInteract;

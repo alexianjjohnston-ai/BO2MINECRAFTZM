@@ -341,7 +341,33 @@ public final class Bench {
 					default -> sub++;
 				}
 			}
-			case 11 -> {
+			case 11 -> { // stance, going down and bleeding out (a lone player: the last one down ends the game)
+				var scale = p.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.SCALE);
+				switch (sub) {
+					case 0 -> { Revive.toggleProne(g, p, pg); sub = 1; until = g.tick + 5; }
+					case 1 -> {
+						log(pg.prone && scale.getValue() < 0.55, "prone-down", "prone=" + pg.prone + " scale=" + scale.getValue());
+						Revive.toggleProne(g, p, pg); sub = 2; until = g.tick + 5;
+					}
+					case 2 -> {
+						log(!pg.prone && scale.getValue() > 0.99, "prone-stand", "prone=" + pg.prone + " scale=" + scale.getValue());
+						Revive.down(g, p, pg); sub = 3; until = g.tick + 5;
+					}
+					case 3 -> {
+						log(pg.downed && scale.getValue() < 0.55 && Revive.isDowned(p), "downed", "downed=" + pg.downed + " scale=" + scale.getValue());
+						pg.bleedEnd = g.tick + 1; sub = 4; until = g.tick + 10;
+					}
+					case 4 -> { log(pg.dead && g.phase == Payloads.PHASE_GAMEOVER, "bleedout-last-player-ends-game", "dead=" + pg.dead + " phase=" + g.phase); sub = 5; }
+					case 5 -> {
+						if (g.phase != Payloads.PHASE_COUNTDOWN) break;
+						PlayerGame np = g.pg(p);
+						log(!np.dead && !np.downed && !p.isSpectator() && scale.getValue() > 0.99, "restart-clears-downed", "dead=" + np.dead + " scale=" + scale.getValue());
+						next(12, 20);
+					}
+					default -> {}
+				}
+			}
+			case 12 -> {
 				log(fails == 0, "BENCH-DONE", passes + " passed, " + fails + " failed");
 				step = 999;
 			}

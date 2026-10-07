@@ -37,6 +37,12 @@ public final class PlayerGame {
 	public int drinkPerk;
 	public long shieldUntil;
 
+	/** Co-op: downed (bleeding out, crawling, waiting for a teammate), dead (spectating until the next round), prone (crawling by choice). */
+	public boolean downed, dead, prone;
+	public long bleedEnd;
+	/** Ticks of revive progress a teammate has built on this downed player, and what the HUD shows (0-100) for the downed player and the reviver. */
+	public int reviveTicks, reviveShow;
+
 	public String message = "";
 	public int messageTicks;
 	public String prompt = "";

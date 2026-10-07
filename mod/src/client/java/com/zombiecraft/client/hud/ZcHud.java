@@ -96,6 +96,22 @@ public final class ZcHud {
 		}
 	}
 
+	/** Downed: red screen, bleed-out countdown. Reviving (either side): a progress bar under the crosshair. */
+	private static void downedOverlay(GuiGraphics g, Font font, Payloads.StateSync s, int w, int h) {
+		boolean down = s.bleedSec() > 0;
+		if (down) {
+			float pulse = 0.7f + 0.3f * (float) Math.sin(System.currentTimeMillis() / 250.0);
+			if (!UiArt.draw(g, "overlay_low_health", 0, 0, w, h, ((int) (255 * pulse) << 24) | 0xFFFFFF)) g.fill(0, 0, w, h, 0x50A01010);
+			text(g, font, "BLEEDING OUT  " + s.bleedSec(), w / 2, h - h / 5, 1.6f, s.bleedSec() <= 10 ? 0xFFFF4444 : 0xFFFFFFFF, true);
+		}
+		if (s.revivePct() > 0) {
+			int bw = Math.max(120, w / 6), x = (w - bw) / 2, y = h / 2 + h / 8;
+			g.fill(x - 1, y - 1, x + bw + 1, y + 7, 0xA0000000);
+			g.fill(x, y, x + bw * s.revivePct() / 100, y + 6, down ? 0xFF5FE0E8 : 0xFFD8A020);
+			text(g, font, down ? "BEING REVIVED" : "REVIVING", w / 2, y + 12, 0.9f, 0xFFFFFFFF, true);
+		}
+	}
+
 	/** BO2 weapon icon files by weapon id (pack-a-punched guns use the base gun's icon). */
 	private static String icon(String weaponId) {
 		String id = weaponId.replace("_pap", "");
@@ -230,6 +246,7 @@ public final class ZcHud {
 		int w = g.guiWidth(), h = g.guiHeight();
 		float partialTick = dt.getGameTimeDeltaPartialTick(false);
 		damageFlash(g, mc, partialTick);
+		if (s.bleedSec() > 0 || s.revivePct() > 0) downedOverlay(g, font, s, w, h);
 
 		// tell the player where the sounds come from
 		var audio = com.zombiecraft.client.audio.AudioCache.status;
