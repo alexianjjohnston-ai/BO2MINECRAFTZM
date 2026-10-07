@@ -144,7 +144,12 @@ for pid, model, origin, angles in prop_list:
 
 # ---- build: paste the exported geometry, then an invisible wall round the playable area (BO2 pathnodes span bx 1..70, bz 17..77)
 x0, z0, x1, z1 = REGION
-ops = [dict(id='bo2_depot', order=0, op='import', block='bo2_depot', block2=None, x1=x0 - OX, y1=0, z1=z0 - OZ, x2=x0 - OX, y2=0, z2=z0 - OZ, stepX=1, stepZ=1, group='ground',
+SCEN = (-120, -112)  # sheet frame: where depot_scenery's corner lands so that the original compound's lot (crop offset 80, 80) sits under REGION
+ops = [dict(id='scenery', order=-2, op='scenery', block='depot_scenery', block2=None, x1=SCEN[0], y1=0, z1=SCEN[1], x2=SCEN[0], y2=0, z2=SCEN[1], stepX=1, stepZ=1, group='ground',
+            note='roads, forest and hills round the depot from Tranzit Reimagined (tools/make_depot_scenery.py), so the map does not end in a cut; air is skipped'),
+       dict(id='play_area_clear', order=-1, op='fill', block='minecraft:air', block2=None, x1=x0 - OX, y1=1, z1=z0 - OZ, x2=x1 - OX, y2=30, z2=z1 - OZ, stepX=1, stepZ=1, group='ground',
+            note='the lot of the original depot is emptied (its building and bus); the BO2 geometry is pasted here'),
+       dict(id='bo2_depot', order=0, op='import', block='bo2_depot', block2=None, x1=x0 - OX, y1=0, z1=z0 - OZ, x2=x0 - OX, y2=0, z2=z0 - OZ, stepX=1, stepZ=1, group='ground',
             note='Bus Depot geometry from the player\'s own BO2 map export (tools/obj_to_blocks.py); x/z = where its corner lands in the sheet frame'),
        dict(id='barrier_ring', order=90, op='walls', block='minecraft:barrier', block2=None, x1=x0 - OX + 1, y1=1, z1=z0 - OZ + 1, x2=x1 - OX - 1, y2=14, z2=z1 - OZ - 1, stepX=1, stepZ=1,
             group='ground', note='invisible wall round the playable area so nobody walks off the cut')]

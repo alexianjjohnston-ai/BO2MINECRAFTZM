@@ -51,7 +51,10 @@ public final class ImportedMap {
 	}
 
 	/** Pastes the map so that its grass layer is y=0 and its (0, 0) corner lands on (ox, oz) of the sheet frame. Returns the number of blocks set. */
-	public static int place(ServerLevel level, BlockPos origin, String name, int ox, int oy, int oz) {
+	public static int place(ServerLevel level, BlockPos origin, String name, int ox, int oy, int oz) { return place(level, origin, name, ox, oy, oz, false); }
+
+	/** With skipAir the air runs are left alone (cheap backdrops: a big scenery file is mostly sky; whatever was there stays, MapBuilder clears a box first). */
+	public static int place(ServerLevel level, BlockPos origin, String name, int ox, int oy, int oz, boolean skipAir) {
 		File f;
 		try (var in = new InputStreamReader(new GZIPInputStream(Files.newInputStream(find(name))), StandardCharsets.UTF_8)) {
 			f = new Gson().fromJson(in, File.class);
@@ -68,6 +71,7 @@ public final class ImportedMap {
 		BlockPos base = origin.offset(ox, oy - f.groundRow(), oz);
 		for (int[] run : f.rle()) {
 			BlockState s = states[run[0]];
+			if (skipAir && s.isAir()) { i += run[1]; continue; }
 			for (int n = 0; n < run[1]; n++, i++) {
 				int x = i % sx, z = (i / sx) % sz, y = i / (sx * sz);
 				level.setBlock(base.offset(x, y, z), s, FLAGS);

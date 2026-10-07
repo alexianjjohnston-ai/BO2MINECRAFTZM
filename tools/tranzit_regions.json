@@ -1,10 +1,75 @@
 {
  "_note": "World-block boxes [x1,z1,x2,z2] inside the Tranzit Reimagined save (overworld). Labels are guesses from the layout; rename after checking maps_local/overview.png.",
- "depot":  {"box": [40, -60, 110, -5],       "label": "Bus Depot (ticket sign at 91,3,-36, world spawn 94,-37)"},
- "bunker": {"box": [-135, -112, 40, -80],    "label": "long skylit structure + Restricted Area / Fallout Shelter signs"},
- "town":   {"box": [-80, 96, 47, 207],       "label": "Town crossroads (bowling, Dye Your Own Armor), spawner basement"},
- "farm":   {"box": [-144, 288, -1, 367],     "label": "farm (barn with 90 barrels, fences, pond)"},
- "diner":  {"box": [110, 256, 239, 447],     "label": "buildings east at z 270..430 (bookshelves, blast furnaces, vault)"},
- "power":  {"box": [-208, -32, -129, 63],    "label": "fenced complex (daylight panels, blast furnaces)"},
- "strip":  {"box": [-416, -400, -369, -241], "label": "narrow street of shops far west"}
+ "depot": {
+  "box": [
+   40,
+   -60,
+   110,
+   -5
+  ],
+  "label": "Bus Depot (ticket sign at 91,3,-36, world spawn 94,-37)"
+ },
+ "bunker": {
+  "box": [
+   -135,
+   -112,
+   40,
+   -80
+  ],
+  "label": "long skylit structure + Restricted Area / Fallout Shelter signs"
+ },
+ "town": {
+  "box": [
+   -80,
+   96,
+   47,
+   207
+  ],
+  "label": "Town crossroads (bowling, Dye Your Own Armor), spawner basement"
+ },
+ "farm": {
+  "box": [
+   -144,
+   288,
+   -1,
+   367
+  ],
+  "label": "farm (barn with 90 barrels, fences, pond)"
+ },
+ "diner": {
+  "box": [
+   110,
+   256,
+   239,
+   447
+  ],
+  "label": "buildings east at z 270..430 (bookshelves, blast furnaces, vault)"
+ },
+ "power": {
+  "box": [
+   -208,
+   -32,
+   -129,
+   63
+  ],
+  "label": "fenced complex (daylight panels, blast furnaces)"
+ },
+ "strip": {
+  "box": [
+   -416,
+   -400,
+   -369,
+   -241
+  ],
+  "label": "narrow street of shops far west"
+ },
+ "depot_wide": {
+  "box": [
+   -60,
+   -220,
+   260,
+   120
+  ],
+  "label": "wide area round the Bus Depot (scenery for the BO2 depot map: forest, road, hills)"
+ }
 }

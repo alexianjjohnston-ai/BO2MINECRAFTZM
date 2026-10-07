@@ -242,3 +242,9 @@ Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulati
 ## Online lobby (2026-10-07)
 - With ONLINE GAME: ON, START MATCH now opens the world to LAN in a lobby (`PHASE_LOBBY`) instead of starting at once: `Bo2Locations.Lobby` shows the players present (4 max, a 5th is refused), INVITE FRIENDS (the playit.gg steps) and START MATCH for the host only (`Payloads.StartMatch` -> 3 s "Game starting in N" for everyone). Joiners land in the same lobby screen; joining mid-match still works. `Game.lobbyNext` is how the client tells the integrated server. Dev: `-PdevProps=debugLobby`.
 - Not tested: a second real client joining the lobby.
+
+## Bus Depot surroundings (Tranzit Reimagined scenery)
+- The owner of Tranzit Reimagined confirmed sharing and republishing, so `maps_local/depot_scenery.json.gz` (88 KB) is committed. `tools/extract_tranzit.py depot_wide` cuts a 320x340 area round the original depot; `tools/make_depot_scenery.py` crops it to 232x217 (roads, forest, hills, ~80 blocks of margin).
+- New map op `scenery` (like `import`, but air runs are skipped, so a mostly-sky file is cheap). `bo2_depot` pastes it at order -2 (sheet origin -120,-112, so the original lot sits under the play region), empties the play region (order -1), then the BO2 geometry import (0), props (50) and the barrier ring (90) go on top.
+- Checked in game with stand-in geometry: beyond the barrier ring there is terrain, grass, flowers and trees out into the fog, no void edge. Dev tour got four "outside" stops (ring sides, 12 up, looking away).
+- Still open for the depot: the real BO2 wall geometry (needs the map export), diagonal barricade 4, door models. Town is not started (depot first).

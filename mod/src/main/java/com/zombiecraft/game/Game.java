@@ -205,6 +205,15 @@ public final class Game {
 			String inside = switch (w.wall()) { case "N" -> "south"; case "S" -> "north"; case "E" -> "west"; default -> "east"; };
 			tourAdd("window " + w.id(), cx - 0.5, cz - 0.5, inside, 3, 0);
 		}
+		// outside the play area: four views from 12 up at the middle of each side of the barrier ring, looking away from the map (what the player sees beyond the cut)
+		var ring = Sheets.MAP_OPS.stream().filter(o -> o.id().equals("barrier_ring")).findFirst();
+		if (ring.isPresent()) {
+			var r = ring.get(); double mx = (r.x1() + r.x2()) / 2.0, mz = (r.z1() + r.z2()) / 2.0;
+			tourViews.add(new double[] {mx, r.z1() - 0.5, 180, 18, 12}); tourNames.add("outside north");
+			tourViews.add(new double[] {mx, r.z2() + 1.5, 0, 18, 12}); tourNames.add("outside south");
+			tourViews.add(new double[] {r.x1() - 0.5, mz, 90, 18, 12}); tourNames.add("outside west");
+			tourViews.add(new double[] {r.x2() + 1.5, mz, 270, 18, 12}); tourNames.add("outside east");
+		}
 	}
 
 	public void start() { start(false); }
@@ -421,7 +430,7 @@ public final class Game {
 				if (snap) ServerPlayNetworking.send(p, new Payloads.Shot("tour_" + i));
 				else {
 					if (tourNames.get(i).startsWith("door") && i > 0 && !tourNames.get(i - 1).startsWith("door")) doors.openAll();
-					p.teleportTo(level, origin.getX() + v[0], origin.getY() + 1, origin.getZ() + v[1], Set.of(), (float) v[2], (float) v[3], true);
+					p.teleportTo(level, origin.getX() + v[0], origin.getY() + (v.length > 4 ? v[4] : 1), origin.getZ() + v[1], Set.of(), (float) v[2], (float) v[3], true);
 					System.out.println("[tour] " + i + " " + tourNames.get(i));
 				}
 			}
