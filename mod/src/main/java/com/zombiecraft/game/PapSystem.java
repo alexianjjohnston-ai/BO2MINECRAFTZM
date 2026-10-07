@@ -42,12 +42,13 @@ public final class PapSystem {
 		Vec3 c = center();
 		game.cmd("kill @e[tag=zc_papdisp]");
 		game.cmd(String.format(Locale.ROOT,
-				"summon item_display %.2f %.2f %.2f {item:{id:\"%s\",count:1},billboard:\"center\",Tags:[\"zc\",\"zc_papdisp\"],transformation:{left_translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[1.4f,1.4f,1.4f],right_rotation:[0f,0f,0f,1f]}}",
+				"summon item_display %.2f %.2f %.2f {item:{id:\"%s\",count:1},billboard:\"center\",Tags:[\"zc\",\"zc_papdisp\"],transformation:{translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[1.4f,1.4f,1.4f],right_rotation:[0f,0f,0f,1f]}}",
 				c.x, c.y, c.z, id));
 	}
 
 	public void use(ServerPlayer p, PlayerGame pg) {
 		int cost = Sheets.sysInt("pap_cost");
+		if (state == State.IDLE && game.machines != null && !game.machines.power) { Cue.ui("evt_perk_deny", p); return; }
 		if (state == State.IDLE) {
 			Gun g = WeaponSystem.active(p, pg);
 			if (g == null || g.pap || pg.points < cost) { Cue.ui("zmb_perks_packa_deny", p); return; }
@@ -90,6 +91,7 @@ public final class PapSystem {
 
 	public String promptFor(ServerPlayer p, PlayerGame pg) {
 		Gun g = WeaponSystem.active(p, pg);
+		if (state == State.IDLE && game.machines != null && !game.machines.power) return "The power must be turned on first";
 		return switch (state) {
 			case IDLE -> g == null ? "" : g.pap ? "This gun is already Pack-a-Punched" : "Press F to Pack-a-Punch the " + g.def().name() + " [" + Sheets.sysInt("pap_cost") + "]";
 			case READY -> p.getUUID().equals(user) ? "Press F to take your " + Sheets.weapon(weapon).papName() : "";

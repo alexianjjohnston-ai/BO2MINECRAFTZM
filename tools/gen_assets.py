@@ -63,6 +63,20 @@ for w in [x for x in weapons if not x['upgrade']]:
     json.dump({"parent": "minecraft:item/generated", "textures": {"layer0": f"zombiecraft:item/{w['id']}"}, "display": DISPLAY}, open(os.path.join(RES, 'models', 'item', w['id'] + '.json'), 'w'), indent=1)
     json.dump({"model": {"type": "minecraft:model", "model": f"zombiecraft:item/{w['id']}"}}, open(os.path.join(RES, 'items', w['id'] + '.json'), 'w'), indent=1)
     lang[f"item.zombiecraft.{w['id']}"] = w['name']
+# props shown in displays (their meshes come from the player's own install when available; these are the plain fallbacks)
+def prop(name, rows, pal, title):
+    px = [(0, 0, 0, 0)] * 256
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            if ch in pal: px[y * 16 + x] = pal[ch] + (255,)
+    png(os.path.join(RES, 'textures', 'item', name + '.png'), px)
+    json.dump({"parent": "minecraft:item/generated", "textures": {"layer0": f"zombiecraft:item/{name}"}}, open(os.path.join(RES, 'models', 'item', name + '.json'), 'w'), indent=1)
+    json.dump({"model": {"type": "minecraft:model", "model": f"zombiecraft:item/{name}"}}, open(os.path.join(RES, 'items', name + '.json'), 'w'), indent=1)
+    lang[f"item.zombiecraft.{name}"] = title
+prop('teddy', ["................", "..bb........bb..", ".bbbb......bbbb.", ".bbbbbbbbbbbbbb.", "..bbbbbbbbbbbb..", "..bbbbbbbbbbbb..", "..bbbdbbbbdbbb..", "..bbbbbllbbbbb..", "..bbbbbbbbbbbb..", "...bbbbbbbbbb...", "..bbbbbbbbbbbb..", ".bbbbbbbbbbbbbb.", ".bbbb.bbbb.bbbb.", ".bbbb.bbbb.bbbb.", "..bb........bb..", "................"],
+     {'b': (150, 100, 55), 'd': (30, 20, 10), 'l': (200, 150, 100)}, 'Teddy Bear')
+prop('mystery_box', ["................", "................", "..wwwwwwwwwwww..", ".wbbbbbbbbbbbbw.", ".wbbbbbbbbbbbbw.", ".wbbbbyyyybbbbw.", ".wbbbbbbyybbbbw.", ".wbbbbbyybbbbbw.", ".wbbbbbbbbbbbbw.", ".wbbbbbyybbbbbw.", ".wbbbbbbbbbbbbw.", ".wbbbbbbbbbbbbw.", "..wwwwwwwwwwww..", "................", "................", "................"],
+     {'w': (60, 40, 20), 'b': (110, 75, 40), 'y': (240, 200, 60)}, 'Mystery Box')
 lang["entity.zombiecraft.zombie"] = "Zombie"
 json.dump(lang, open(os.path.join(RES, 'lang', 'en_us.json'), 'w'), indent=1)
-print(len(weapons), 'weapon icons, models and lang entries written')
+print(len(weapons), 'weapon icons, models and lang entries written (plus props)')

@@ -1,0 +1,93 @@
+[
+ {
+  "id": "w1",
+  "wall": "S",
+  "fixed": -4,
+  "a": -28,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "diner",
+  "boardBlock": "minecraft:oak_planks",
+  "sillBlock": "minecraft:dark_oak_planks"
+ },
+ {
+  "id": "w2",
+  "wall": "S",
+  "fixed": -4,
+  "a": -16,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "diner",
+  "boardBlock": "minecraft:oak_planks",
+  "sillBlock": "minecraft:dark_oak_planks"
+ },
+ {
+  "id": "w3",
+  "wall": "W",
+  "fixed": -34,
+  "a": -14,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "diner",
+  "boardBlock": "minecraft:oak_planks",
+  "sillBlock": "minecraft:dark_oak_planks"
+ },
+ {
+  "id": "w4",
+  "wall": "N",
+  "fixed": -20,
+  "a": -22,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "diner",
+  "boardBlock": "minecraft:oak_planks",
+  "sillBlock": "minecraft:dark_oak_planks"
+ },
+ {
+  "id": "w5",
+  "wall": "S",
+  "fixed": -4,
+  "a": 13,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "shop",
+  "boardBlock": "minecraft:oak_planks",
+  "sillBlock": "minecraft:dark_oak_planks"
+ },
+ {
+  "id": "w6",
+  "wall": "N",
+  "fixed": -20,
+  "a": 13,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "shop",
+  "boardBlock": "minecraft:oak_planks",
+  "sillBlock": "minecraft:dark_oak_planks"
+ },
+ {
+  "id": "w7",
+  "wall": "E",
+  "fixed": 22,
+  "a": -14,
+  "width": 3,
+  "y0": 2,
+  "height": 2,
+  "boards": 6,
+  "room": "shop",
+  "boardBlock": "minecraft:oak_planks",
+  "sillBlock": "minecraft:dark_oak_planks"
+ }
+]

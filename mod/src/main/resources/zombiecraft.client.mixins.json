@@ -6,7 +6,9 @@
     "ZcGuiMixin",
     "ZcMouseHandlerMixin",
     "ZcItemInHandRendererMixin",
-    "ZcLoadingScreenMixin"
+    "ZcLoadingScreenMixin",
+    "ZcItemStackRenderStateMixin",
+    "ZcItemModelResolverMixin"
   ],
   "injectors": { "defaultRequire": 1 }
 }

@@ -41,10 +41,21 @@ public final class BoxSystem {
 
 	private void placeChest() {
 		Direction d = Direction.valueOf(loc().facing().toUpperCase());
-		level.setBlock(chestPos(), Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, d), 3);
+		if (LocalAssets.models) {
+			// the box mesh is drawn by an item display; an invisible barrier keeps the collision and the hit test
+			level.setBlock(chestPos(), Blocks.BARRIER.defaultBlockState(), 3);
+			Vec3 c = center();
+			float yaw = switch (d) { case SOUTH -> 0f; case WEST -> 90f; case NORTH -> 180f; default -> -90f; };
+			game.cmd(String.format(Locale.ROOT, "summon item_display %.2f %.2f %.2f {item:{id:\"zombiecraft:mystery_box\",count:1},item_display:\"none\",Rotation:[%.1ff,0f],Tags:[\"zc\",\"zc_boxmodel\"]}", c.x, c.y, c.z, yaw));
+		} else {
+			level.setBlock(chestPos(), Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, d), 3);
+		}
 	}
 
-	private void removeChest() { level.setBlock(chestPos(), Blocks.AIR.defaultBlockState(), 3); }
+	private void removeChest() {
+		level.setBlock(chestPos(), Blocks.AIR.defaultBlockState(), 3);
+		game.cmd("kill @e[tag=zc_boxmodel]");
+	}
 
 	private void lid(boolean open) { level.blockEvent(chestPos(), Blocks.CHEST, 1, open ? 1 : 0); }
 
@@ -52,7 +63,7 @@ public final class BoxSystem {
 		Vec3 c = center();
 		game.cmd("kill @e[tag=zc_boxdisp]");
 		game.cmd(String.format(Locale.ROOT,
-				"summon item_display %.2f %.2f %.2f {item:{id:\"zombiecraft:%s\",count:1},billboard:\"center\",Tags:[\"zc\",\"zc_boxdisp\"],transformation:{left_translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[1.6f,1.6f,1.6f],right_rotation:[0f,0f,0f,1f]}}",
+				"summon item_display %.2f %.2f %.2f {item:{id:\"zombiecraft:%s\",count:1},billboard:\"center\",Tags:[\"zc\",\"zc_boxdisp\"],transformation:{translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[1.6f,1.6f,1.6f],right_rotation:[0f,0f,0f,1f]}}",
 				c.x, c.y + 1.1, c.z, weapon));
 	}
 
@@ -126,7 +137,7 @@ public final class BoxSystem {
 				if (timer <= 0) {
 					if (pg != null && teddy()) {
 						state = State.TEDDY; timer = 70;
-						showItem("minecraft:brown_wool");
+						showItem("zombiecraft:teddy");
 						Cue.at("zmb_laugh_child", level, center());
 					} else {
 						offered = pg == null ? Sheets.BOX_POOL.get(0).weaponId() : pickWeapon(pg);

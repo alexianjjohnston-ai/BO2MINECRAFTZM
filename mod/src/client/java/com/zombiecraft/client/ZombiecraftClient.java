@@ -26,14 +26,14 @@ import net.minecraft.world.InteractionResult;
 import org.lwjgl.glfw.GLFW;
 
 public class ZombiecraftClient implements ClientModInitializer {
-	public static volatile Payloads.StateSync state = new Payloads.StateSync(0, 0, 0, -1, 0, "", "", "", false, 0, 0, 0);
+	public static volatile Payloads.StateSync state = new Payloads.StateSync(0, 0, 0, -1, 0, "", "", "", false, 0, 0, 0, 0, 0, 0);
 	private static KeyMapping interactKey, reloadKey;
 	private static boolean lastFire, lastInteract, lastAttack;
 	private static int lastWeaponSlot;
 
 	@Override
 	public void onInitializeClient() {
-		EntityRendererRegistry.register(ZcEntities.ZOMBIE, ZombieRenderer::new);
+		EntityRendererRegistry.register(ZcEntities.ZOMBIE, com.zombiecraft.client.render.ZcZombieRenderer::new);
 		AutoWorld.register();
 		com.zombiecraft.client.menu.Bo2Menus.register();
 
@@ -68,11 +68,11 @@ public class ZombiecraftClient implements ClientModInitializer {
 			if (FeedbackBench.finished()) mc.stop();
 		});
 		HudRenderCallback.EVENT.register(ZcHud::render);
-		ClientLifecycleEvents.CLIENT_STARTED.register(c -> AudioCache.prepareAsync());
+		ClientLifecycleEvents.CLIENT_STARTED.register(c -> { AudioCache.prepareAsync(); com.zombiecraft.client.render.ModelCache.ensureAsync(); });
 	}
 
 	private static void resetSession() {
-		state = new Payloads.StateSync(Payloads.PHASE_IDLE, 0, 0, -1, 0, "", "", "", false, 0, 0, 0);
+		state = new Payloads.StateSync(Payloads.PHASE_IDLE, 0, 0, -1, 0, "", "", "", false, 0, 0, 0, 0, 0, 0);
 		lastFire = lastInteract = lastAttack = false;
 		lastWeaponSlot = 0;
 		GunFeedback.reset();

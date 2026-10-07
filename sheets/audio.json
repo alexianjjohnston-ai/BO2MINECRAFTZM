@@ -80,6 +80,76 @@
   "fallback": "minecraft:block.note_block.basedrum"
  },
  {
+  "cue": "evt_carpenter",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.wood.place"
+ },
+ {
+  "cue": "evt_carpenter_end",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.wood.place"
+ },
+ {
+  "cue": "evt_nuke_flash",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.generic.explode"
+ },
+ {
+  "cue": "evt_nuked",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.generic.explode"
+ },
+ {
+  "cue": "evt_perk_bottle_open",
+  "category": "ui",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.bottle.fill"
+ },
+ {
+  "cue": "evt_perk_deny",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.note_block.bass"
+ },
+ {
+  "cue": "evt_perk_swallow",
+  "category": "ui",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.generic.drink"
+ },
+ {
   "cue": "evt_player_death",
   "category": "ui",
   "soundSource": "PLAYERS",
@@ -380,6 +450,46 @@
   "fallback": "minecraft:music_disc.chirp"
  },
  {
+  "cue": "mus_perks_doubletap_jingle",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 0.9,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.note_block.chime"
+ },
+ {
+  "cue": "mus_perks_doubletap_sting",
+  "category": "music",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.bell.use"
+ },
+ {
+  "cue": "mus_perks_jugganog_jingle",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 0.9,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.note_block.chime"
+ },
+ {
+  "cue": "mus_perks_jugganog_sting",
+  "category": "music",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.bell.use"
+ },
+ {
   "cue": "mus_perks_packa_sting",
   "category": "music",
   "soundSource": "MASTER",
@@ -388,6 +498,46 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:block.beacon.activate"
+ },
+ {
+  "cue": "mus_perks_revive_jingle",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 0.9,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.note_block.chime"
+ },
+ {
+  "cue": "mus_perks_revive_sting",
+  "category": "music",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.bell.use"
+ },
+ {
+  "cue": "mus_perks_speed_jingle",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 0.9,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.note_block.chime"
+ },
+ {
+  "cue": "mus_perks_speed_sting",
+  "category": "music",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.bell.use"
  },
  {
   "cue": "mus_zombie_game_over",
@@ -840,6 +990,46 @@
   "fallback": "minecraft:entity.experience_orb.pickup"
  },
  {
+  "cue": "zmb_double_point_loop",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.4,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.ambient"
+ },
+ {
+  "cue": "zmb_full_ammo",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.armor.equip_iron"
+ },
+ {
+  "cue": "zmb_insta_kill",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.wither.spawn"
+ },
+ {
+  "cue": "zmb_insta_kill_loop",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.4,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.ambient"
+ },
+ {
   "cue": "zmb_laugh_child",
   "category": "world",
   "soundSource": "BLOCKS",
@@ -900,6 +1090,16 @@
   "fallback": "minecraft:block.note_block.bass"
  },
  {
+  "cue": "zmb_perks_machine_loop",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 0.5,
+  "positional": true,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.ambient"
+ },
+ {
   "cue": "zmb_perks_packa_deny",
   "category": "ui",
   "soundSource": "MASTER",
@@ -950,6 +1150,46 @@
   "fallback": "minecraft:block.anvil.use"
  },
  {
+  "cue": "zmb_perks_power_on",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.activate"
+ },
+ {
+  "cue": "zmb_points_loop_off",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.note_block.bass"
+ },
+ {
+  "cue": "zmb_power_on_quad",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.activate"
+ },
+ {
+  "cue": "zmb_powerup_grabbed",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.player.levelup"
+ },
+ {
   "cue": "zmb_repair_boards",
   "category": "world",
   "soundSource": "BLOCKS",
@@ -958,6 +1198,26 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:block.wood.place"
+ },
+ {
+  "cue": "zmb_spawn_powerup",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 0.9,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.experience_orb.pickup"
+ },
+ {
+  "cue": "zmb_spawn_powerup_loop",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 0.6,
+  "positional": true,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.ambient"
  },
  {
   "cue": "zmb_ui_globe_spin_start",

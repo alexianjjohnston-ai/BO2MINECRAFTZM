@@ -135,3 +135,8 @@ Added: player footsteps (fly_step_walk/run_plr_ceramic), zombie footsteps (fly_s
 Alias map note: dev alias_map_transit.json now also reads spl_frontend (out5) and uses the full install (D:/New folder (2)), since D:/SteamLibrary lacks the spl_* banks.
 
 Loading screen music: `mus_load_zm_transit` (BO2's Tranzit loading track, lovesong_for_the_damned, from zmb_code_post_gfx.all.sabs) plays while the BO2 loading screen is shown and stops when it ends.
+
+## Power, perks, power-ups (2026-10-06)
+Sheet `map_machines.json` (power switch + 4 perk machines; spots chosen from the map checker's voxel model, preflight checks them). `Machines`: power starts off; perk machines and Pack-a-Punch refuse until it is on. Perks per the BO2 scripts: Juggernog 2500 (health x2.5), Speed Cola 3000 (reload x0.5), Double Tap 2000 (fire time x0.75), Quick Revive 500 (solo self-revive, 3 buys per game). `PowerUps`: drop queue from team earned points (500+2000, x1.14 each), max 4 per round, 30 s lifetime; Max Ammo, Insta-Kill (30 s), Double Points (30 s), Nuke (+400), Carpenter (+200, repairs all). 27 new BO2 cues (power on, machine hum, jingles, stings, drink, power-up spawn/grab/loops, nuke, carpenter).
+Self-test (bench) gained perk/power/power-up steps: all pass. Older steps (wall-buy, Pack-a-Punch, window-repair points) fail because another session replaced the diner with the Bus Depot map; the Pack-a-Punch step now times out instead of hanging.
+Mystery Box mesh: BO2 box front is local +y (scripts put its trigger there), scaled to 1.6 blocks wide so it no longer pokes through walls. Fixed `item_display` transformation key (`translation`).

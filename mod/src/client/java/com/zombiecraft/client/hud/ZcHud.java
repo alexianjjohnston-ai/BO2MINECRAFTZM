@@ -213,6 +213,20 @@ public final class ZcHud {
 			}
 		}
 
+		// perk icons (BO2's own) along the bottom, power-up timers at the top middle
+		String[] perkIcons = {"specialty_juggernaut_zombies", "specialty_fastreload_zombies", "specialty_doubletap_zombies", "specialty_quickrevive_zombies"};
+		int owned = 0;
+		for (int b = 0; b < 4; b++) if ((s.perks() & (1 << b)) != 0) owned++;
+		int ix = w / 2 - owned * 17;
+		for (int b = 0; b < 4; b++) {
+			if ((s.perks() & (1 << b)) == 0) continue;
+			UiArt.draw(g, perkIcons[b], ix, h - 40, 32, 32);
+			ix += 34;
+		}
+		int ty = (int) (h * 0.12);
+		if (s.instaSec() > 0) { text(g, font, "INSTA-KILL  " + s.instaSec(), w / 2, ty, 1.3f, 0xFFFF5050, true); ty += 18; }
+		if (s.doubleSec() > 0) text(g, font, "DOUBLE POINTS  " + s.doubleSec(), w / 2, ty, 1.3f, 0xFFFFE060, true);
+
 		// banners
 		if (!s.message().isEmpty()) text(g, font, s.message(), w / 2, h / 4 + 24, 3f, 0xFFD8A020, true);
 

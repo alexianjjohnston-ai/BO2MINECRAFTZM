@@ -67,6 +67,8 @@ public final class Bench {
 		p.connection.teleport(from.x, from.y, from.z, yaw, pitch);
 	}
 
+	private static com.zombiecraft.sheet.Rows.MachineDef machine(String id) { return Sheets.MACHINES.stream().filter(m -> m.id().equals(id)).findFirst().orElseThrow(); }
+
 	private static Vec3 abs(Game g, double x, double y, double z) { return new Vec3(g.origin.getX() + x, g.origin.getY() + y, g.origin.getZ() + z); }
 
 	private static void tick() {
@@ -206,7 +208,10 @@ public final class Bench {
 						log(g.pap.state == PapSystem.State.UPGRADING && pg.points == 1000 && pg.guns[0] == null, "pap-start", "state=" + g.pap.state + " points=" + pg.points + " gun removed=" + (pg.guns[0] == null));
 						sub = 3;
 					}
-					case 3 -> { if (g.pap.state == PapSystem.State.READY) { shot(p, "08_pap_ready"); face(p, stand, machine); pg.interactHeld = true; sub = 4; until = g.tick + 3; } }
+					case 3 -> {
+						if (g.pap.state == PapSystem.State.READY) { shot(p, "08_pap_ready"); face(p, stand, machine); pg.interactHeld = true; sub = 4; until = g.tick + 3; }
+						else if (ticksInStep > 900) { log(false, "pap-take", "the machine never became ready (state " + g.pap.state + ")"); next(5, 20); }
+					}
 					default -> {
 						pg.interactHeld = false;
 						var gun = WeaponSystem.active(p, pg);
@@ -273,7 +278,66 @@ public final class Bench {
 					next(9, 40);
 				}
 			}
-			case 9 -> {
+			case 9 -> { // power switch and perks (called directly: where the machines stand is the map's business)
+				var jug = machine("m_jug"); var speed = machine("m_speed"); var dtap = machine("m_doubletap"); var rev = machine("m_revive"); var power = machine("m_power");
+				switch (sub) {
+					case 0 -> {
+						pg.points = 20000; int before = pg.points;
+						g.machines.use(jug, p, pg);
+						log(!g.machines.power && pg.perks == 0 && pg.points == before, "perk-needs-power", "perks=" + pg.perks + " points=" + pg.points);
+						sub = 1;
+					}
+					case 1 -> { g.machines.use(power, p, pg); log(g.machines.power, "power-on", "power=" + g.machines.power); sub = 2; }
+					case 2 -> { g.machines.use(jug, p, pg); sub = 3; until = g.tick + 70; }
+					case 3 -> {
+						log((pg.perks & 1) != 0 && p.getMaxHealth() > Sheets.sys("player_max_health") * 2.4 && pg.points == 17500, "perk-jug", "perks=" + pg.perks + " maxHealth=" + p.getMaxHealth() + " points=" + pg.points);
+						g.machines.use(speed, p, pg); sub = 4; until = g.tick + 70;
+					}
+					case 4 -> {
+						log((pg.perks & 2) != 0 && pg.perkReloadFactor == 0.5, "perk-speed", "reloadFactor=" + pg.perkReloadFactor);
+						g.machines.use(dtap, p, pg); sub = 5; until = g.tick + 70;
+					}
+					case 5 -> {
+						log((pg.perks & 4) != 0 && pg.perkFireFactor < 1.0, "perk-doubletap", "fireFactor=" + pg.perkFireFactor);
+						g.machines.use(rev, p, pg); sub = 6; until = g.tick + 70;
+					}
+					case 6 -> {
+						log((pg.perks & 8) != 0 && pg.points == 12000, "perk-revive-buy", "perks=" + pg.perks + " points=" + pg.points);
+						p.setHealth(1f);
+						boolean saved = g.machines.revive(p, pg);
+						log(saved && p.getHealth() >= p.getMaxHealth() - 0.5f && (pg.perks & 8) == 0, "perk-revive-save", "saved=" + saved + " health=" + p.getHealth() + " perks=" + pg.perks);
+						next(10, 20);
+					}
+					default -> {}
+				}
+			}
+			case 10 -> { // power-ups: drop each one on the player and let the pickup logic collect it
+				PowerUps.Kind[] kinds = {PowerUps.Kind.DOUBLE_POINTS, PowerUps.Kind.INSTA_KILL, PowerUps.Kind.MAX_AMMO, PowerUps.Kind.NUKE, PowerUps.Kind.CARPENTER};
+				if (sub >= kinds.length * 3) { next(11, 20); break; }
+				PowerUps.Kind k = kinds[sub / 3];
+				switch (sub % 3) {
+					case 0 -> { // set up and drop
+						if (k == PowerUps.Kind.MAX_AMMO) { pg.guns[0].mag = 0; pg.guns[0].reserve = 0; }
+						if (k == PowerUps.Kind.NUKE) { g.zombiesToSpawn = Math.max(g.zombiesToSpawn, 1); g.spawnTest("s1a", "walk", 150); pg.points = 0; }
+						if (k == PowerUps.Kind.CARPENTER) { g.barriers.get(0).tear(); g.barriers.get(0).tear(); pg.points = 0; }
+						if (k == PowerUps.Kind.DOUBLE_POINTS) pg.points = 0;
+						g.powerups.dropNow(k, p.position().add(0, -0.5, 0));
+						sub++; until = g.tick + 6;
+					}
+					case 1 -> { // collected by walking into it; check the effect
+						switch (k) {
+							case DOUBLE_POINTS -> { pg.earn(50); log(g.powerups.doubleTicks > 0 && pg.points == 100, "powerup-double", "points=" + pg.points + " ticks=" + g.powerups.doubleTicks); g.powerups.doubleTicks = 1; }
+							case INSTA_KILL -> { log(g.powerups.instaTicks > 0 && pg.instaKill, "powerup-insta", "instaTicks=" + g.powerups.instaTicks); g.powerups.instaTicks = 1; }
+							case MAX_AMMO -> log(pg.guns[0].mag == pg.guns[0].magSize() && pg.guns[0].reserve == pg.guns[0].reserveMax(), "powerup-maxammo", "ammo=" + pg.guns[0].mag + "/" + pg.guns[0].reserve);
+							case NUKE -> log(g.alive.isEmpty() && pg.points == 400, "powerup-nuke", "alive=" + g.alive.size() + " points=" + pg.points);
+							case CARPENTER -> log(g.barriers.get(0).boardsLeft() == g.barriers.get(0).boardsTotal() && pg.points == 200, "powerup-carpenter", "boards=" + g.barriers.get(0).boardsLeft() + " points=" + pg.points);
+						}
+						sub++; until = g.tick + 6;
+					}
+					default -> sub++;
+				}
+			}
+			case 11 -> {
 				log(fails == 0, "BENCH-DONE", passes + " passed, " + fails + " failed");
 				step = 999;
 			}
