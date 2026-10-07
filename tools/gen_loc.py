@@ -8,7 +8,7 @@ fits (a window in a wall, a gun on a wall face, ...). Things BO2 has but this ga
 (zm_transit_standard_town/farm.gsc) switch the power on and open every door at the start, so no door is written and everything is one room.
 The Power Station has no Survival data in BO2 (only 3 barricades, a box and an AK74u from Tranzit), so its building is found in the blocks and the same things are placed by a spread rule.
 Everything is checked against the real blocks (the rules of gen_tranzit_depot.py); what does not fit or cannot be reached is dropped and printed."""
-import gzip, json, math, os, sys
+import glob, gzip, json, math, os, re, sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -26,6 +26,26 @@ D = {'north': (0, -1), 'south': (0, 1), 'east': (1, 0), 'west': (-1, 0)}
 FACE = {0: 'east', 90: 'north', 180: 'west', 270: 'south'}
 OUT_DIR = {'S': (0, 1), 'N': (0, -1), 'E': (1, 0), 'W': (-1, 0)}
 PASS = ('short_grass', 'tall_grass', 'fern', 'large_fern', 'dandelion', 'poppy', 'azure_bluet', 'cornflower', 'oxeye_daisy', 'vine', 'snow')
+
+
+DUMP = os.environ.get('BO2_DUMP', r'C:\Users\alexi\bo2-dump')
+SCALE = 0.025 / 0.0225        # the prop renderer draws 0.0225 blocks per BO2 unit, the map is 40 units per block
+
+
+def model_points(name):
+    for f in glob.glob(os.path.join(DUMP, 'out*', '*', 'model_export', name + '_lod0.xmodel_export')):
+        t = open(f, errors='ignore').read()
+        return np.array([[float(v) for v in m.groups()] for m in re.finditer(r'^OFFSET (-?[\d.e+-]+), (-?[\d.e+-]+), (-?[\d.e+-]+)\s*$', t, re.M)])
+    return None
+
+
+def rot(pitch, yaw, roll):
+    """BO2 angles: yaw about z, then pitch about y (positive = nose down), then roll about x."""
+    c = lambda d: math.cos(math.radians(d)); sn = lambda d: math.sin(math.radians(d))
+    Rz = np.array([[c(yaw), -sn(yaw), 0], [sn(yaw), c(yaw), 0], [0, 0, 1]])
+    Ry = np.array([[c(pitch), 0, sn(pitch)], [0, 1, 0], [-sn(pitch), 0, c(pitch)]])
+    Rx = np.array([[1, 0, 0], [0, c(roll), -sn(roll)], [0, sn(roll), c(roll)]])
+    return Rz @ Ry @ Rx
 
 
 def facing(yaw): return FACE[int(round(yaw / 90.0)) % 4 * 90]
@@ -290,6 +310,22 @@ def build(loc):
             for cx, cz in best[4]: taken.add((cx, cz))
         else: warn('Pack-a-Punch: no 3x3 floor patch with a wall behind it near its BO2 spot')
 
+    # ---- BO2 props the Survival script places (the wrecks that wall the playable area in): BO2 model on the street, its blocks as stand-ins (invisible barriers once the model is drawn)
+    props, prop_cells = [], []
+    if cfg['off']:
+        for i, e in enumerate(x for x in ents if x.get('targetname') == 'game_mode_object' and x.get('script_noteworthy') == loc):
+            pitch, yaw, roll = (float(v) for v in e['angles'].split()); pitch, roll = ((pitch + 180) % 360) - 180, ((roll + 180) % 360) - 180
+            px, pz = P(e['origin'])
+            if not inb(int(px), int(pz)): continue
+            pts = model_points(e['model']); cells = {}
+            if pts is not None:
+                w = (rot(pitch, yaw, roll) @ pts.T).T / 40.0
+                for xi, zi, yi in zip(np.floor(px + w[:, 0]).astype(int), np.floor(pz - w[:, 1]).astype(int), np.floor(1 + w[:, 2]).astype(int)):
+                    lo, hi = cells.get((xi, zi), (yi, yi)); cells[(xi, zi)] = (min(lo, yi), max(hi, yi))
+                cells = {k: (max(1, lo), hi) for k, (lo, hi) in cells.items() if hi >= 1 and air(int(k[0]), 1, int(k[1]))}
+            for (xi, zi), (lo, hi) in sorted(cells.items()): prop_cells.append((f'{loc}_wreck{i}', int(xi), int(lo), int(zi), int(hi)))
+            props.append(dict(id=f'{loc}_wreck{i}', model=e['model'], px=px, pz=pz, yaw=yaw, pitch=pitch, roll=roll, cells=cells))
+
     # ---- sheet origin: an open ground column near the player (the game reads the surface height there)
     def open_col(x, z): return all(air(x, y, z) for y in range(1, 16)) and solid(x, 0, z)
     o = nearest(lambda x, z: 0 if open_col(x, z) else None, PL[0], PL[1], 60)
@@ -320,6 +356,19 @@ def build(loc):
         T1, T2 = T(ax, az), T(bx_, bz_)
         paprows = [dict(id='pap1', x1=min(T1[0], T2[0]), y1=1, z1=min(T1[1], T2[1]), x2=max(T1[0], T2[0]), y2=4, z2=max(T1[1], T2[1]), facing=f, room='hall')]
 
+    prop_rows = []
+    for k, (pid, x, y1, z, y2) in enumerate(prop_cells):
+        t = T(x, z)
+        ops.append(dict(id=f'{pid}_c{k}', order=50, op='fill', block='minecraft:gray_concrete', block2=None, x1=t[0], y1=y1, z1=t[1], x2=t[0], y2=y2, z2=t[1], stepX=1, stepZ=1, group='props',
+                        note='stand-in blocks for ' + pid + ' (invisible barriers once the BO2 model is drawn)'))
+    for pr in props:
+        t = T(pr['px'], pr['pz'])
+        if pr['cells']:
+            xs = [T(int(k[0]), int(k[1]))[0] for k in pr['cells']]; zs = [T(int(k[0]), int(k[1]))[1] for k in pr['cells']]; ys = [int(v) for lh in pr['cells'].values() for v in lh]
+            hide = f'{min(xs)},{min(ys)},{min(zs)},{max(xs)},{max(ys)},{max(zs)}'
+        else: hide = 'none'
+        prop_rows.append(dict(id=pr['id'], model=pr['model'], x=round(t[0], 3), y=1.0, z=round(t[1], 3), yaw=round(-pr['yaw'], 2), scale=round(SCALE, 4), hide=hide, room='hall',
+                              pitch=round(pr['pitch'], 2), roll=round(pr['roll'], 2), exact=True, fallback=('minecraft:gray_concrete' if pr['cells'] else None)))
     rows_w, rows_s = [], []
     for i, w in enumerate(windows):
         horiz = w['wall'] in 'NS'; t = T(w['a'], w['fixed']) if horiz else T(w['fixed'], w['a'])
@@ -340,8 +389,8 @@ def build(loc):
     sheet('map_wallbuys.json', [dict(id=f'wb{i + 1}', weaponId=g, x=T(x, z)[0], y=2, z=T(x, z)[1], facing=f, room='hall') for i, (g, x, z, f) in enumerate(wall)])
     sheet('map_boxes.json', [dict(id=f'bx{i + 1}', x=T(x, z)[0], y=1, z=T(x, z)[1], facing=f, initial=n, room='hall') for i, (x, z, f, n) in enumerate(boxes)])
     sheet('map_machines.json', [dict(id=f'm_{p}', kind='perk', perk=p, x=T(x, z)[0], y=1, z=T(x, z)[1], facing=f, room='hall') for p, x, z, f in mach])
-    sheet('map_pap.json', paprows); sheet('map_doors.json', []); sheet('map_props.json', [])
-    print(f'ok {loc}: {len(rows_w)} windows, {len(rows_s)} spawns, {len(wall)} wall guns, {len(boxes)} boxes, {len(mach)} perks, pap {bool(pap)}; sheet origin = cut ({OX},{OZ}), player cut {PL}')
+    sheet('map_pap.json', paprows); sheet('map_doors.json', []); sheet('map_props.json', prop_rows)
+    print(f'ok {loc}: {len(rows_w)} windows, {len(rows_s)} spawns, {len(wall)} wall guns, {len(boxes)} boxes, {len(mach)} perks, pap {bool(pap)}, {len(prop_rows)} BO2 props; sheet origin = cut ({OX},{OZ}), player cut {PL}')
     for w in windows: print('  window', w['wall'], w['mx'], w['mz'])
 
 

@@ -1,1 +1,17 @@
-[]
+[
+ {
+  "id": "town_wreck3",
+  "model": "veh_t6_civ_microbus_dead",
+  "x": -26.547,
+  "y": 1.0,
+  "z": 2.72,
+  "yaw": -99.6,
+  "scale": 1.1111,
+  "hide": "-28,1,0,-26,3,5",
+  "room": "hall",
+  "pitch": 0.0,
+  "roll": 0.0,
+  "exact": true,
+  "fallback": "minecraft:gray_concrete"
+ }
+]
