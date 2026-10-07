@@ -87,6 +87,9 @@ public final class Bo2Mesh {
 		return a;
 	}
 
+	/** 0..1, the slow pulse shared by every glowing part of the Mystery Box. */
+	public static float pulse() { return 0.5f + 0.5f * (float) Math.sin((System.nanoTime() % 100_000_000_000L) / 1e9 * 2.2); }
+
 	private static ResourceLocation white;
 
 	private static ResourceLocation white() {
@@ -140,8 +143,8 @@ public final class Bo2Mesh {
 			boolean glow = m.materials.get(surf.material).name() != null && m.materials.get(surf.material).name().endsWith("_obj");
 			ResourceLocation tex = glow ? white() : l.tex[s];
 			if (tex == null) continue;
-			VertexConsumer vc = buf.getBuffer(glow ? RenderType.eyes(tex) : RenderType.entityCutoutNoCull(tex));
-			float pulse = 0.5f + 0.5f * (float) Math.sin((System.nanoTime() % 100_000_000_000L) / 1e9 * 2.2);
+			VertexConsumer vc = buf.getBuffer(glow ? RenderType.entityTranslucentEmissive(tex) : RenderType.entityCutoutNoCull(tex));
+			float pulse = pulse();
 			int cr = glow ? (int) (8 + 247 * pulse) : 255, cg = glow ? (int) (8 + 207 * pulse) : 255, cb = glow ? (int) (8 + 0 * pulse) : 255;
 			int lv = glow ? 0xF000F0 : light;
 			for (int c = 0; c + 2 < surf.cornerCount(); c += 3) {

@@ -280,6 +280,14 @@ public final class Game {
 				if (p.position().distanceToSqr(origin.getX() + sp.x(), origin.getY() + sp.y(), origin.getZ() + sp.z()) > 25 * 25)
 					p.teleportTo(level, origin.getX() + sp.x() + 0.5, origin.getY() + sp.y(), origin.getZ() + sp.z() + 0.5, Set.of(), (float) sp.yaw(), 0f, true);
 		}
+		// dev: -Dzombiecraft.debugBox=true stands the player in front of the Mystery Box looking at it (for screenshots)
+		if (Boolean.getBoolean("zombiecraft.debugBox") && tick - startedAt == 60 && box != null) {
+			net.minecraft.core.Direction f = net.minecraft.core.Direction.valueOf(box.loc().facing().toUpperCase());
+			var cp = box.chestPos();
+			double px = cp.getX() + 0.5 + f.getStepX() * 2.6, pz = cp.getZ() + 0.5 + f.getStepZ() * 2.6;
+			float yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
+			for (ServerPlayer p : level.players()) p.teleportTo(level, px, cp.getY(), pz, Set.of(), yaw, 22f, true);
+		}
 		switch (phase) {
 			case Payloads.PHASE_COUNTDOWN -> { if (--countdown <= 0) beginRound(1); }
 			case Payloads.PHASE_ACTIVE -> {
