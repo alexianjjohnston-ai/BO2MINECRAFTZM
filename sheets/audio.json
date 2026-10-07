@@ -1,5 +1,35 @@
 [
  {
+  "cue": "amb_depot_l",
+  "category": "ui",
+  "soundSource": "AMBIENT",
+  "volume": 0.35,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:ambient.cave"
+ },
+ {
+  "cue": "amb_depot_map_light",
+  "category": "ui",
+  "soundSource": "AMBIENT",
+  "volume": 0.25,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:ambient.cave"
+ },
+ {
+  "cue": "amb_depot_r",
+  "category": "ui",
+  "soundSource": "AMBIENT",
+  "volume": 0.35,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:ambient.cave"
+ },
+ {
   "cue": "amb_diner_l",
   "category": "ui",
   "soundSource": "AMBIENT",
@@ -60,6 +90,16 @@
   "fallback": "minecraft:block.chain.step"
  },
  {
+  "cue": "cac_cmn_beep",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
   "cue": "cac_cmn_deny",
   "category": "ui",
   "soundSource": "MASTER",
@@ -70,6 +110,56 @@
   "fallback": "minecraft:block.note_block.bass"
  },
  {
+  "cue": "cac_cmn_equip_item",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "cac_main_nav",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "cac_slide_nav_down",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "cac_slide_nav_up",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "cac_submenu_nav",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
   "cue": "chr_heart_beat_ingame",
   "category": "ui",
   "soundSource": "PLAYERS",
@@ -78,6 +168,16 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:block.note_block.basedrum"
+ },
+ {
+  "cue": "chr_pain_exhale",
+  "category": "ui",
+  "soundSource": "PLAYERS",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 2,
+  "fallback": "minecraft:entity.player.hurt"
  },
  {
   "cue": "evt_carpenter",
@@ -158,6 +258,16 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:entity.player.death"
+ },
+ {
+  "cue": "evt_player_final_hit",
+  "category": "ui",
+  "soundSource": "PLAYERS",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.player.hurt"
  },
  {
   "cue": "evt_player_swiped",
@@ -560,6 +670,16 @@
   "fallback": "minecraft:music_disc.chirp"
  },
  {
+  "cue": "mus_fe_start",
+  "category": "music",
+  "soundSource": "MASTER",
+  "volume": 1.0,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:block.bell.use"
+ },
+ {
   "cue": "mus_load_zm_transit",
   "category": "music",
   "soundSource": "MUSIC",
@@ -660,6 +780,16 @@
   "fallback": "minecraft:block.bell.use"
  },
  {
+  "cue": "mus_raygun_stinger",
+  "category": "music",
+  "soundSource": "MASTER",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.bell.use"
+ },
+ {
   "cue": "mus_zombie_game_over",
   "category": "music",
   "soundSource": "MASTER",
@@ -690,6 +820,16 @@
   "fallback": "minecraft:block.bell.use"
  },
  {
+  "cue": "mus_zombie_splash_screen",
+  "category": "music",
+  "soundSource": "MASTER",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.bell.use"
+ },
+ {
   "cue": "uin_cmn_backout",
   "category": "ui",
   "soundSource": "MASTER",
@@ -710,6 +850,26 @@
   "fallback": "minecraft:entity.experience_orb.pickup"
  },
  {
+  "cue": "uin_lobby_leave",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "uin_lobby_summary",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
   "cue": "uin_main_nav",
   "category": "ui",
   "soundSource": "MASTER",
@@ -721,6 +881,16 @@
  },
  {
   "cue": "uin_main_pause",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "uin_timer",
   "category": "ui",
   "soundSource": "MASTER",
   "volume": 0.8,
@@ -1210,6 +1380,16 @@
   "fallback": "minecraft:entity.generic.explode"
  },
  {
+  "cue": "zmb_box_poof_land",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 1.0,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.wooden_door.open"
+ },
+ {
   "cue": "zmb_break_boards",
   "category": "world",
   "soundSource": "BLOCKS",
@@ -1220,6 +1400,26 @@
   "fallback": "minecraft:block.wood.break"
  },
  {
+  "cue": "zmb_bus_depot_dbl",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.wooden_door.open"
+ },
+ {
+  "cue": "zmb_bus_depot_dbl_close",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.wooden_door.open"
+ },
+ {
   "cue": "zmb_cha_ching",
   "category": "ui",
   "soundSource": "MASTER",
@@ -1228,6 +1428,16 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:entity.experience_orb.pickup"
+ },
+ {
+  "cue": "zmb_depot_crack",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.wooden_door.open"
  },
  {
   "cue": "zmb_double_point_loop",
@@ -1490,6 +1700,16 @@
   "fallback": "minecraft:block.beacon.ambient"
  },
  {
+  "cue": "zmb_ui_globe_spin_stop",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
   "cue": "zmb_ui_map_level_select",
   "category": "ui",
   "soundSource": "MASTER",
@@ -1504,6 +1724,26 @@
   "category": "ui",
   "soundSource": "MASTER",
   "volume": 0.7,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "zmb_ui_map_zoom_in",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:ui.button.click"
+ },
+ {
+  "cue": "zmb_ui_map_zoom_out",
+  "category": "ui",
+  "soundSource": "MASTER",
+  "volume": 0.8,
   "positional": false,
   "loop": false,
   "variants": 1,

@@ -38,6 +38,9 @@ public final class Rows {
 
 	public record PapDef(String id, int x1, int y1, int z1, int x2, int y2, int z2, String facing, String room) {}
 
+	/** A Black Ops II model standing in the map (x, y, z in blocks from the origin; yaw 0 = front towards south; hide = decor cells it replaces: x1,y1,z1,x2,y2,z2). */
+	public record MapProp(String id, String model, double x, double y, double z, double yaw, double scale, String hide, String room) {}
+
 	public record PlayerSpawn(String id, int x, int y, int z, double yaw, String room) {}
 
 	public record CueDef(String cue, String category, String soundSource, double volume, boolean positional, boolean loop, int variants,

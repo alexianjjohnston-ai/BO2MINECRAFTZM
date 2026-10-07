@@ -204,6 +204,7 @@ public final class BoxSystem {
 					} else {
 						offered = pg == null ? Sheets.BOX_POOL.get(0).weaponId() : pickWeapon(pg);
 						showItem("zombiecraft:" + offered);
+						if (offered.startsWith("ray_gun") && pg != null) { Cue.ui("mus_raygun_stinger", level.getServer().getPlayerList().getPlayer(user)); }
 						state = State.OFFER; timer = Sheets.sysInt("box_timeout_s") * 20;
 					}
 				}

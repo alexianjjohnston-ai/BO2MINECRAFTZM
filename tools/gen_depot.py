@@ -221,6 +221,75 @@ player = [dict(id='spawn', x=ps[0], y=1, z=ps[1], yaw=180.0,  # facing north: wi
                 room='lobby')]
 
 
+# ---- BO2 models (ripped from the player's install at run time; the decor blocks they replace stay as the fallback and the collision)
+props = []
+YAW = {'south': 0, 'west': 90, 'north': 180, 'east': -90}
+
+
+def prop(id, model, bx, bz, facing='south', y=1.0, ox=0.0, oz=0.0, rot=0, scale=1.0, hide=None, room='lobby'):
+    """A BO2 model at the middle of block (bx, bz); facing = where its front looks; rot = extra yaw for models whose front is not on -y;
+    hide = (bx1, y1, bz1, bx2, y2, bz2) cells (decor blocks, trees ...) the model replaces."""
+    x, z = L(bx, bz)
+    h = 'none'
+    if hide:
+        a, b = L(hide[0], hide[2]), L(hide[3], hide[5])
+        h = f'{a[0]},{hide[1]},{a[1]},{b[0]},{hide[4]},{b[1]}'
+    props.append(dict(id=id, model=model, x=x + 0.5 + ox, y=y, z=z + 0.5 + oz, yaw=YAW[facing] + rot, scale=scale, hide=h, room=room))
+
+
+prop('kiosk', 'p6_zm_kiosk', 47, 40, 'west', hide=(47, 1, 39, 47, 3, 41))
+for i, bx in enumerate((32.4, 35.1)):
+    prop(f'seats_w{i}', 'p6_zm_bench_plastic', int(bx), 41, 'north', ox=bx - int(bx) - .5, rot=-90, hide=(31, 1, 41, 35, 1, 41) if i == 0 else None)
+for i, bx in enumerate((51.4, 54.1)):
+    prop(f'seats_e{i}', 'p6_zm_bench_plastic', int(bx), 41, 'north', ox=bx - int(bx) - .5, rot=-90, hide=(50, 1, 41, 54, 1, 41) if i == 0 else None)
+prop('seats_back', 'p6_zm_bench_plastic', 39, 52, 'north', ox=.5, rot=-90, hide=(38, 1, 52, 41, 1, 52), room='back')
+for i, (bx, bz) in enumerate([(29, 34), (54, 45), (31, 52), (53, 52)]):
+    prop(f'bin{i}', 'p_glo_trashcan', bx, bz, hide=(bx, 1, bz, bx, 1, bz), room='lobby')
+for i, bz in enumerate((43, 44, 45)):
+    prop(f'locker{i}', 'p_rus_locker_closed', 21, bz, 'east', oz=0, ox=-.2, hide=(21, 1, bz, 21, 2, bz), room='wing')
+prop('sign_restrooms', 'p6_zm_sign_restrooms', 53, 45, 'north', y=3.2, oz=.45, hide=(53, 3, 45, 53, 3, 45))
+prop('clock', 'p_zom_clock', 50, 34, 'south', y=4.0, oz=-.45, hide=(50, 4, 34, 50, 4, 34))
+for i, bx in enumerate((31.5, 34.2)):
+    prop(f'stop_bench{i}', 'p6_zm_bench_old', int(bx), 28, 'north', ox=bx - int(bx) - .5, hide=(30, 1, 28, 33, 1, 28) if i == 0 else None, room='road')
+for i, bx in enumerate((18, 40, 64)):
+    prop(f'lamp{i}', 'p_glo_street_light02', bx, 27, 'south', hide=(bx, 1, 27, bx, 4, 27), room='road')
+for i, (bx, bz) in enumerate([(35, 39), (51, 39), (34, 44), (52, 44)]):
+    pass  # the round pillars have no BO2 model of their own; they stay blocks
+for i, (x1, z1, x2, z2) in enumerate([(32, 39, 36, 39), (40, 39, 44, 39), (48, 39, 52, 39), (32, 43, 36, 43), (40, 43, 44, 43), (48, 43, 52, 43), (32, 49, 36, 49), (44, 49, 48, 49)]):
+    prop(f'light{i}', 'p_glo_lights_fluorescent_yellow_on_depot', (x1 + x2) // 2, (z1 + z2) // 2, 'south', y=6.0, rot=90 if x2 > x1 else 0)
+# extra scenery from the depot zone and the Tranzit town
+prop('payphone', 'com_payphone_america', 29, 38, 'east', y=2.0, ox=-.45)
+prop('fountain', 'ch_water_fountain', 30, 35, 'east', y=1.0)
+prop('magazines', 'p6_zm_magazines_rack', 54, 38, 'west', ox=.45)
+prop('sofa', 'p6_sofa_damaged_panama', 23, 41, 'east', room='wing')
+prop('trash_pile0', 'mp_m_trash_pile', 30, 45, hide=None)
+prop('trash_pile1', 'mp_m_trash_pile', 54, 52, room='back')
+prop('suitcase', 'p_eb_lg_suitcase', 32, 44, 'south', ox=.2)
+prop('stanchion0', 'p6_stanchion_post', 40, 38)
+prop('stanchion1', 'p6_stanchion_post', 48, 38)
+prop('workbench', 'p6_zm_work_bench', 26, 51, 'west', room='wing')
+prop('tools', 'p_glo_tools_chest_tall', 22, 51, 'east', room='wing')
+prop('radiator', 'ch_radiator01', 55, 40, 'west', ox=.4)
+prop('ac0', 'p_rus_ac_unit', 30, 40, y=8.0, room='roof')
+prop('ac1', 'p_rus_ac_unit', 48, 48, y=8.0, room='roof')
+prop('dumpster', 'p_rus_dumpster_zm_bstation', 59, 55, 'west', room='road')
+prop('outhouse', 'p6_zm_outhouse', 70, 58, 'north', room='road')
+prop('planter0', 'ny_harbor_planter', 26, 30, room='road')
+prop('planter1', 'ny_harbor_planter', 58, 30, room='road')
+prop('tower', 'p6_zm_water_tower', 70, 66, room='road')
+prop('pole0', 'p6_zm_street_power_pole', 6, 28, room='road')
+prop('pole1', 'afr_powerpole1', 76, 30, room='road')
+prop('bikes', 'com_bike_destroyed', 15, 30, room='road')
+prop('tires', 'com_junktire', 62, 34, y=1.2, room='road')
+prop('pallet', 'afr_pallet_destroyed', 8, 53, room='road')
+prop('sandbags0', 'p_glo_sandbags_green_lego_mdl', 20, 31, 'south', room='road')
+prop('caution', 'p_jun_caution_sign', 36, 29, 'north', room='road')
+for i, (bx, bz, c) in enumerate([(22, 27, 'brown'), (52, 30, 'gray'), (62, 24, 'red'), (8, 45, 'brown'), (66, 54, 'gray')]):
+    prop(f'wreck{i}', 'veh_t6_civ_microbus_dead', bx + 1, bz, 'south', ox=.5, rot=90 if i % 2 else 0, hide=(bx, 1, bz, bx + 3, 2, bz + 1), room='road')
+for i, (bx, bz) in enumerate([(8, 30), (10, 60), (68, 48), (72, 62), (6, 38), (30, 62), (60, 62)]):
+    prop(f'tree{i}', 't5_foliage_tree_burnt02' if i % 2 else 't5_foliage_tree_burnt03', bx, bz, 'south', scale=.6, hide=(bx - 1, 1, bz - 1, bx + 1, 5, bz + 1), room='road')
+
+
 def dump(name, rows):
     with open(os.path.join(SH, name), 'w', encoding='utf-8') as f:
         json.dump(rows, f, indent=1, ensure_ascii=False)
@@ -236,4 +305,5 @@ dump('map_machines.json', machines)
 dump('map_doors.json', doors)
 dump('map_pap.json', pap)
 dump('map_player.json', player)
+dump('map_props.json', props)
 print(len(ops), 'ops,', len(windows), 'windows,', len(spawns), 'spawns')

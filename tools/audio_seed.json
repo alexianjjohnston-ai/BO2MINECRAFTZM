@@ -484,6 +484,153 @@
    "soundSource": "MASTER",
    "volume": 1.0,
    "fallback": "minecraft:block.wooden_door.open"
+  },
+  "amb_depot_l": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.35,
+   "fallback": "minecraft:ambient.cave",
+   "loop": true
+  },
+  "amb_depot_r": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.35,
+   "fallback": "minecraft:ambient.cave",
+   "loop": true
+  },
+  "amb_depot_map_light": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.25,
+   "fallback": "minecraft:ambient.cave",
+   "loop": true
+  },
+  "mus_zombie_splash_screen": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 1.0,
+   "fallback": "minecraft:block.bell.use"
+  },
+  "mus_raygun_stinger": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 1.0,
+   "fallback": "minecraft:block.bell.use"
+  },
+  "mus_fe_start": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 1.0,
+   "fallback": "minecraft:block.bell.use"
+  },
+  "cac_cmn_beep": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "cac_main_nav": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "cac_submenu_nav": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "cac_cmn_equip_item": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "cac_slide_nav_up": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "cac_slide_nav_down": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "uin_lobby_leave": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "uin_lobby_summary": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "uin_timer": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "zmb_ui_globe_spin_stop": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "zmb_ui_map_zoom_in": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "zmb_ui_map_zoom_out": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "chr_pain_exhale": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.player.hurt"
+  },
+  "evt_player_final_hit": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 1.0,
+   "fallback": "minecraft:entity.player.hurt"
+  },
+  "zmb_box_poof_land": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.wooden_door.open"
+  },
+  "zmb_bus_depot_dbl": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.wooden_door.open"
+  },
+  "zmb_bus_depot_dbl_close": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.wooden_door.open"
+  },
+  "zmb_depot_crack": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 1.0,
+   "fallback": "minecraft:block.wooden_door.open"
   }
  },
  "roles": {

@@ -53,6 +53,7 @@ public final class Bo2Menus {
 	/** Leaves the running game and returns to the BO2 title (the vanilla one would show with autoplay on). */
 	public static void endGame() {
 		Minecraft mc = Minecraft.getInstance();
+		MenuAudio.play("uin_lobby_leave");
 		boolean local = mc.isLocalServer();
 		if (mc.level != null) mc.level.disconnect();
 		if (local) mc.disconnect(new GenericMessageScreen(Component.translatable("menu.savingLevel")));

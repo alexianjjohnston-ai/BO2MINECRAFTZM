@@ -24,10 +24,12 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 7;
+	public static final int VERSION = 8;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
-	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit", "common_zm"};
+	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit", "common_zm",
+			// the map zones hold the depot's own props (benches, kiosk, lockers ...), the town's, the diner's and so on
+			"zm_transit_gump_busstation", "zm_transit_gump_town", "zm_transit_gump_diner", "zm_transit_gump_farm", "zm_transit_gump_powerstation", "zm_transit_gump_tunnel", "zm_transit_gump_cornfield", "zm_transit_gump_labs", "zm_transit_gump_forest", "zm_transit_gump_bridge"};
 	/** First-person clips copied for every gun that has an {@code anim} prefix in bo2_models.json (a gun may lack some). */
 	public static final String[] GUN_CLIPS = {"idle", "fire", "reload", "reload_empty", "pullout", "first_raise"};
 	static final String[] ASSET_TYPES = {"xmodel", "material", "image", "xanim"};

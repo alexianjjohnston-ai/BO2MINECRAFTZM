@@ -1,5 +1,38 @@
 [
  {
+  "id": "amb_depot_l#0",
+  "cue": "amb_depot_l",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 2549199214,
+  "size": 1464214,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 1457397
+ },
+ {
+  "id": "amb_depot_map_light#0",
+  "cue": "amb_depot_map_light",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 1090279067,
+  "size": 384000,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 192000
+ },
+ {
+  "id": "amb_depot_r#0",
+  "cue": "amb_depot_r",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 1663197044,
+  "size": 1446499,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 1439747
+ },
+ {
   "id": "amb_diner_l#0",
   "cue": "amb_diner_l",
   "bank": "zmb_common.all.sabs",
@@ -154,6 +187,17 @@
   "frames": 42314
  },
  {
+  "id": "cac_cmn_beep#0",
+  "cue": "cac_cmn_beep",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 717783784,
+  "size": 16035,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 9774
+ },
+ {
   "id": "cac_cmn_deny#0",
   "cue": "cac_cmn_deny",
   "bank": "zmb_code_post_gfx.all.sabs",
@@ -165,6 +209,61 @@
   "frames": 30458
  },
  {
+  "id": "cac_cmn_equip_item#0",
+  "cue": "cac_cmn_equip_item",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 225802891,
+  "size": 79869,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 28466
+ },
+ {
+  "id": "cac_main_nav#0",
+  "cue": "cac_main_nav",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 2535672999,
+  "size": 69766,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 39730
+ },
+ {
+  "id": "cac_slide_nav_down#0",
+  "cue": "cac_slide_nav_down",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 387380421,
+  "size": 53525,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 20587
+ },
+ {
+  "id": "cac_slide_nav_up#0",
+  "cue": "cac_slide_nav_up",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 1252623862,
+  "size": 65342,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 26233
+ },
+ {
+  "id": "cac_submenu_nav#0",
+  "cue": "cac_submenu_nav",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 2658511003,
+  "size": 19306,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 16049
+ },
+ {
   "id": "chr_heart_beat_ingame#0",
   "cue": "chr_heart_beat_ingame",
   "bank": "cmn_root.all.sabl",
@@ -174,6 +273,28 @@
   "channels": 2,
   "rateHz": 48000,
   "frames": 20848
+ },
+ {
+  "id": "chr_pain_exhale#0",
+  "cue": "chr_pain_exhale",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 484443427,
+  "size": 35572,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 17786
+ },
+ {
+  "id": "chr_pain_exhale#1",
+  "cue": "chr_pain_exhale",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 3915915812,
+  "size": 69632,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 34816
  },
  {
   "id": "evt_carpenter#0",
@@ -262,6 +383,17 @@
   "channels": 2,
   "rateHz": 48000,
   "frames": 288000
+ },
+ {
+  "id": "evt_player_final_hit#0",
+  "cue": "evt_player_final_hit",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 4102278986,
+  "size": 79345,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 41252
  },
  {
   "id": "evt_player_swiped#0",
@@ -957,6 +1089,17 @@
   "frames": 5853138
  },
  {
+  "id": "mus_fe_start#0",
+  "cue": "mus_fe_start",
+  "bank": "spl_frontend.all.sabs",
+  "entryId": 2983292291,
+  "size": 25003992,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 14886218
+ },
+ {
   "id": "mus_load_zm_transit#0",
   "cue": "mus_load_zm_transit",
   "bank": "zmb_code_post_gfx.all.sabs",
@@ -1067,6 +1210,17 @@
   "frames": 223487
  },
  {
+  "id": "mus_raygun_stinger#0",
+  "cue": "mus_raygun_stinger",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 1631727525,
+  "size": 507464,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 126866
+ },
+ {
   "id": "mus_zombie_game_over#0",
   "cue": "mus_zombie_game_over",
   "bank": "zmb_patch.all.sabs",
@@ -1100,6 +1254,17 @@
   "frames": 672769
  },
  {
+  "id": "mus_zombie_splash_screen#0",
+  "cue": "mus_zombie_splash_screen",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 2344514994,
+  "size": 972348,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 531116
+ },
+ {
   "id": "uin_cmn_backout#0",
   "cue": "uin_cmn_backout",
   "bank": "zmb_code_post_gfx.all.sabs",
@@ -1122,6 +1287,28 @@
   "frames": 35400
  },
  {
+  "id": "uin_lobby_leave#0",
+  "cue": "uin_lobby_leave",
+  "bank": "cmn_root.all.sabs",
+  "entryId": 2992434703,
+  "size": 71048,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 57650
+ },
+ {
+  "id": "uin_lobby_summary#0",
+  "cue": "uin_lobby_summary",
+  "bank": "cmn_root.all.sabs",
+  "entryId": 2323455510,
+  "size": 769335,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 353864
+ },
+ {
   "id": "uin_main_nav#0",
   "cue": "uin_main_nav",
   "bank": "zmb_code_post_gfx.all.sabs",
@@ -1142,6 +1329,17 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 15768
+ },
+ {
+  "id": "uin_timer#0",
+  "cue": "uin_timer",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 164407498,
+  "size": 32642,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 17853
  },
  {
   "id": "wpn_1911_dryfire_plr#0",
@@ -1815,6 +2013,17 @@
   "frames": 66730
  },
  {
+  "id": "zmb_box_poof_land#0",
+  "cue": "zmb_box_poof_land",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 3433629183,
+  "size": 208896,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 104448
+ },
+ {
   "id": "zmb_break_boards#0",
   "cue": "zmb_break_boards",
   "bank": "zmb_common.all.sabl",
@@ -1881,6 +2090,28 @@
   "frames": 18848
  },
  {
+  "id": "zmb_bus_depot_dbl#0",
+  "cue": "zmb_bus_depot_dbl",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 1632803576,
+  "size": 231280,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 110608
+ },
+ {
+  "id": "zmb_bus_depot_dbl_close#0",
+  "cue": "zmb_bus_depot_dbl_close",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 3753030603,
+  "size": 224104,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 107292
+ },
+ {
   "id": "zmb_cha_ching#0",
   "cue": "zmb_cha_ching",
   "bank": "zmb_common.all.sabl",
@@ -1890,6 +2121,17 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 133120
+ },
+ {
+  "id": "zmb_depot_crack#0",
+  "cue": "zmb_depot_crack",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 3714612604,
+  "size": 669216,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 441088
  },
  {
   "id": "zmb_double_point_loop#0",
@@ -2233,6 +2475,17 @@
   "frames": 68763
  },
  {
+  "id": "zmb_ui_globe_spin_stop#0",
+  "cue": "zmb_ui_globe_spin_stop",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 4195955305,
+  "size": 65696,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 80860
+ },
+ {
   "id": "zmb_ui_map_level_select#0",
   "cue": "zmb_ui_map_level_select",
   "bank": "zmb_code_post_gfx.all.sabs",
@@ -2253,6 +2506,28 @@
   "channels": 2,
   "rateHz": 48000,
   "frames": 53054
+ },
+ {
+  "id": "zmb_ui_map_zoom_in#0",
+  "cue": "zmb_ui_map_zoom_in",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 2893295149,
+  "size": 164373,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 96037
+ },
+ {
+  "id": "zmb_ui_map_zoom_out#0",
+  "cue": "zmb_ui_map_zoom_out",
+  "bank": "zmb_code_post_gfx.all.sabs",
+  "entryId": 2408711726,
+  "size": 101579,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 76161
  },
  {
   "id": "zmb_vocals_zombie_ambience#0",

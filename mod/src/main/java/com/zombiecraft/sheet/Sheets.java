@@ -43,6 +43,7 @@ public final class Sheets {
 	public static final List<DoorDef> DOORS = load("map_doors.json", DoorDef.class);
 	public static final List<MachineDef> MACHINES = load("map_machines.json", MachineDef.class);
 	public static final List<PapDef> PAPS = load("map_pap.json", PapDef.class);
+	public static final List<MapProp> PROPS = load("map_props.json", MapProp.class);
 	public static final List<PlayerSpawn> PLAYER_SPAWNS = load("map_player.json", PlayerSpawn.class);
 	public static final List<CueDef> CUES = load("audio.json", CueDef.class);
 	public static final List<CueFile> CUE_FILES = load("audio_files.json", CueFile.class);

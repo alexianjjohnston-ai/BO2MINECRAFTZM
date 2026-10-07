@@ -404,5 +404,243 @@
   "xmodel": "c_zom_player_reporter_fb",
   "world": "",
   "note": ""
+ },
+ {
+  "id": "prop_afr_pallet_destroyed",
+  "group": "prop",
+  "xmodel": "afr_pallet_destroyed",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_afr_powerpole1",
+  "group": "prop",
+  "xmodel": "afr_powerpole1",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_ch_radiator01",
+  "group": "prop",
+  "xmodel": "ch_radiator01",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_ch_water_fountain",
+  "group": "prop",
+  "xmodel": "ch_water_fountain",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_com_bike_destroyed",
+  "group": "prop",
+  "xmodel": "com_bike_destroyed",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_com_junktire",
+  "group": "prop",
+  "xmodel": "com_junktire",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_com_payphone_america",
+  "group": "prop",
+  "xmodel": "com_payphone_america",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_mp_m_trash_pile",
+  "group": "prop",
+  "xmodel": "mp_m_trash_pile",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_ny_harbor_planter",
+  "group": "prop",
+  "xmodel": "ny_harbor_planter",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_sofa_damaged_panama",
+  "group": "prop",
+  "xmodel": "p6_sofa_damaged_panama",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_stanchion_post",
+  "group": "prop",
+  "xmodel": "p6_stanchion_post",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_zm_bench_old",
+  "group": "prop",
+  "xmodel": "p6_zm_bench_old",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_zm_bench_plastic",
+  "group": "prop",
+  "xmodel": "p6_zm_bench_plastic",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_zm_kiosk",
+  "group": "prop",
+  "xmodel": "p6_zm_kiosk",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_zm_magazines_rack",
+  "group": "prop",
+  "xmodel": "p6_zm_magazines_rack",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_zm_outhouse",
+  "group": "prop",
+  "xmodel": "p6_zm_outhouse",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_zm_sign_restrooms",
+  "group": "prop",
+  "xmodel": "p6_zm_sign_restrooms",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_zm_street_power_pole",
+  "group": "prop",
+  "xmodel": "p6_zm_street_power_pole",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_zm_water_tower",
+  "group": "prop",
+  "xmodel": "p6_zm_water_tower",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p6_zm_work_bench",
+  "group": "prop",
+  "xmodel": "p6_zm_work_bench",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_eb_lg_suitcase",
+  "group": "prop",
+  "xmodel": "p_eb_lg_suitcase",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_glo_lights_fluorescent_yellow_on_depot",
+  "group": "prop",
+  "xmodel": "p_glo_lights_fluorescent_yellow_on_depot",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_glo_sandbags_green_lego_mdl",
+  "group": "prop",
+  "xmodel": "p_glo_sandbags_green_lego_mdl",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_glo_street_light02",
+  "group": "prop",
+  "xmodel": "p_glo_street_light02",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_glo_tools_chest_tall",
+  "group": "prop",
+  "xmodel": "p_glo_tools_chest_tall",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_glo_trashcan",
+  "group": "prop",
+  "xmodel": "p_glo_trashcan",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_jun_caution_sign",
+  "group": "prop",
+  "xmodel": "p_jun_caution_sign",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_rus_ac_unit",
+  "group": "prop",
+  "xmodel": "p_rus_ac_unit",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_rus_dumpster_zm_bstation",
+  "group": "prop",
+  "xmodel": "p_rus_dumpster_zm_bstation",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_rus_locker_closed",
+  "group": "prop",
+  "xmodel": "p_rus_locker_closed",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_p_zom_clock",
+  "group": "prop",
+  "xmodel": "p_zom_clock",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_t5_foliage_tree_burnt02",
+  "group": "prop",
+  "xmodel": "t5_foliage_tree_burnt02",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_t5_foliage_tree_burnt03",
+  "group": "prop",
+  "xmodel": "t5_foliage_tree_burnt03",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_veh_t6_civ_microbus_dead",
+  "group": "prop",
+  "xmodel": "veh_t6_civ_microbus_dead",
+  "world": "",
+  "note": "map scenery"
  }
 ]

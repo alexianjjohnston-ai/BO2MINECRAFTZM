@@ -881,5 +881,38 @@
     "t": "string"
    }
   }
+ },
+ "map_props": {
+  "file": "map_props.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "model": {
+    "t": "string"
+   },
+   "x": {
+    "t": "number"
+   },
+   "y": {
+    "t": "number"
+   },
+   "z": {
+    "t": "number"
+   },
+   "yaw": {
+    "t": "number"
+   },
+   "scale": {
+    "t": "number"
+   },
+   "hide": {
+    "t": "string"
+   },
+   "room": {
+    "t": "string"
+   }
+  }
  }
 }

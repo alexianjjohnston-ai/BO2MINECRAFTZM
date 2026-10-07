@@ -14,7 +14,7 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 	public static final class State extends EntityRenderState {
 		int kind;
 		boolean powered, busy;
-		float yaw, sinceSec;
+		float yaw, sinceSec, scale;
 		String weapon = "";
 		int papState;
 		float papSec;
@@ -38,6 +38,7 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 		s.powered = e.getEntityData().get(ZcProp.POWERED);
 		s.busy = e.getEntityData().get(ZcProp.BUSY);
 		s.yaw = e.getYRot();
+		s.scale = e.getEntityData().get(ZcProp.PAP_DEPTH);
 		s.weapon = e.getEntityData().get(ZcProp.PAP_WEAPON);
 		s.papState = e.getEntityData().get(ZcProp.PAP_STATE);
 		s.papSec = (e.level().getGameTime() - e.getEntityData().get(ZcProp.PAP_SINCE) + partialTick) / 20f;
@@ -122,7 +123,20 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 		ps.popPose();
 	}
 
+	/** Scenery: the model centred on the entity across the floor, standing on it, its front towards the entity's facing. */
+	private void renderScenery(State s, PoseStack ps, MultiBufferSource buf, int light) {
+		Bo2Mesh.Loaded l = s.weapon.isEmpty() ? null : Bo2Mesh.get(s.weapon);
+		if (l == null) return;
+		float sc = SCALE * s.scale;
+		ps.pushPose();
+		ps.mulPose(Axis.YP.rotationDegrees(-s.yaw));
+		ps.translate(-l.cx * sc, -l.minZ * sc, l.cy * sc);
+		Bo2Mesh.draw(l, null, ps, buf, light, sc, 1);
+		ps.popPose();
+	}
+
 	@Override public void render(State s, PoseStack ps, MultiBufferSource buf, int light) {
+		if (s.kind == ZcProp.SCENERY) { renderScenery(s, ps, buf, light); return; }
 		if (s.kind >= ZcProp.WALLGUN) { renderGun(s, ps, buf, light); return; }
 		if (s.kind >= ZcProp.AMMO) { renderPowerup(s, ps, buf); return; }
 		int k = Math.max(0, Math.min(OFF.length - 1, s.kind));

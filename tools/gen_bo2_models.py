@@ -60,5 +60,11 @@ for p in ("engineer", "farmgirl", "oldman", "reporter"):
 for p in ("engineer", "farmgirl", "oldman", "reporter"):
     add(f"player_{p}", "player", f"c_zom_player_{p}_fb")
 
+# scenery: every model the map sheet places (tools/gen_depot.py writes map_props.json)
+_pp = os.path.join(SH, 'map_props.json')
+if os.path.exists(_pp):
+    for _m in sorted({r['model'] for r in json.load(open(_pp, encoding='utf-8'))}):
+        add('prop_' + _m, 'prop', _m, note='map scenery')
+
 json.dump(rows, open(os.path.join(SH, 'bo2_models.json'), 'w'), indent=1)
 print(len(rows), 'bo2_models rows')

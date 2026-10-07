@@ -1,6 +1,7 @@
 package com.zombiecraft.game;
 
 import com.zombiecraft.entity.ZcEntities;
+import com.zombiecraft.entity.ZcProp;
 import com.zombiecraft.entity.ZcZombie;
 import com.zombiecraft.game.PlayerGame.Gun;
 import com.zombiecraft.map.MapBuilder;
@@ -83,6 +84,7 @@ public final class Game {
 				if (pg != null) pg.lastHurtTick = INSTANCE.tick;
 				if (source.getEntity() instanceof ZcZombie zz) {
 					Cue.ui("evt_player_swiped", p);
+					Cue.ui("chr_pain_exhale", p);
 					ServerPlayNetworking.send(p, new Payloads.HitDirection(zz.getX(), zz.getZ()));
 				}
 			}
@@ -137,6 +139,30 @@ public final class Game {
 	}
 
 	/** (Re)start the whole game: rebuild the map, reset every player, count down to round 1. */
+	/** BO2 models standing in the map. With the local model cache the decor blocks they replace become invisible barriers (or air) so the model is all you see. */
+	private void placeProps() {
+		for (var p : Sheets.PROPS) {
+			ZcProp e = new ZcProp(ZcEntities.PROP, level);
+			e.moveTo(origin.getX() + p.x(), origin.getY() + p.y(), origin.getZ() + p.z(), (float) p.yaw(), 0f);
+			e.setYRot((float) p.yaw());
+			e.addTag("zc"); e.addTag("zc_scenery");
+			e.getEntityData().set(ZcProp.KIND, ZcProp.SCENERY);
+			e.getEntityData().set(ZcProp.PAP_WEAPON, p.model());
+			e.getEntityData().set(ZcProp.PAP_DEPTH, (float) p.scale());
+			level.addFreshEntity(e);
+			if (!LocalAssets.models || p.hide() == null || p.hide().equals("none")) continue;
+			String[] h = p.hide().split(",");
+			int[] c = new int[6];
+			for (int i = 0; i < 6; i++) c[i] = Integer.parseInt(h[i].trim());
+			for (int x = c[0]; x <= c[3]; x++) for (int y = c[1]; y <= c[4]; y++) for (int z = c[2]; z <= c[5]; z++) {
+				BlockPos bp = origin.offset(x, y, z);
+				var st = level.getBlockState(bp);
+				if (!st.isAir())
+					level.setBlock(bp, st.getCollisionShape(level, bp).isEmpty() ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : net.minecraft.world.level.block.Blocks.BARRIER.defaultBlockState(), 3);
+			}
+		}
+	}
+
 	public void start() {
 		level = server.overworld();
 		int surface = level.getHeight(Heightmap.Types.WORLD_SURFACE, 0, 0);
@@ -157,6 +183,7 @@ public final class Game {
 		if (powerups != null) powerups.shutdown();
 		machines = new Machines(this);
 		doors = new Doors(this);
+		placeProps();
 		powerups = new PowerUps(this);
 		teamEarned = 0;
 		scheduled.clear();
@@ -177,6 +204,7 @@ public final class Game {
 		players.clear();
 		for (ServerPlayer p : level.players()) resetPlayer(p);
 		phase = Payloads.PHASE_COUNTDOWN;
+		Cue.all("mus_zombie_splash_screen", level);
 		countdown = Sheets.sysInt("first_round_delay_s") * 20;
 		for (String c : AMBIENCE) { Cue.stopAll(c, level); Cue.all(c, level); }
 		ambientTimer = 200;
@@ -291,7 +319,7 @@ public final class Game {
 
 	// ------------------------------------------------------------------ the tick
 	/** The diner's looping bed (wind left/right, light hum) and the odd creak or rustle near a player. */
-	private static final String[] AMBIENCE = {"amb_diner_l", "amb_diner_r", "amb_flourescent_light"};
+	private static final String[] AMBIENCE = {"amb_depot_l", "amb_depot_r", "amb_depot_map_light", "amb_flourescent_light"};
 	private static final String[] ONE_SHOTS = {"amb_diner_metal_creak", "amb_metal_creak_lgt", "amb_paper_rustle"};
 	private int ambientTimer;
 	private final List<ZcZombie> dbgZ = new java.util.ArrayList<>();
@@ -323,7 +351,7 @@ public final class Game {
 		if (Boolean.getBoolean("zombiecraft.debugTour") && tick - startedAt >= 60 && (tick - startedAt) % 40 % 30 == 0) {
 			boolean snap = (tick - startedAt) % 40 == 30;
 			int i = (int) ((tick - startedAt - (snap ? 30 : 0)) / 40) - 2;
-			double[][] views = {{2, -7, 180}, {-6, -7, -90}, {-6, -6, 90}, {-6, -6, 90}, {8, -16, 0}, {0, -16, 180}, {2, 3, 180}, {-12, -6, 90}};
+			double[][] views = {{2, -7, 180}, {-6, -7, -90}, {-7, -3, 180}, {-6, -6, 90}, {8, -16, 0}, {0, -16, 180}, {-14, -3, 90}, {-12, -6, 90}};
 			if (i >= 0 && i < views.length) for (ServerPlayer p : level.players()) {
 				if (snap) ServerPlayNetworking.send(p, new Payloads.Shot("tour_" + i));
 				else if (i == 3) { doors.openAll(); p.teleportTo(level, origin.getX() + views[i][0] + 0.5, origin.getY() + 1, origin.getZ() + views[i][1] + 0.5, Set.of(), (float) views[i][2], 0f, true); }
