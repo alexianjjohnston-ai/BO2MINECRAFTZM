@@ -67,6 +67,8 @@ Parity target: every number and rule behaves like BO2's solo Survival.
 Files: `game/Machines.java`, `game/WeaponSystem.java`, `game/PlayerGame.java`, `game/Game.java`, `game/ZombieHealth.java`, `game/Interactions.java`,
 `sheets/weapons.json` (+ `tools/gen_weapons.py`), `sheets/rounds.json`, `sheets/systems.json`, `game/Bench.java`.
 
+**Status (2026-10-07, first pass done, see MODLOG):** task 1 fixed (fireCooldown unit bug, bench step added); task 2 done for start ammo (M1911 8/32 via `startReserve`) and PaP wall ammo (4500); task 6 partly (bench green on Bus Depot, window-entry step fixed). **Still open:** task 2 wall-buy half price check for box guns, task 3 (power-up numbers, drop rates, down/revive times, PaP repack), task 4 (rounds 1-10 by hand, stuck zombie respawn), task 5 (bounds/exploits), `-PpapBench`, K3 `/zc` input validation.
+
 Tasks
 1. **Bug: cannot shoot after drinking a perk.** In the clip the ammo stays 20/102 for ~15 s after the bottle while the player types
    "gun can not shoot after drinking". The server lock is only `fireCooldown = tick + DRINK_TICKS` (50 ticks, `Machines.use`), so the cause is elsewhere.
