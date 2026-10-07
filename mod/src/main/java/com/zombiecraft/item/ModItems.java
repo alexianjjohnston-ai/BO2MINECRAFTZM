@@ -30,7 +30,14 @@ public final class ModItems {
 		}
 	}
 
+	/** Plain props drawn with a BO2 mesh when the local cache has one (the box's teddy bear and the Mystery Box itself). */
+	public static final Map<String, Item> PROPS = new LinkedHashMap<>();
+
 	public static void register() {
+		for (String id : new String[] {"teddy", "mystery_box"}) {
+			ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Payloads.id(id));
+			PROPS.put(id, Registry.register(BuiltInRegistries.ITEM, key, new Item(new Item.Properties().setId(key).stacksTo(1))));
+		}
 		for (WeaponDef w : Sheets.WEAPONS) {
 			if (w.upgrade()) continue;
 			ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Payloads.id(w.id()));
@@ -46,6 +53,12 @@ public final class ModItems {
 			s.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 		}
 		return s;
+	}
+
+	/** Key into bo2_models.json for the model this stack is drawn with, or null. */
+	public static String modelKeyOf(ItemStack s) {
+		if (s.getItem() instanceof GunItem g) return g.weaponId;
+		return s.getItem() == PROPS.get("teddy") ? "teddy" : s.getItem() == PROPS.get("mystery_box") ? "mystery_box" : null;
 	}
 
 	public static String weaponOf(ItemStack s) {

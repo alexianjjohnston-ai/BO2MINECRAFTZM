@@ -32,6 +32,7 @@ for h in "aknl":
 
 add("mystery_box", "machine", "p6_anim_zm_magic_box")
 add("mystery_box_fake", "machine", "p6_anim_zm_magic_box_fake")
+add("teddy", "machine", "zombie_teddybear")
 add("pack_a_punch", "machine", "p6_anim_zm_buildable_pap")
 add("pack_a_punch_on", "machine", "p6_anim_zm_buildable_pap_on")
 add("power_switch_body", "machine", "p6_zm_buildable_pswitch_body")

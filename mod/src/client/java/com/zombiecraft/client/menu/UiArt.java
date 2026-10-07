@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,9 +35,7 @@ public final class UiArt {
 			try {
 				Optional<Path> bo2 = Bo2Locator.find(game);
 				if (bo2.isEmpty()) { failed = true; return; }
-				String dump = System.getProperty("zombiecraft.bo2dump", "");
-				List<Path> dumps = dump.isBlank() ? List.of() : java.util.Arrays.stream(dump.split(";")).map(Path::of).toList();
-				UiAssets.prepare(game, bo2.get(), dumps, m -> ZombiecraftMod.LOG.info("Block Ops 2 menu art: {}", m));
+				UiAssets.prepare(game, bo2.get(), com.zombiecraft.bo2.Bo2Config.dumps(game), m -> ZombiecraftMod.LOG.info("Block Ops 2 menu art: {}", m));
 			} catch (IOException | RuntimeException e) {
 				ZombiecraftMod.LOG.warn("Block Ops 2 menu art unavailable: {}", e.toString());
 				failed = true;

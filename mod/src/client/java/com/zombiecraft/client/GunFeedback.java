@@ -127,9 +127,10 @@ public final class GunFeedback {
 		int side = mc.player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
 		double now = time(partialTick);
 		float kick = recoil(now);
-		pose.translate(0f, kick * 0.025f, kick * 0.09f);
-		pose.mulPose(Axis.XP.rotationDegrees(kick * 7.5f));
-		pose.mulPose(Axis.ZP.rotationDegrees(-side * kick * 1.4f));
+		pose.translate(-side * kick * 0.012f, kick * 0.04f, kick * 0.14f);
+		pose.mulPose(Axis.XP.rotationDegrees(kick * 10f));
+		pose.mulPose(Axis.YP.rotationDegrees(side * kick * 2.2f));
+		pose.mulPose(Axis.ZP.rotationDegrees(-side * kick * 2.4f));
 
 		float progress = reloadProgress(partialTick);
 		if (reloadTicks > 0 && progress < 1f) {

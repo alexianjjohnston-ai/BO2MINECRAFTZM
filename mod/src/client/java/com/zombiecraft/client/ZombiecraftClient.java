@@ -33,7 +33,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		EntityRendererRegistry.register(ZcEntities.ZOMBIE, ZombieRenderer::new);
+		EntityRendererRegistry.register(ZcEntities.ZOMBIE, com.zombiecraft.client.render.ZcZombieRenderer::new);
 		AutoWorld.register();
 		com.zombiecraft.client.menu.Bo2Menus.register();
 
@@ -68,7 +68,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 			if (FeedbackBench.finished()) mc.stop();
 		});
 		HudRenderCallback.EVENT.register(ZcHud::render);
-		ClientLifecycleEvents.CLIENT_STARTED.register(c -> AudioCache.prepareAsync());
+		ClientLifecycleEvents.CLIENT_STARTED.register(c -> { AudioCache.prepareAsync(); com.zombiecraft.client.render.ModelCache.ensureAsync(); });
 	}
 
 	private static void resetSession() {

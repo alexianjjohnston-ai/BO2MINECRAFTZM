@@ -147,6 +147,13 @@
   "note": ""
  },
  {
+  "id": "teddy",
+  "group": "machine",
+  "xmodel": "zombie_teddybear",
+  "world": "",
+  "note": ""
+ },
+ {
   "id": "pack_a_punch",
   "group": "machine",
   "xmodel": "p6_anim_zm_buildable_pap",
