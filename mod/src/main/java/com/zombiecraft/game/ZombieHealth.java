@@ -24,6 +24,8 @@ public final class ZombieHealth {
 			return;
 		}
 		z.hp = 0;
+		pg.kills++;
+		if (head && !melee) pg.headshots++;
 		int bonus = melee ? Sheets.sysInt("bonus_melee") : head ? Sheets.sysInt("bonus_head") : Sheets.sysInt("bonus_torso");
 		pg.earn(Sheets.sysInt("kill_points") + bonus);
 		ZombieTier t = Sheets.tier(z.tier);

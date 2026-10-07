@@ -28,7 +28,7 @@ public final class Payloads {
 	/** Everything the HUD needs, sent a few times a second. */
 	public record StateSync(int phase, int round, int points, int mag, int reserve, String gun, String prompt, String message,
 			boolean interactable, int zombiesLeft, int countdownSec, int roundsSurvived,
-			int perks, int instaSec, int doubleSec) implements CustomPacketPayload {
+			int perks, int instaSec, int doubleSec, int kills, int headshots, int downs, int revives) implements CustomPacketPayload {
 		public static final Type<StateSync> TYPE = new Type<>(id("state"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, StateSync> CODEC = StreamCodec.ofMember(StateSync::write, StateSync::read);
 
@@ -37,12 +37,13 @@ public final class Payloads {
 			b.writeUtf(gun); b.writeUtf(prompt); b.writeUtf(message); b.writeBoolean(interactable);
 			b.writeVarInt(zombiesLeft); b.writeVarInt(countdownSec); b.writeVarInt(roundsSurvived);
 			b.writeVarInt(perks); b.writeVarInt(instaSec); b.writeVarInt(doubleSec);
+			b.writeVarInt(kills); b.writeVarInt(headshots); b.writeVarInt(downs); b.writeVarInt(revives);
 		}
 
 		static StateSync read(RegistryFriendlyByteBuf b) {
 			return new StateSync(b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(),
 					b.readUtf(), b.readUtf(), b.readUtf(), b.readBoolean(), b.readVarInt(), b.readVarInt(), b.readVarInt(),
-					b.readVarInt(), b.readVarInt(), b.readVarInt());
+					b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt());
 		}
 
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
