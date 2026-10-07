@@ -13,16 +13,12 @@ if not defined JAVA_HOME (
 echo Using %JAVA_HOME%
 
 rem --- Sync with GitHub every start (fast-forward only; never overwrites local work) ---
-where git >nul 2>nul
-if errorlevel 1 (
-  echo [sync] git not found, skipping update.
+rem Works with git clones and with downloaded zips; also fetches the OpenAssetTools converter the game needs.
+echo [sync] Checking GitHub for updates...
+if exist "%~dp0tools\update.ps1" (
+  powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0tools\update.ps1"
 ) else (
-  pushd "%~dp0"
-  echo [sync] Checking GitHub for updates...
-  git pull --ff-only
-  if errorlevel 1 echo [sync] Could not fast-forward ^(offline, local changes in the way, or no upstream^). Continuing with the current version.
-  for /f %%H in ('git rev-parse --short HEAD') do echo [sync] Version %%H
-  popd
+  echo [sync] tools\update.ps1 missing - download the project again from https://github.com/alexianjjohnston-ai/BO2MINECRAFTZM
 )
 
 rem --- Look for Black Ops II every start (read-only). The game does its own full search too; this just reports and passes a hint. ---
