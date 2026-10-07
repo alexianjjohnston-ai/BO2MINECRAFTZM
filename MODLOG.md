@@ -113,3 +113,25 @@ Dev tip: set `pauseOnLostFocus:false` in mod/run/options.txt or the integrated s
 
 ## Next
 Finish the BO2 zombie renderer on branch `bo2-visuals` (models, textures, anims are readable; renderer not wired). Then: bigger map, power/perks/power-ups, 3D guns, box model.
+
+## UI with real BO2 art (2026-10-06)
+Menus and HUD use art converted on the player's PC from their own install (`bo2/UiAssets`, cache `zombiecraft/bo2/ui/`, needs OAT Unlinker like the models). Falls back to plain drawing without it.
+Done: title screen, lobby, map select (Green Run open, 5 locked "coming soon"), BO2 loading postcards, pause menu, HUD (weapon icons incl. Ray Gun, round tally marks, low-health red edge instead of hearts/XP).
+Perk icons are extracted (specialty_*_zombies) but not drawn yet: the HUD perk row comes with the perk system.
+Dev: put `oat.dir=<OAT folder>` in mod/run/config/zombiecraft.properties so the dev client can build the art cache.
+
+## Naming and HUD pass (2026-10-06)
+User-facing name is now "Block Ops 2" (UI, lang, mod name, README, licence). Internal ids, packages, folders (`zombiecraft/`), env vars and system properties are unchanged on purpose (saves, caches, config keep working).
+HUD now follows the BO2 Zombies layout: chalkmarks tallies bottom left, points + cyan +N popup + ammo bottom right over the BO2 blood splat (hud_dpad_blood), grenade icon, BO2 low-health overlay, small crosshair. Only Green Run is selectable; it starts the Diner and shows the diner postcard.
+Real BO2 images worth reusing later: chalkmarks_0-5, hud_dpad_blood, overlay_low_health, grenadeicon_32, damage_feedback (hit marker), hit_direction_zm, specialty_*_zombies (common_zm / zm_transit).
+
+## Menu audio + HUD banner (2026-10-06)
+Menu music = BO2 `mus_zombie_splash_screen` (restarted when it ends, stopped when a game starts). UI sounds: uin_main_nav (hover), uin_lobby_join, uin_cmn_backout, uin_main_pause, zmb_ui_globe_spin_start / map_level_switch / map_level_select, cac_cmn_deny (locked map). In game: mus_zombie_game_over, chr_heart_beat_ingame at low health. 11 new cues added via tools/audio_seed.json + derive_audio.py. CueMixer now plays menu sounds with no world and while paused.
+"Get ready" and "Next round" banners removed; the controls are listed on the pause menu instead.
+
+## Sound pass 2 (2026-10-06)
+Menu music is now the real BO2 front-end theme (`mus_fe_main` = mus_bo2_theme_ambient, from spl_frontend.all.sabs; loops). Vanilla Minecraft music is stopped every tick; the local player and all zombies are silent (vanilla step/hurt/ambient sounds), so only BO2 cues play.
+Added: player footsteps (fly_step_walk/run_plr_ceramic), zombie footsteps (fly_step_*_npc_ceramic), diner ambience (amb_diner_l/r + light hum loops, random creaks/rustles near players). Quieter: child laugh, zombie groans (also less frequent).
+Alias map note: dev alias_map_transit.json now also reads spl_frontend (out5) and uses the full install (D:/New folder (2)), since D:/SteamLibrary lacks the spl_* banks.
+
+Loading screen music: `mus_load_zm_transit` (BO2's Tranzit loading track, lovesong_for_the_damned, from zmb_code_post_gfx.all.sabs) plays while the BO2 loading screen is shown and stops when it ends.

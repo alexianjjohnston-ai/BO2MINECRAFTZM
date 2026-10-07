@@ -35,6 +35,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		EntityRendererRegistry.register(ZcEntities.ZOMBIE, ZombieRenderer::new);
 		AutoWorld.register();
+		com.zombiecraft.client.menu.Bo2Menus.register();
 
 		interactKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.zombiecraft.interact", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F, "key.categories.zombiecraft"));
 		reloadKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.zombiecraft.reload", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.categories.zombiecraft"));
@@ -63,6 +64,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 			keepWeaponSelected(mc);
 			GunFeedback.tick(mc);
 			ZcHud.tick(mc);
+			com.zombiecraft.client.audio.Footsteps.tick(mc);
 			if (FeedbackBench.finished()) mc.stop();
 		});
 		HudRenderCallback.EVENT.register(ZcHud::render);

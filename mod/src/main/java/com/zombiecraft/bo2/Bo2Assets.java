@@ -92,7 +92,7 @@ public final class Bo2Assets {
 		if (dumpRoots.isEmpty()) {
 			Path exe = findUnlinker(gameDir).orElseThrow(() -> new IOException("OpenAssetTools Unlinker.exe not found (put it in zombiecraft/tools/oat or set ZOMBIECRAFT_OAT_DIR)"));
 			log.accept("Reading Black Ops II models (first run only, about a minute)...");
-			unlink(exe, bo2Dir, temp, log);
+			unlink(exe, bo2Dir, temp, log, ZONES, ASSET_TYPES);
 			dumpRoots.add(temp);
 			ownDump = true;
 		}
@@ -103,12 +103,12 @@ public final class Bo2Assets {
 		}
 	}
 
-	private static void unlink(Path exe, Path bo2Dir, Path out, Consumer<String> log) throws IOException {
+	static void unlink(Path exe, Path bo2Dir, Path out, Consumer<String> log, String[] zones, String[] types) throws IOException {
 		Files.createDirectories(out);
 		Path zoneDir = bo2Dir.resolve("zone").resolve("all");
 		List<String> cmd = new ArrayList<>(List.of(exe.toString(), "--no-color", "--model-format", "XMODEL_EXPORT", "--image-format", "DDS",
-				"--include-assets", String.join(",", ASSET_TYPES), "-o", out.toString() + "/?zone?"));
-		for (String z : ZONES) {
+				"--include-assets", String.join(",", types), "-o", out.toString() + "/?zone?"));
+		for (String z : zones) {
 			Path ff = zoneDir.resolve(z + ".ff");
 			if (Files.isRegularFile(ff)) cmd.add(ff.toString());
 		}

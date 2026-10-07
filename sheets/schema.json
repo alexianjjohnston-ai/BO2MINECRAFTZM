@@ -602,7 +602,8 @@
      "MUSIC",
      "PLAYERS",
      "HOSTILE",
-     "BLOCKS"
+     "BLOCKS",
+     "AMBIENT"
     ]
    },
    "volume": {

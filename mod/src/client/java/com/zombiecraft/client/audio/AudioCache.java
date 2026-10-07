@@ -39,11 +39,11 @@ public final class AudioCache {
 			if (bo2.isEmpty()) {
 				status = Status.NO_BO2;
 				detail = "Black Ops II not found";
-				ZombiecraftMod.LOG.warn("Zombiecraft audio: Black Ops II not found, using Minecraft sounds. Set bo2.dir in config/zombiecraft.properties or ZOMBIECRAFT_BO2_DIR.");
+				ZombiecraftMod.LOG.warn("Block Ops 2 audio: Black Ops II not found, using Minecraft sounds. Set bo2.dir in config/zombiecraft.properties or ZOMBIECRAFT_BO2_DIR.");
 				return;
 			}
-			var r = CueExtractor.extract(bo2.get(), dir, msg -> ZombiecraftMod.LOG.warn("Zombiecraft audio: {}", msg));
-			ZombiecraftMod.LOG.info("Zombiecraft audio: {} sounds from {} ({}), {} skipped", r.files(), bo2.get(), r.fromCache() ? "cache up to date" : (r.bytes() / 1_000_000) + " MB extracted", r.skipped());
+			var r = CueExtractor.extract(bo2.get(), dir, msg -> ZombiecraftMod.LOG.warn("Block Ops 2 audio: {}", msg));
+			ZombiecraftMod.LOG.info("Block Ops 2 audio: {} sounds from {} ({}), {} skipped", r.files(), bo2.get(), r.fromCache() ? "cache up to date" : (r.bytes() / 1_000_000) + " MB extracted", r.skipped());
 			CueMixer m = CueMixer.create(dir);
 			if (m == null) { status = Status.ERROR; detail = "no audio output"; return; }
 			CueMixer.INSTANCE = m;
@@ -52,7 +52,7 @@ public final class AudioCache {
 		} catch (IOException | RuntimeException ex) {
 			status = Status.ERROR;
 			detail = String.valueOf(ex);
-			ZombiecraftMod.LOG.error("Zombiecraft audio: could not prepare the Black Ops II sounds, using Minecraft sounds", ex);
+			ZombiecraftMod.LOG.error("Block Ops 2 audio: could not prepare the Black Ops II sounds, using Minecraft sounds", ex);
 		}
 	}
 }

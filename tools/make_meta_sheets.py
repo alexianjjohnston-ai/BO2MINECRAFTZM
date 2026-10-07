@@ -55,7 +55,7 @@ schema = {
  "map_boxes": {"file": "map_boxes.json", "key": "id", "columns": {"id": STR, "x": NUM, "y": NUM, "z": NUM, "facing": FACING, "initial": BOOL, "room": STR}},
  "map_pap": {"file": "map_pap.json", "key": "id", "columns": {"id": STR, "x1": NUM, "y1": NUM, "z1": NUM, "x2": NUM, "y2": NUM, "z2": NUM, "facing": FACING, "room": STR}},
  "map_player": {"file": "map_player.json", "key": "id", "columns": {"id": STR, "x": NUM, "y": NUM, "z": NUM, "yaw": NUM, "room": STR}},
- "audio": {"file": "audio.json", "key": "cue", "columns": {"cue": STR, "category": enum("music", "ui", "world", "vox", "weapon"), "soundSource": enum("MASTER", "MUSIC", "PLAYERS", "HOSTILE", "BLOCKS"),
+ "audio": {"file": "audio.json", "key": "cue", "columns": {"cue": STR, "category": enum("music", "ui", "world", "vox", "weapon"), "soundSource": enum("MASTER", "MUSIC", "PLAYERS", "HOSTILE", "BLOCKS", "AMBIENT"),
     "volume": NUM, "positional": BOOL, "loop": BOOL, "variants": NUM, "fallback": STR}},
  "audio_files": {"file": "audio_files.json", "key": "id", "columns": {"id": STR, "cue": ref("audio.cue"), "bank": STR, "entryId": NUM, "size": NUM, "format": enum("pcm16", "flac"), "channels": NUM, "rateHz": NUM, "frames": NUM}},
  "bo2_models": {"file": "bo2_models.json", "key": "id", "columns": {"id": STR, "group": enum("gun", "zombie", "head", "machine", "prop", "perkbottle", "player"), "xmodel": STR, "world": opt(STR), "note": opt(STR)}},

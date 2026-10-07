@@ -2,6 +2,8 @@ package com.zombiecraft.client.hud;
 
 import com.zombiecraft.client.ZombiecraftClient;
 import com.zombiecraft.client.GunFeedback;
+import com.zombiecraft.client.menu.UiArt;
+import com.zombiecraft.client.menu.UiFont;
 import com.zombiecraft.item.ModItems;
 import com.zombiecraft.net.Payloads;
 import net.minecraft.client.DeltaTracker;
@@ -16,7 +18,7 @@ public final class ZcHud {
 	private static final int DAMAGE_FLASH_TICKS = 10;
 	private static LocalPlayer trackedPlayer;
 	private static float previousHealth;
-	private static int previousHurtTime, previousPhase, damageFlashTicks;
+	private static int previousHurtTime, previousPhase, damageFlashTicks, lastPoints = -1, popup, popupTicks, heartTicks;
 
 	private ZcHud() {}
 
@@ -28,6 +30,7 @@ public final class ZcHud {
 
 	/** Called once per client tick, even when the HUD is hidden. */
 	public static void tick(Minecraft mc) {
+		if (popupTicks > 0) popupTicks--;
 		int phase = ZombiecraftClient.state.phase();
 		if (!usesWeaponHud(mc)) {
 			reset();
@@ -58,19 +61,28 @@ public final class ZcHud {
 			previousHealth = health;
 			previousHurtTime = player.hurtTime;
 		}
+		// low health: BO2's heartbeat
+		if (!mc.isPaused() && health <= player.getMaxHealth() * 0.35f && ++heartTicks >= 24) { heartTicks = 0; com.zombiecraft.client.audio.MenuAudio.play("chr_heart_beat_ingame"); }
+		else if (health > player.getMaxHealth() * 0.35f) heartTicks = 24;
 		previousPhase = phase;
 	}
 
 	public static void reset() {
 		trackedPlayer = null;
+		lastPoints = -1;
+		popupTicks = 0;
 		previousHealth = 0;
 		previousHurtTime = previousPhase = damageFlashTicks = 0;
 	}
 
-	private static void damageFlash(GuiGraphics g, float partialTick) {
+	/** Red screen edge: a pulse when hit, and a steady one while health is low (BO2 has no hearts). */
+	private static void damageFlash(GuiGraphics g, Minecraft mc, float partialTick) {
 		float strength = Math.max(0f, (damageFlashTicks - partialTick) / DAMAGE_FLASH_TICKS);
+		float low = 1f - mc.player.getHealth() / (mc.player.getMaxHealth() * 0.5f);
+		strength = Math.max(strength, Math.max(0f, Math.min(1f, low)) * 0.8f);
 		if (strength <= 0f) return;
 		int w = g.guiWidth(), h = g.guiHeight();
+		if (UiArt.draw(g, "overlay_low_health", 0, 0, w, h, ((int) (255 * Math.min(1f, strength * 1.2f)) << 24) | 0xFFFFFF)) return;
 		int edge = Math.max(12, Math.min(48, Math.min(w, h) / 8));
 		for (int i = 0; i < edge; i++) {
 			float fade = 1f - (float) i / edge;
@@ -84,25 +96,35 @@ public final class ZcHud {
 		}
 	}
 
-	private static void weaponSlots(GuiGraphics g, Minecraft mc) {
+	/** BO2 weapon icon files by weapon id (pack-a-punched guns use the base gun's icon). */
+	private static String icon(String weaponId) {
+		String id = weaponId.replace("_pap", "");
+		return switch (id) {
+			case "m1911" -> "menu_mp_weapons_1911_big";
+			case "rottweil72" -> "menu_mp_weapons_olympia_big";
+			case "mp5k" -> "menu_mp_weapons_mp5_big";
+			case "ray_gun" -> "menu_zm_weapons_raygun_big";
+			default -> "menu_mp_weapons_" + id + "_big";
+		};
+	}
+
+	/** Icon file of the gun in hand, or null. */
+	private static String heldIcon(Minecraft mc) {
 		Inventory inventory = mc.player.getInventory();
-		int count = 0;
-		for (int slot = 0; slot < Inventory.getSelectionSize(); slot++) {
-			if (ModItems.weaponOf(inventory.getItem(slot)) != null) count++;
-		}
-		if (count == 0) return;
-		int width = 28, gap = 4;
-		int x = (g.guiWidth() - (count * (width + gap) - gap)) / 2;
-		int y = g.guiHeight() - 27;
-		for (int slot = 0; slot < Inventory.getSelectionSize(); slot++) {
-			var stack = inventory.getItem(slot);
-			if (ModItems.weaponOf(stack) == null) continue;
-			boolean selected = slot == inventory.selected;
-			g.fill(x, y, x + width, y + 24, selected ? 0xC02A2722 : 0x8A141414);
-			g.renderOutline(x, y, width, 24, selected ? 0xFFD8A020 : 0x80666666);
-			g.renderItem(stack, x + 6, y + 2);
-			g.drawString(mc.font, Integer.toString(slot + 1), x + 2, y + 14, selected ? 0xFFFFD878 : 0xFFAAAAAA, true);
-			x += width + gap;
+		String id = ModItems.weaponOf(inventory.getItem(inventory.selected));
+		return id == null ? null : icon(id);
+	}
+
+	/** BO2's small four-tick crosshair (the vanilla one is hidden while a match runs). */
+	private static void crosshair(GuiGraphics g, Minecraft mc) {
+		if (!mc.options.getCameraType().isFirstPerson() || mc.screen != null) return;
+		int cx = g.guiWidth() / 2, cy = g.guiHeight() / 2;
+		for (int pass = 0; pass < 2; pass++) {
+			int c = pass == 0 ? 0x90000000 : 0xFFFFFFFF, o = pass == 0 ? 1 : 0;
+			g.fill(cx - o, cy - 7 - o, cx + 1 + o, cy - 3 + o, c);
+			g.fill(cx - o, cy + 4 - o, cx + 1 + o, cy + 8 + o, c);
+			g.fill(cx - 7 - o, cy - o, cx - 3 + o, cy + 1 + o, c);
+			g.fill(cx + 4 - o, cy - o, cx + 8 + o, cy + 1 + o, c);
 		}
 	}
 
@@ -125,13 +147,17 @@ public final class ZcHud {
 		}
 	}
 
+	/** Round tallies from BO2's own chalk-mark images, tinted blood red: groups of five, then the remainder. */
+	private static void tally(GuiGraphics g, int n, int x, int y, int size) {
+		int step = size * 3 / 4, groups = n / 5, rest = n % 5;
+		for (int i = 0; i < groups; i++) UiArt.draw(g, "chalkmarks_5", x + i * step, y, size, size, 0xFFB01010);
+		if (rest > 0) UiArt.draw(g, "chalkmarks_" + rest, x + groups * step, y, size, size, 0xFFB01010);
+	}
+
 	private static void text(GuiGraphics g, Font font, String s, int x, int y, float scale, int color, boolean centered) {
-		g.pose().pushPose();
-		g.pose().scale(scale, scale, 1f);
-		int w = font.width(s);
-		int px = centered ? (int) (x / scale - w / 2f) : (int) (x / scale);
-		g.drawString(font, s, px, (int) (y / scale), color, true);
-		g.pose().popPose();
+		float height = 9f * scale * 1.3f;
+		int px = centered ? x - UiFont.width(s, height) / 2 : x;
+		UiFont.draw(g, s, px, y, height, color, true);
 	}
 
 	public static void render(GuiGraphics g, DeltaTracker dt) {
@@ -141,7 +167,7 @@ public final class ZcHud {
 		Font font = mc.font;
 		int w = g.guiWidth(), h = g.guiHeight();
 		float partialTick = dt.getGameTimeDeltaPartialTick(false);
-		damageFlash(g, partialTick);
+		damageFlash(g, mc, partialTick);
 
 		// tell the player where the sounds come from
 		var audio = com.zombiecraft.client.audio.AudioCache.status;
@@ -153,36 +179,41 @@ public final class ZcHud {
 			text(g, font, "You survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " round" : " rounds"), w / 2, h / 2 + 8, 2f, 0xFFFFFFFF, true);
 			return;
 		}
-		weaponSlots(g, mc);
 		hitMarker(g, mc, partialTick);
+		crosshair(g, mc);
 
-		// round counter (bottom left, red) and points
-		if (s.round() > 0) text(g, font, String.valueOf(s.round()), 14, h - 78, 5f, 0xFFB01010, false);
-		text(g, font, String.valueOf(s.points()), 16, h - 30, 2f, 0xFFFFFFFF, false);
+		// round tallies bottom left (a number once past round 10)
+		int tallySize = Math.max(32, h / 6);
+		if (s.round() > 10) text(g, font, String.valueOf(s.round()), 14, h - 14 - (int) (9 * 4f * 1.3f), 4f, 0xFFB01010, false);
+		else if (s.round() > 0) tally(g, s.round(), 6, h - tallySize - 6, tallySize);
 
-		// ammo (bottom right)
+		// bottom right, stacked up from the ammo line so nothing overlaps: blood splat, points, +points, ammo
+		float ammoScale = 2.2f, pointsScale = 1.9f, popScale = 1.2f;
+		int right = w - Math.max(16, w / 14), ammoH = (int) (9 * ammoScale * 1.3f), popH = (int) (9 * popScale * 1.3f), pointsH = (int) (9 * pointsScale * 1.3f);
+		int ammoY = h - 10 - ammoH, popY = ammoY - popH - 3, pointsY = popY - pointsH - 1;
+		UiArt.draw(g, "hud_dpad_blood", right - 130, pointsY - 12, 170, 85 + (h - 10 - pointsY) - 40, 0xA0B01010);
+		if (s.points() != lastPoints) { if (s.points() > lastPoints && lastPoints >= 0) { popup = s.points() - lastPoints; popupTicks = 50; } lastPoints = s.points(); }
+		String pts = String.valueOf(s.points());
+		text(g, font, pts, right - UiFont.width(pts, 9f * pointsScale * 1.3f), pointsY, pointsScale, 0xFFFFFFFF, false);
+		if (popupTicks > 0) {
+			String pop = "+" + popup;
+			text(g, font, pop, right - UiFont.width(pop, 9f * popScale * 1.3f), popY, popScale, (Math.min(255, popupTicks * 8) << 24) | 0x5FE0E8, false);
+		}
 		if (s.mag() >= 0) {
-			text(g, font, s.gun(), w - 14 - font.width(s.gun()), h - 60, 1f, 0xFFDDDDDD, false);
-			String ammo = s.mag() + " / " + s.reserve();
-			text(g, font, ammo, w - 14 - (int) (font.width(ammo) * 2f), h - 48, 2f, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
+			String ammo = s.mag() + "/" + s.reserve();
+			int ammoW = UiFont.width(ammo, 9f * ammoScale * 1.3f);
+			text(g, font, ammo, right - ammoW, ammoY, ammoScale, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
+			String held = heldIcon(mc);
+			if (held != null && !UiArt.draw(g, held, right - ammoW - 70, ammoY - 4, 64, 32, 0xC0FFFFFF)) text(g, font, s.gun(), right - ammoW - 8 - UiFont.width(s.gun(), 9f * 1.3f), ammoY + 6, 1f, 0xFFDDDDDD, false);
+			UiArt.draw(g, "grenadeicon_32", right + 8, ammoY, 20, 20);
 			if (GunFeedback.isReloading()) {
 				int barWidth = 64;
-				text(g, font, "RELOADING", w - 14 - font.width("RELOADING"), h - 25, 1f, 0xFFFFD878, false);
-				g.fill(w - 14 - barWidth, h - 12, w - 14, h - 10, 0xA0404040);
-				g.fill(w - 14 - barWidth, h - 12, w - 14 - barWidth + (int) (barWidth * GunFeedback.reloadProgress(partialTick)), h - 10, 0xFFD8A020);
+				g.fill(right - barWidth, h - 6, right, h - 4, 0xA0404040);
+				g.fill(right - barWidth, h - 6, right - barWidth + (int) (barWidth * GunFeedback.reloadProgress(partialTick)), h - 4, 0xFFD8A020);
 			}
 		}
 
-		// zombies left (top right, small)
-		if (s.phase() == Payloads.PHASE_ACTIVE) text(g, font, "Zombies: " + s.zombiesLeft(), w - 12 - font.width("Zombies: 00"), 10, 1f, 0xFFAAAAAA, false);
-
 		// banners
-		if (s.phase() == Payloads.PHASE_COUNTDOWN) {
-			text(g, font, "Get ready... " + s.countdownSec(), w / 2, h / 3, 3f, 0xFFFFFFFF, true);
-			text(g, font, "Right click: shoot    R: reload    Left click: knife", w / 2, h / 3 + 40, 1.0f, 0xFFDDDDDD, true);
-			text(g, font, "F: buy guns, Mystery Box, Pack-a-Punch  (hold F to repair windows)", w / 2, h / 3 + 54, 1.0f, 0xFFDDDDDD, true);
-		}
-		else if (s.phase() == Payloads.PHASE_INTERMISSION) text(g, font, "Next round in " + s.countdownSec(), w / 2, h / 4, 2f, 0xFFCCCCCC, true);
 		if (!s.message().isEmpty()) text(g, font, s.message(), w / 2, h / 4 + 24, 3f, 0xFFD8A020, true);
 
 		// prompt (lower middle)

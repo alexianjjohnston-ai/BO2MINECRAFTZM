@@ -129,7 +129,7 @@
   "zmb_laugh_child": {
    "category": "world",
    "soundSource": "BLOCKS",
-   "volume": 1.0,
+   "volume": 0.45,
    "fallback": "minecraft:entity.witch.celebrate"
   },
   "zmb_box_move": {
@@ -155,13 +155,148 @@
    "soundSource": "HOSTILE",
    "volume": 1.0,
    "fallback": "minecraft:entity.zombie.ambient"
+  },
+  "uin_main_nav": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "uin_cmn_backout": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "cac_cmn_deny": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:block.note_block.bass"
+  },
+  "uin_lobby_join": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:entity.experience_orb.pickup"
+  },
+  "uin_main_pause": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "zmb_ui_map_level_select": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.beacon.power_select"
+  },
+  "zmb_ui_map_level_switch": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.7,
+   "fallback": "minecraft:ui.button.click"
+  },
+  "zmb_ui_globe_spin_start": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:block.beacon.ambient"
+  },
+  "mus_zombie_game_over": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 1.0,
+   "fallback": "minecraft:block.bell.resonate"
+  },
+  "chr_heart_beat_ingame": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.7,
+   "fallback": "minecraft:block.note_block.basedrum"
+  },
+  "mus_fe_main": {
+   "category": "music",
+   "soundSource": "MUSIC",
+   "volume": 0.7,
+   "fallback": "minecraft:music_disc.chirp"
+  },
+  "fly_step_walk_plr_ceramic": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.5,
+   "fallback": "minecraft:block.stone.step"
+  },
+  "fly_step_run_plr_ceramic": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.55,
+   "fallback": "minecraft:block.stone.step"
+  },
+  "fly_step_walk_npc_ceramic": {
+   "category": "world",
+   "soundSource": "HOSTILE",
+   "volume": 0.4,
+   "fallback": "minecraft:block.stone.step"
+  },
+  "fly_step_run_npc_ceramic": {
+   "category": "world",
+   "soundSource": "HOSTILE",
+   "volume": 0.45,
+   "fallback": "minecraft:block.stone.step"
+  },
+  "amb_diner_l": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.3,
+   "fallback": "minecraft:ambient.cave"
+  },
+  "amb_diner_r": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.3,
+   "fallback": "minecraft:ambient.cave"
+  },
+  "amb_flourescent_light": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.15,
+   "fallback": "minecraft:block.beacon.ambient"
+  },
+  "amb_diner_metal_creak": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.6,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_metal_creak_lgt": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.6,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_paper_rustle": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.6,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "mus_load_zm_transit": {
+   "category": "music",
+   "soundSource": "MUSIC",
+   "volume": 0.8,
+   "fallback": "minecraft:music_disc.chirp"
   }
  },
  "roles": {
   "cueAmbient": {
    "category": "vox",
    "soundSource": "HOSTILE",
-   "volume": 0.9,
+   "volume": 0.5,
    "fallback": "minecraft:entity.zombie.ambient"
   },
   "cueAttack": {
@@ -179,7 +314,7 @@
   "cueSpawn": {
    "category": "vox",
    "soundSource": "HOSTILE",
-   "volume": 0.9,
+   "volume": 0.6,
    "fallback": "minecraft:entity.zombie.ambient"
   },
   "cueTear": {
@@ -191,7 +326,7 @@
   "cueRun": {
    "category": "vox",
    "soundSource": "HOSTILE",
-   "volume": 1.0,
+   "volume": 0.55,
    "fallback": "minecraft:entity.zombie.ambient"
   },
   "cueFire": {

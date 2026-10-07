@@ -20,7 +20,7 @@ import net.minecraft.world.level.levelgen.presets.WorldPresets;
 public final class AutoWorld {
 	private AutoWorld() {}
 
-	public static final String WORLD = "Zombiecraft";
+	public static final String WORLD = "Block Ops 2";
 	private static boolean done;
 
 	public static void register() {
@@ -28,24 +28,25 @@ public final class AutoWorld {
 		ScreenEvents.AFTER_INIT.register((mc, screen, w, h) -> {
 			if (done || !(screen instanceof TitleScreen)) return;
 			done = true;
-			mc.execute(() -> open(mc, screen));
+			mc.execute(() -> start(mc, screen));
 		});
 	}
 
-	private static void open(Minecraft mc, net.minecraft.client.gui.screens.Screen title) {
+	public static void start(Minecraft mc, net.minecraft.client.gui.screens.Screen title) {
+		com.zombiecraft.client.audio.MenuAudio.stopMusic();
 		try {
 			if (mc.getLevelSource().levelExists(WORLD)) {
-				ZombiecraftMod.LOG.info("Zombiecraft: opening the existing world");
+				ZombiecraftMod.LOG.info("Block Ops 2: opening the existing world");
 				mc.createWorldOpenFlows().openWorld(WORLD, () -> {});
 			} else {
-				ZombiecraftMod.LOG.info("Zombiecraft: creating the flat world");
+				ZombiecraftMod.LOG.info("Block Ops 2: creating the flat world");
 				LevelSettings settings = new LevelSettings(WORLD, GameType.ADVENTURE, false, Difficulty.NORMAL, true,
 						new GameRules(FeatureFlags.DEFAULT_FLAGS), WorldDataConfiguration.DEFAULT);
 				mc.createWorldOpenFlows().createFreshLevel(WORLD, settings, new WorldOptions(20261006L, false, false),
 						WorldPresets::createFlatWorldDimensions, title);
 			}
 		} catch (RuntimeException e) {
-			ZombiecraftMod.LOG.error("Zombiecraft: could not open the world automatically", e);
+			ZombiecraftMod.LOG.error("Block Ops 2: could not open the world automatically", e);
 			done = false;
 		}
 	}

@@ -5,7 +5,8 @@
   "client": [
     "ZcGuiMixin",
     "ZcMouseHandlerMixin",
-    "ZcItemInHandRendererMixin"
+    "ZcItemInHandRendererMixin",
+    "ZcLoadingScreenMixin"
   ],
   "injectors": { "defaultRequire": 1 }
 }

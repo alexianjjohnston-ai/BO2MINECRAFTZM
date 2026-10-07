@@ -32,7 +32,7 @@ public final class CueMixer {
 	private record Sample(short[] pcm, int channels) {}
 
 	private static final class Voice {
-		String cue; Sample s; double pos; double step; float gain; boolean loop, positional; double x, y, z;
+		String cue; Sample s; double pos; double step; float gain; boolean loop, positional, menu; double x, y, z;
 	}
 
 	private final Map<String, List<Sample>> bank = new HashMap<>();
@@ -62,10 +62,10 @@ public final class CueMixer {
 			Thread t = new Thread(m::mixLoop, "zombiecraft-mixer");
 			t.setDaemon(true);
 			t.start();
-			ZombiecraftMod.LOG.info("Zombiecraft mixer: {} sounds loaded", loaded);
+			ZombiecraftMod.LOG.info("Block Ops 2 mixer: {} sounds loaded", loaded);
 			return loaded > 0 ? m : null;
 		} catch (LineUnavailableException | IOException | RuntimeException e) {
-			ZombiecraftMod.LOG.warn("Zombiecraft mixer: no audio line, using Minecraft sounds ({})", e.toString());
+			ZombiecraftMod.LOG.warn("Block Ops 2 mixer: no audio line, using Minecraft sounds ({})", e.toString());
 			return null;
 		}
 	}
@@ -103,6 +103,17 @@ public final class CueMixer {
 		return true;
 	}
 
+	/** A menu sound or music: plays on any screen, even paused or with no world. */
+	public boolean playMenu(CueDef def, float volume) {
+		if (!play(def, false, 0, 0, 0, volume, 1f)) return false;
+		synchronized (voices) { voices.get(voices.size() - 1).menu = true; }
+		return true;
+	}
+
+	public boolean playing(String cue) {
+		synchronized (voices) { return voices.stream().anyMatch(v -> v.cue.equals(cue)); }
+	}
+
 	public void stop(String cue) {
 		synchronized (voices) { voices.removeIf(v -> v.cue.equals(cue)); }
 	}
@@ -113,15 +124,18 @@ public final class CueMixer {
 		while (running) {
 			Arrays.fill(mix, 0f);
 			Minecraft mc = Minecraft.getInstance();
-			boolean idle = mc.level == null || mc.player == null || mc.isPaused();
-			if (!idle) {
-				double lx = mc.player.getX(), ly = mc.player.getEyeY(), lz = mc.player.getZ();
-				double yaw = Math.toRadians(mc.player.getYRot());
+			// in a world, game sounds freeze while paused or loading; menu sounds and music always play
+			boolean frozen = mc.level != null && (mc.player == null || mc.isPaused());
+			{
+				boolean inWorld = mc.level != null && mc.player != null;
+				double lx = inWorld ? mc.player.getX() : 0, ly = inWorld ? mc.player.getEyeY() : 0, lz = inWorld ? mc.player.getZ() : 0;
+				double yaw = inWorld ? Math.toRadians(mc.player.getYRot()) : 0;
 				double rx = -Math.cos(yaw), rz = -Math.sin(yaw);
 				synchronized (voices) {
 					Iterator<Voice> it = voices.iterator();
 					while (it.hasNext()) {
 						Voice v = it.next();
+						if (frozen && !v.menu) continue;
 						float gl = v.gain, gr = v.gain;
 						if (v.positional) {
 							double dx = v.x - lx, dy = v.y - ly, dz = v.z - lz;
