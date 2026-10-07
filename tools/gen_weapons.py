@@ -56,7 +56,7 @@ def row(id_, name, bo2, d, kind, shape, color, wall, boxw, start, papname, papid
         rangeMin=round(num(d, 'minDamageRange') * IN, 1) if not projectile else 0.0,
         headMult=1.5 if pellets > 1 else (1.0 if projectile else 3.0), pellets=pellets, spreadDeg=spread,
         fireTime=num(d, 'fireTime', 0.1), burstCount=3 if mode == 'burst' else 1, burstGap=num(d, 'burstFireDelay') if mode == 'burst' else 0.0,
-        mag=clip, reserve=reserve, reloadTime=num(d, 'reloadTime', 2.0), reloadEmptyTime=num(d, 'reloadEmptyTime', num(d, 'reloadTime', 2.0)),
+        mag=clip, reserve=reserve, startReserve=(int(num(d, 'startAmmo', mags)) * (1 if projectile else clip)), reloadTime=num(d, 'reloadTime', 2.0), reloadEmptyTime=num(d, 'reloadEmptyTime', num(d, 'reloadTime', 2.0)),
         projectile=projectile, projSpeed=round(num(d, 'projectileSpeed') * IN, 1), explRadius=round(num(d, 'explosionRadius') * IN, 2),
         range=64.0,
         wallCost=wall, boxWeight=boxw, start=start, upgrade=upgrade, papId=(papid or None), papName=papname,

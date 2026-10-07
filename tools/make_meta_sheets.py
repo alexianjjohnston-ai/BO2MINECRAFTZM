@@ -40,7 +40,7 @@ schema = {
     "cueAmbient": ref("audio.cue"), "cueAttack": ref("audio.cue"), "cueDeath": ref("audio.cue"), "cueSpawn": ref("audio.cue"), "cueTear": ref("audio.cue"), "cueRun": ref("audio.cue"), "status": ST}},
  "weapons": {"file": "weapons.json", "key": "id", "columns": {"id": STR, "name": STR, "bo2Id": STR, "kind": enum("pistol", "shotgun", "smg", "rifle", "raygun"), "fireMode": enum("semi", "auto", "burst"),
     "damage": NUM, "damageMin": NUM, "rangeFull": NUM, "rangeMin": NUM, "headMult": NUM, "pellets": NUM, "spreadDeg": NUM, "fireTime": NUM, "burstCount": NUM, "burstGap": NUM,
-    "mag": NUM, "reserve": NUM, "reloadTime": NUM, "reloadEmptyTime": NUM, "projectile": BOOL, "projSpeed": NUM, "explRadius": NUM, "range": NUM,
+    "mag": NUM, "reserve": NUM, "startReserve": NUM, "reloadTime": NUM, "reloadEmptyTime": NUM, "projectile": BOOL, "projSpeed": NUM, "explRadius": NUM, "range": NUM,
     "wallCost": opt(NUM), "boxWeight": NUM, "start": BOOL, "upgrade": BOOL, "papId": opt(ref("weapons.id")), "papName": STR,
     "cueFire": ref("audio.cue"), "cueDry": ref("audio.cue"), "cueReloadOut": ref("audio.cue"), "cueReloadIn": ref("audio.cue"), "cueReloadEnd": ref("audio.cue"),
     "cueProjectile": opt(ref("audio.cue")), "cueExplosion": opt(ref("audio.cue")),
