@@ -3232,5 +3232,126 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 156318
+ },
+ {
+  "id": "fly_870mcs_pull#0",
+  "cue": "fly_870mcs_pull",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 60958950,
+  "size": 21370,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 10685
+ },
+ {
+  "id": "fly_870mcs_release#0",
+  "cue": "fly_870mcs_release",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 3669262976,
+  "size": 19200,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 9600
+ },
+ {
+  "id": "fly_870mcs_shell_in#0",
+  "cue": "fly_870mcs_shell_in",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 535641464,
+  "size": 29820,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 14910
+ },
+ {
+  "id": "fly_870mcs_shell_in#1",
+  "cue": "fly_870mcs_shell_in",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 3967113849,
+  "size": 29520,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 14760
+ },
+ {
+  "id": "fly_870mcs_shell_in#2",
+  "cue": "fly_870mcs_shell_in",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 3103618938,
+  "size": 39164,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 19582
+ },
+ {
+  "id": "fly_870mcs_shell_in#3",
+  "cue": "fly_870mcs_shell_in",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2240124027,
+  "size": 49148,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 24574
+ },
+ {
+  "id": "fly_870mcs_shell_in#4",
+  "cue": "fly_870mcs_shell_in",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 1376629116,
+  "size": 56828,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 28414
+ },
+ {
+  "id": "fly_870mcs_shell_in#5",
+  "cue": "fly_870mcs_shell_in",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 513134205,
+  "size": 60668,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 30334
+ },
+ {
+  "id": "wpn_870mcs_dryfire_plr#0",
+  "cue": "wpn_870mcs_dryfire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2970292461,
+  "size": 29940,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 7485
+ },
+ {
+  "id": "wpn_870mcs_fire_plr#0",
+  "cue": "wpn_870mcs_fire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 1362796509,
+  "size": 189540,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 47385
+ },
+ {
+  "id": "wpn_870mcs_fire_plr_pap#0",
+  "cue": "wpn_870mcs_fire_plr_pap",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2937998377,
+  "size": 94056,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 23514
  }
 ]

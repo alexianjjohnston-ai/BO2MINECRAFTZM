@@ -80,6 +80,14 @@
   "anim": "saiga12"
  },
  {
+  "id": "870mcs",
+  "group": "gun",
+  "xmodel": "t6_wpn_shotty_870mcs_view",
+  "world": "t6_wpn_shotty_870mcs_world",
+  "note": "segmented reload: viewmodel_870mcs_reload_in / _loop / _out",
+  "anim": "870mcs"
+ },
+ {
   "id": "rpd",
   "group": "gun",
   "xmodel": "t6_wpn_lmg_rpd_view",

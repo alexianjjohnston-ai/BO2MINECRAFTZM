@@ -48,6 +48,12 @@
   "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
  },
  {
+  "id": "pool_870mcs",
+  "weaponId": "870mcs",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
   "id": "pool_saiga12",
   "weaponId": "saiga12",
   "weight": 1.0,

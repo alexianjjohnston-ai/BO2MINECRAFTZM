@@ -31,7 +31,7 @@ public final class Bo2Assets {
 			// the map zones hold the depot's own props (benches, kiosk, lockers ...), the town's, the diner's and so on
 			"zm_transit_gump_busstation", "zm_transit_gump_town", "zm_transit_gump_diner", "zm_transit_gump_farm", "zm_transit_gump_powerstation", "zm_transit_gump_tunnel", "zm_transit_gump_cornfield", "zm_transit_gump_labs", "zm_transit_gump_forest", "zm_transit_gump_bridge"};
 	/** First-person clips copied for every gun that has an {@code anim} prefix in bo2_models.json (a gun may lack some). */
-	public static final String[] GUN_CLIPS = {"idle", "fire", "reload", "reload_empty", "pullout", "first_raise", "drink", "lower"};
+	public static final String[] GUN_CLIPS = {"idle", "fire", "reload", "reload_empty", "reload_in", "reload_loop", "reload_out", "pullout", "first_raise", "drink", "lower"};
 	static final String[] ASSET_TYPES = {"xmodel", "material", "image", "xanim"};
 	/** Animations copied into the cache (compiled xanim files are small). The renderer picks them by these names. */
 	public static final String[] ANIMS = {"ai_zombie_walk_v1", "ai_zombie_walk_v2", "ai_zombie_walk_v3", "ai_zombie_walk_v4",

@@ -33,6 +33,7 @@ GUNS = [
     ('galil',      'Galil',   'galil_zm',      'galil_upgraded_zm',  'rifle',    'rifle',    '#556b2f', None, 1.0, False, 'Lamentation',         1.0, ('fly_galil_mag_out', 'fly_galil_mag_in', 'fly_galil_charge'), 'wpn_galil_dryfire_plr'),
     ('python',     'Python',  'python_zm',     'python_upgraded_zm', 'pistol',   'revolver', '#9a9a9a', None, 1.0, False, 'Cobra',               0.5, ('fly_python_open', 'fly_python_load', 'fly_python_close'), 'wpn_python_dryfire_plr'),
     ('fnfal',      'FAL',     'fnfal_zm',      'fnfal_upgraded_zm',  'rifle',    'rifle',    '#4a4a52', None, 1.0, False, 'FAL PaP',             1.0, ('fly_fnfal_mag_out', 'fly_fnfal_mag_in', 'fly_fnfal_charge'), 'wpn_fnfal_dryfire_plr'),
+    ('870mcs',     'Remington 870 MCS', '870mcs_zm', '870mcs_upgraded_zm', 'shotgun', 'shotgun', '#6a5a3a', 1500, 1.0, False, 'Remington 870 MCS PaP', 4.5, ('fly_870mcs_release', 'fly_870mcs_shell_in', 'fly_870mcs_pull'), 'wpn_870mcs_dryfire_plr'),
     ('saiga12',    'Saiga 12', 'saiga12_zm',   'saiga12_upgraded_zm', 'shotgun', 'shotgun',  '#5a4a3a', None, 1.0, False, 'Saiga 12 PaP',        4.5, ('fly_saiga12_mag_out', 'fly_saiga12_mag_in', 'fly_saiga12_release'), 'wpn_saiga12_dryfire_plr'),
     ('rpd',        'RPD',     'rpd_zm',        'rpd_upgraded_zm',    'rifle',    'rifle',    '#3d4538', None, 1.0, False, 'RPD PaP',             2.5, ('fly_rpd_mag_out', 'fly_rpd_mag_in', 'fly_rpd_close'), 'wpn_rpd_dryfire_plr'),
     ('judge',      'Executioner', 'judge_zm',  'judge_upgraded_zm',  'pistol',   'revolver', '#8a8a8a', None, 1.0, False, 'Executioner PaP',     4.0, ('fly_judge_open', 'fly_judge_load', 'fly_judge_close'), 'wpn_judge_dryfire_plr'),
@@ -48,6 +49,9 @@ def row(id_, name, bo2, d, kind, shape, color, wall, boxw, start, papname, papid
     mags = int(num(d, 'maxAmmo', 1))
     reserve = mags if d.get('weaponType') == 'projectile' else clip * mags   # projectile weapons list total ammo, bullet weapons list magazines
     dmg = num(d, 'damage'); dmin = num(d, 'minDamage')
+    reload_t, reload_e = num(d, 'reloadTime', 2.0), num(d, 'reloadEmptyTime', num(d, 'reloadTime', 2.0))
+    if d.get('segmentedReload') == '1':   # shell by shell (Remington 870 MCS): start + one loop per shell + end, for a full tube
+        reload_t = reload_e = round(num(d, 'reloadStartTime') + clip * num(d, 'reloadTime') + num(d, 'reloadEndTime'), 2)
     if projectile:
         dmg = num(d, 'explosionInnerDamage'); dmin = num(d, 'explosionOuterDamage')
     return dict(
@@ -56,7 +60,7 @@ def row(id_, name, bo2, d, kind, shape, color, wall, boxw, start, papname, papid
         rangeMin=round(num(d, 'minDamageRange') * IN, 1) if not projectile else 0.0,
         headMult=1.5 if pellets > 1 else (1.0 if projectile else 3.0), pellets=pellets, spreadDeg=spread,
         fireTime=num(d, 'fireTime', 0.1), burstCount=3 if mode == 'burst' else 1, burstGap=num(d, 'burstFireDelay') if mode == 'burst' else 0.0,
-        mag=clip, reserve=reserve, startReserve=(int(num(d, 'startAmmo', mags)) * (1 if projectile else clip)), reloadTime=num(d, 'reloadTime', 2.0), reloadEmptyTime=num(d, 'reloadEmptyTime', num(d, 'reloadTime', 2.0)),
+        mag=clip, reserve=reserve, startReserve=(int(num(d, 'startAmmo', mags)) * (1 if projectile else clip)), reloadTime=reload_t, reloadEmptyTime=reload_e,
         projectile=projectile, projSpeed=round(num(d, 'projectileSpeed') * IN, 1), explRadius=round(num(d, 'explosionRadius') * IN, 2),
         range=64.0,
         wallCost=wall, boxWeight=boxw, start=start, upgrade=upgrade, papId=(papid or None), papName=papname,

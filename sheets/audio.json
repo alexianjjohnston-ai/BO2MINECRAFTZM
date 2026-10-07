@@ -1828,5 +1828,65 @@
   "loop": false,
   "variants": 2,
   "fallback": "minecraft:entity.zombie.ambient"
+ },
+ {
+  "cue": "fly_870mcs_pull",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_end"
+ },
+ {
+  "cue": "fly_870mcs_release",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_start"
+ },
+ {
+  "cue": "fly_870mcs_shell_in",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 6,
+  "fallback": "minecraft:item.crossbow.loading_middle"
+ },
+ {
+  "cue": "wpn_870mcs_dryfire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.dispenser.fail"
+ },
+ {
+  "cue": "wpn_870mcs_fire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
+ },
+ {
+  "cue": "wpn_870mcs_fire_plr_pap",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
  }
 ]

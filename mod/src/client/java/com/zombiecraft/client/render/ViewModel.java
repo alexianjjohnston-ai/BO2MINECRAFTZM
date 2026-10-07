@@ -123,12 +123,22 @@ public final class ViewModel {
 		XAnim fire = clip(m, "fire"), pull = clip(m, "pullout"), drink = weaponId.startsWith("bottle_") ? clip(m, "drink") : null;
 		XAnim reloadClip = reload < 0f ? null : clip(m, GunFeedback.reloadWasEmpty() ? "reload_empty" : "reload");
 		if (reload >= 0f && reloadClip == null) reloadClip = clip(m, GunFeedback.reloadWasEmpty() ? "reload" : "reload_empty"); // some guns have only one reload clip
+		XAnim segIn = reload >= 0f && reloadClip == null ? clip(m, "reload_in") : null; // shell-by-shell guns (Remington 870 MCS): in, one loop per shell, out
 		if (drink != null) {
 			a = drink;
 			frame = Math.min(a.numFrames, GunFeedback.drinkSeconds() * a.frameRate);
 		} else if (reloadClip != null) {
 			a = reloadClip;
 			frame = reload * a.numFrames;
+		} else if (segIn != null) {
+			XAnim lp = clip(m, "reload_loop"), out = clip(m, "reload_out");
+			float tIn = segIn.lengthSeconds(), tLp = lp == null ? 0f : lp.lengthSeconds(), tOut = out == null ? 0f : out.lengthSeconds();
+			int shells = Math.max(1, Sheets.weapon(weaponId.replace("_pap", "")).mag());
+			float pos = reload * (tIn + shells * tLp + tOut);
+			if (pos < tIn || lp == null) { a = segIn; frame = Math.min(a.numFrames, pos * a.frameRate); }
+			else if (pos < tIn + shells * tLp) { a = lp; frame = ((pos - tIn) % tLp) * lp.frameRate; }
+			else if (out != null) { a = out; frame = Math.min(out.numFrames, (pos - tIn - shells * tLp) * out.frameRate); }
+			else { a = clip(m, "idle"); frame = 0; if (a == null) return false; }
 		} else if (fire != null && shotAge >= 0f && shotAge < fire.lengthSeconds()) {
 			a = fire; frame = shotAge * fire.frameRate;
 		} else if (pull != null && equipAge < pull.lengthSeconds()) {
