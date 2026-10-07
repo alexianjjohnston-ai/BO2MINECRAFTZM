@@ -78,7 +78,7 @@ player = [dict(id='spawn', x=S(px, pz)[0], y=1, z=S(px, pz)[1], yaw=round(math.d
 # door brushes have no extent in the entity file: widths follow the leaves ("rotate" brushes) around the trigger
 doors = [
     dict(id='door_750', cost=750, x1=S(36.7, 46)[0], y1=1, z1=S(36.7, 46)[1], x2=S(40.7, 46)[0], y2=2, z2=S(36.7, 46)[1], block='zombiecraft:door_metal', opens='ext',
-         cue='zmb_power_door', label='Bus Station', room='hall'),
+         cue='zmb_bus_depot_dbl', label='Bus Station', room='hall'),
     dict(id='door_west_a', cost=99999, x1=S(30.4, 39.8)[0], y1=1, z1=S(30.4, 39.8)[1], x2=S(30.4, 39.8)[0], y2=2, z2=S(30.4, 42.8)[1], block='zombiecraft:door_metal', opens='side',
          cue='zmb_power_door', label='Needs power', room='hall'),
     dict(id='door_west_b', cost=99999, x1=S(25.6, 48.1)[0], y1=1, z1=S(25.6, 48.1)[1], x2=S(28.5, 48.1)[0], y2=2, z2=S(25.6, 48.1)[1], block='zombiecraft:door_metal', opens='side',

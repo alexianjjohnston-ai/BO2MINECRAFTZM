@@ -321,7 +321,7 @@ public final class Bo2Menus {
 		private int my(int i) { return (int) (height / 2 + POS[i][1] * radius()); }
 
 		private void pick() {
-			if (sel == 0) { MenuAudio.play("zmb_ui_map_level_select"); Minecraft.getInstance().setScreen(new Bo2Locations.Select(this, host)); }
+			if (sel == 0) { MenuAudio.play("zmb_ui_globe_spin_stop"); MenuAudio.play("zmb_ui_map_zoom_in"); MenuAudio.play("zmb_ui_map_level_select"); Minecraft.getInstance().setScreen(new Bo2Locations.Select(this, host)); }
 			else MenuAudio.play("cac_cmn_deny");
 		}
 
@@ -331,7 +331,7 @@ public final class Bo2Menus {
 		}
 
 		@Override public boolean keyPressed(int key, int scan, int mods) {
-			if (key == GLFW.GLFW_KEY_ESCAPE) { MenuAudio.play("uin_cmn_backout"); Minecraft.getInstance().setScreen(parent); }
+			if (key == GLFW.GLFW_KEY_ESCAPE) { MenuAudio.play("zmb_ui_globe_spin_stop"); MenuAudio.play("uin_cmn_backout"); Minecraft.getInstance().setScreen(parent); }
 			else if (key == GLFW.GLFW_KEY_RIGHT || key == GLFW.GLFW_KEY_DOWN) sel = (sel + 1) % NAMES.length;
 			else if (key == GLFW.GLFW_KEY_LEFT || key == GLFW.GLFW_KEY_UP) sel = (sel + NAMES.length - 1) % NAMES.length;
 			else if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) pick();

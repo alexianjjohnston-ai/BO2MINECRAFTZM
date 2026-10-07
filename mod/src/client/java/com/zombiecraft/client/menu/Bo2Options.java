@@ -78,7 +78,7 @@ final class Bo2Options {
 
 		void setTab(int t) {
 			tab = (t + tabs.length) % tabs.length; sel = 0; scroll = 0; rows = build(tab);
-			MenuAudio.play("uin_main_nav");
+			MenuAudio.play("cac_submenu_nav");
 		}
 
 		void back() { MenuAudio.play("uin_cmn_backout"); save(); Minecraft.getInstance().setScreen(parent); }
@@ -105,8 +105,8 @@ final class Bo2Options {
 			if (key == GLFW.GLFW_KEY_Q || key == GLFW.GLFW_KEY_PAGE_UP) { setTab(tab - 1); return true; }
 			if (key == GLFW.GLFW_KEY_E || key == GLFW.GLFW_KEY_PAGE_DOWN) { setTab(tab + 1); return true; }
 			if (!rows.isEmpty()) {
-				if (key == GLFW.GLFW_KEY_LEFT) { rows.get(sel).change().accept(-1); return true; }
-				if (key == GLFW.GLFW_KEY_RIGHT) { rows.get(sel).change().accept(1); return true; }
+				if (key == GLFW.GLFW_KEY_LEFT) { rows.get(sel).change().accept(-1); MenuAudio.play("cac_slide_nav_down"); return true; }
+				if (key == GLFW.GLFW_KEY_RIGHT) { rows.get(sel).change().accept(1); MenuAudio.play("cac_slide_nav_up"); return true; }
 				if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) { activate(sel); return true; }
 			}
 			return super.keyPressed(key, scan, mods);

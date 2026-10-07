@@ -138,7 +138,7 @@ final class Bo2Locations {
 		@Override public boolean keyPressed(int key, int scan, int mods) {
 			if (key == GLFW.GLFW_KEY_ESCAPE) {
 				MenuAudio.play("uin_cmn_backout");
-				if (loc >= 0) loc = -1; else Minecraft.getInstance().setScreen(parent);
+				if (loc >= 0) loc = -1; else { MenuAudio.play("zmb_ui_map_zoom_out"); Minecraft.getInstance().setScreen(parent); }
 			} else if (key == GLFW.GLFW_KEY_RIGHT || key == GLFW.GLFW_KEY_LEFT) {
 				int d = key == GLFW.GLFW_KEY_RIGHT ? 1 : LOCS.length - 1;
 				loc = loc < 0 ? 0 : (loc + d) % LOCS.length;
@@ -207,6 +207,7 @@ final class Bo2Locations {
 		private int sel, lastSel = -1;
 		private long startAt;
 		private boolean launched;
+		private long lastSecs;
 		private int seenX = -1, seenY = -1;
 
 		Match(Screen parent, boolean host, Loc loc, Mode mode) { super(Component.literal("Match")); this.parent = parent; this.host = host; this.loc = loc; this.mode = mode; }
@@ -289,7 +290,9 @@ final class Bo2Locations {
 			if (startAt != 0) {
 				long left = startAt - System.currentTimeMillis();
 				if (left <= 0) launch();
-				cap = "Game starting in " + Math.max(1, (left + 999) / 1000);
+				long secs = Math.max(1, (left + 999) / 1000);
+				if (secs != lastSecs) { lastSecs = secs; MenuAudio.play("uin_timer"); }
+				cap = "Game starting in " + secs;
 			}
 			int capH = (int) Bo2Menus.H(1.0f), cx = x - 4, cw = (int) (width * 0.33);
 			int bottom = hintY - 14;

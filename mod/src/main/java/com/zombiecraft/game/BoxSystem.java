@@ -234,6 +234,7 @@ public final class BoxSystem {
 					uses = 0; moves++;
 					placeChest();
 					Cue.at("zmb_box_poof", level, center());
+					Cue.at("zmb_box_poof_land", level, center());
 					state = State.CLOSED;
 				}
 			}

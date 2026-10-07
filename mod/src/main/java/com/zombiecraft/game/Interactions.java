@@ -139,6 +139,7 @@ public final class Interactions {
 				if (pg.interactHeld && g.tick - pg.lastBoardRepair >= Sheets.sysInt("board_repair_ticks") && t.barrier.repair()) {
 					pg.lastBoardRepair = g.tick;
 					Cue.at("zmb_repair_boards", g.level, t.barrier.center);
+					Cue.at("zmb_board_slam", g.level, t.barrier.center);
 					int pts = Sheets.sysInt("board_repair_points");
 					int cap = Math.min(Sheets.sysInt("board_cap_max"), Sheets.sysInt("board_cap_mult") * Math.max(1, g.round));
 					pg.boardPointsThisRound += pts;

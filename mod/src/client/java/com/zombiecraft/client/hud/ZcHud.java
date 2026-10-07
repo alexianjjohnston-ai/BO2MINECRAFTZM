@@ -40,7 +40,7 @@ public final class ZcHud {
 		if (phase == Payloads.PHASE_GAMEOVER) {
 			// The server restores health on a fatal hit, so its phase transition is the damage signal.
 			if (trackedPlayer != player) damageFlashTicks = 0;
-			else if (previousPhase != phase) damageFlashTicks = DAMAGE_FLASH_TICKS;
+			else if (previousPhase != phase) { damageFlashTicks = DAMAGE_FLASH_TICKS; com.zombiecraft.client.audio.MenuAudio.play("uin_lobby_summary"); }
 			else if (!mc.isPaused() && damageFlashTicks > 0) damageFlashTicks--;
 			trackedPlayer = player;
 			previousPhase = phase;

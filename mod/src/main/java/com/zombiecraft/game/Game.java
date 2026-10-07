@@ -331,6 +331,7 @@ public final class Game {
 		gameOverTicks = Sheets.sysInt("game_over_delay_s") * 20;
 		p.setHealth(p.getMaxHealth());
 		p.setInvulnerable(true);
+		Cue.ui("evt_player_final_hit", p);
 		Cue.ui("evt_player_death", p);
 		Cue.ui("mus_zombie_game_over", p);
 		for (String c : AMBIENCE) Cue.stopAll(c, level);

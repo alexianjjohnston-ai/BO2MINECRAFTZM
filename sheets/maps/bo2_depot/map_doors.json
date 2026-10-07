@@ -10,7 +10,7 @@
   "z2": -1,
   "block": "zombiecraft:door_metal",
   "opens": "ext",
-  "cue": "zmb_power_door",
+  "cue": "zmb_bus_depot_dbl",
   "label": "Bus Station",
   "room": "hall"
  },
