@@ -149,7 +149,7 @@ public final class Game {
 	}
 
 	public void onJoin(ServerPlayer p) {
-		if (phase == Payloads.PHASE_IDLE) { boolean lobby = lobbyNext; lobbyNext = false; start(lobby); }
+		if (phase == Payloads.PHASE_IDLE) { boolean lobby = lobbyNext; lobbyNext = false; com.zombiecraft.ZombiecraftMod.LOG.info("Block Ops 2: first player joined, starting {}", lobby ? "the lobby" : "the match"); start(lobby); }
 		// the joining player may not be in level.players() yet when start() runs: always make sure they are set up
 		if (!players.containsKey(p.getUUID()) || players.get(p.getUUID()).guns[0] == null) resetPlayer(p);
 	}

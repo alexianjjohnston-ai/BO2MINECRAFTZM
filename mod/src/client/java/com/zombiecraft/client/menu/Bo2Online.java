@@ -25,7 +25,7 @@ public final class Bo2Online {
 	private Bo2Online() {}
 
 	private static final int DEFAULT_PORT = 25565;
-	private static boolean hostPending, showInvite;
+	private static boolean hostPending, showInvite, lobbyHosting;
 	private static String lastAddress = "";
 	/** Shown on the Join screen after a connection failed or timed out. */
 	private static String joinError;
@@ -34,7 +34,7 @@ public final class Bo2Online {
 	private static long connectStart;
 
 	/** Called from map select when the player chose to host: the world is opened to LAN as soon as they are in it. */
-	static void hostNext() { hostPending = true; }
+	static void hostNext() { hostPending = true; lobbyHosting = true; com.zombiecraft.game.Game.lobbyNext = true; }
 
 	static boolean hosting(Minecraft mc) { return mc.hasSingleplayerServer() && mc.getSingleplayerServer().isPublished(); }
 
@@ -43,6 +43,17 @@ public final class Bo2Online {
 		boolean debugHost = Boolean.getBoolean("zombiecraft.debugHost");
 		String debugJoin = System.getProperty("zombiecraft.debugJoin");
 		if (debugHost) hostPending = true;
+		// dev: -Dzombiecraft.debugLobby=true hosts the autoplay world as an online lobby and saves zc-lobby.png once it is up
+		if (Boolean.getBoolean("zombiecraft.debugLobby")) {
+			hostNext();
+			Thread t = new Thread(() -> {
+				try { Thread.sleep(45000); } catch (InterruptedException ignored) {}
+				Minecraft mc = Minecraft.getInstance();
+				mc.execute(() -> net.minecraft.client.Screenshot.grab(mc.gameDirectory, "zc-lobby.png", mc.getMainRenderTarget(), c -> {}));
+			}, "zc-dev-shot");
+			t.setDaemon(true);
+			t.start();
+		}
 		if (debugJoin != null) {
 			boolean[] done = {false};
 			ClientTickEvents.END_CLIENT_TICK.register(mc -> {
@@ -79,10 +90,13 @@ public final class Bo2Online {
 				if (ok) showInvite = true;
 			});
 		});
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> { hostPending = false; showInvite = false; });
-		// the invite box waits for the loading screen to finish
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> { hostPending = false; showInvite = false; lobbyHosting = false; com.zombiecraft.game.Game.lobbyNext = false; });
+		// the invite box waits for the loading screen to finish; a hosted lobby has its own screen (with INVITE FRIENDS), so no box first
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
-			if (showInvite && mc.player != null && mc.screen == null) { showInvite = false; mc.setScreen(new Invite()); }
+			if (showInvite && mc.player != null && mc.screen == null) { showInvite = false; if (!lobbyHosting) mc.setScreen(new Invite()); }
+			boolean inLobby = mc.player != null && com.zombiecraft.client.ZombiecraftClient.state.phase() == com.zombiecraft.net.Payloads.PHASE_LOBBY;
+			if (inLobby && mc.screen == null) mc.setScreen(new Bo2Locations.Lobby());
+			else if (!inLobby && mc.screen instanceof Bo2Locations.Lobby) mc.setScreen(null);
 		});
 	}
 

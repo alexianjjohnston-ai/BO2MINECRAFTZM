@@ -274,7 +274,8 @@ final class Bo2Locations {
 			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("uin_main_nav"); lastSel = sel; }
 			int ty = y0 + items.length * step + 6;
 			arrow(g, x - 2, ty + 3);
-			String desc = sel == 0 ? "Begin the game." : sel == 1 ? "Open the match to friends online, up to 4 players." : "Select game mode and location.";
+			String desc = sel == 0 ? (host ? "Open the lobby. Friends join it, then you start the match." : "Begin the game.")
+					: sel == 1 ? "Open a lobby friends can join online before the match starts, up to 4 players." : "Select game mode and location.";
 			for (String line : Bo2Menus.wrap(desc, (int) (width * 0.4), 0.85f)) {
 				Bo2Menus.raw(g, line, x + 10, ty, 0.85f, 0xFFD2CEC6);
 				ty += (int) (Bo2Menus.H(0.85f) * 1.15f);
@@ -313,6 +314,113 @@ final class Bo2Locations {
 			Bo2Menus.raw(g, l1, cx + cw - 10 - Bo2Menus.tw(l1, 0.8f), cy + ch - 34, 0.8f, Bo2Menus.WHITE);
 			Bo2Menus.raw(g, l2, cx + cw - 10 - Bo2Menus.tw(l2, 0.7f), cy + ch - 20, 0.7f, Bo2Menus.WHITE);
 			Bo2Menus.hint(g, "ESC", "Back", x, hintY);
+		}
+	}
+
+	// ------------------------------------------------------------------ online lobby (in the world, before the match starts)
+	/** Shown to the host and to everyone who joins while the world waits in PHASE_LOBBY: the players present, and START MATCH for the host. */
+	static final class Lobby extends Screen {
+		private final boolean host = Minecraft.getInstance().hasSingleplayerServer();
+		private final String[] items = host ? new String[] {"START MATCH", "INVITE FRIENDS", "LEAVE LOBBY"} : new String[] {"LEAVE LOBBY"};
+		private int sel, lastSel = -1, seenX = -1, seenY = -1, lastPlayers = -1;
+		private long lastSecs;
+
+		Lobby() { super(Component.literal("Lobby")); }
+
+		@Override public boolean shouldCloseOnEsc() { return false; }
+		@Override public boolean isPauseScreen() { return false; }
+		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
+
+		private int starting() { return com.zombiecraft.client.ZombiecraftClient.state.countdownSec(); }
+
+		private void activate(int i) {
+			String it = items[i];
+			if (it.startsWith("START")) {
+				if (starting() > 0) return;
+				net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.zombiecraft.net.Payloads.StartMatch());
+			} else if (it.startsWith("INVITE")) Minecraft.getInstance().setScreen(new Bo2Online.Invite());
+			else Bo2Menus.endGame();
+		}
+
+		@Override public boolean mouseClicked(double mx, double my, int button) {
+			if (button == 0) { activate(sel); return true; }
+			return false;
+		}
+
+		@Override public boolean keyPressed(int key, int scan, int mods) {
+			if (key == GLFW.GLFW_KEY_ESCAPE) activate(items.length - 1);
+			else if (key == GLFW.GLFW_KEY_DOWN) sel = (sel + 1) % items.length;
+			else if (key == GLFW.GLFW_KEY_UP) sel = (sel + items.length - 1) % items.length;
+			else if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) activate(sel);
+			else return super.keyPressed(key, scan, mods);
+			return true;
+		}
+
+		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
+			MenuAudio.music();
+			Minecraft mc = Minecraft.getInstance();
+			Loc loc = LOCS[0];
+			Mode mode = loc.modes().get(loc.modes().size() - 1);
+			topDown(g, width, height, true);
+			boolean moved = seenX >= 0 && (mx != seenX || my != seenY);
+			seenX = mx; seenY = my;
+			int x = (int) (width * 0.05), hintY = height - 26, step = (int) (Bo2Menus.H(1.25f) * 1.25f);
+			String title = loc.name() + " / " + mode.name();
+			float ts = 2.0f;
+			while (ts > 1.0f && Bo2Menus.tw(title, ts) > width * 0.5) ts -= 0.1f;
+			Bo2Menus.raw(g, title, x, (int) (height * 0.07), ts, Bo2Menus.WHITE);
+			int y0 = (int) (height * 0.07) + (int) Bo2Menus.H(ts) + 14;
+			int secs = starting();
+			for (int i = 0; i < items.length; i++) {
+				int y = y0 + i * step, w = Bo2Menus.tw(items[i], 1.25f);
+				if (moved && secs == 0 && mx >= x - 6 && mx <= x + w + 6 && my >= y - 3 && my <= y + step - 3) sel = i;
+				boolean on = i == sel;
+				if (on) g.renderOutline(x - 6, y - 3, w + 12, step - 2, Bo2Menus.ORANGE);
+				Bo2Menus.raw(g, items[i], x, y, 1.25f, items[i].startsWith("START") && secs > 0 ? Bo2Menus.GREY : on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
+			}
+			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("uin_main_nav"); lastSel = sel; }
+			int ty = y0 + items.length * step + 6;
+			arrow(g, x - 2, ty + 3);
+			String it = items[sel], desc = it.startsWith("START") ? "Begin the match for everyone in the lobby."
+					: it.startsWith("INVITE") ? "How friends join this lobby." : "Leave the lobby" + (host ? " and close the game." : ".");
+			for (String line : Bo2Menus.wrap(desc, (int) (width * 0.4), 0.85f)) {
+				Bo2Menus.raw(g, line, x + 10, ty, 0.85f, 0xFFD2CEC6);
+				ty += (int) (Bo2Menus.H(0.85f) * 1.15f);
+			}
+
+			// the players present, from the server's player list
+			List<String> names = new java.util.ArrayList<>();
+			if (mc.getConnection() != null) for (var info : mc.getConnection().getOnlinePlayers()) names.add(info.getProfile().getName());
+			java.util.Collections.sort(names);
+			if (names.size() != lastPlayers) { if (lastPlayers >= 0 && names.size() > lastPlayers) MenuAudio.play("uin_lobby_join"); lastPlayers = names.size(); }
+			int rx = Math.max((int) (width * 0.55), x + Bo2Menus.tw(title, ts) + 24), ry = (int) (height * 0.13), lh = (int) Bo2Menus.H(0.85f);
+			Bo2Menus.raw(g, names.size() + (names.size() == 1 ? " Player (" : " Players (") + com.zombiecraft.game.Game.MAX_PLAYERS + " Max)", rx, ry, 0.85f, Bo2Menus.WHITE);
+			g.fill(rx - 4, ry + lh + 4, width - 40, ry + lh + 5, 0x40FFFFFF);
+			String me = mc.getUser().getName();
+			for (int i = 0; i < names.size(); i++)
+				Bo2Menus.raw(g, names.get(i), rx + 30, ry + lh + 8 + i * (lh + 6), 0.9f, names.get(i).equals(me) ? Bo2Menus.YELLOW : Bo2Menus.WHITE);
+
+			String cap = secs > 0 ? "Game starting in " + secs : host ? "Waiting for players. Start when everyone is in" : "Waiting for the host to start the match";
+			if (secs > 0 && secs != lastSecs) { lastSecs = secs; MenuAudio.play("uin_timer"); }
+			int capH = (int) Bo2Menus.H(1.0f), cx = x - 4, cw = (int) (width * 0.33);
+			int bottom = hintY - 14;
+			int ch = Math.min((int) (height * 0.27), bottom - (ty + 10 + capH + 8));
+			if (ch < 40) ch = 40;
+			int cy = bottom - ch;
+			Bo2Menus.raw(g, cap, cx, cy - capH - 8, 1.0f, Bo2Menus.WHITE);
+			g.fill(cx - 3, cy - 3, cx + cw + 3, cy + ch + 3, 0xFFA8A8A8);
+			g.fill(cx, cy, cx + cw, cy + ch, 0xFF000000);
+			String img = loc.loadscreen();
+			if (UiArt.has(img)) {
+				int iw = UiArt.w(img), ih = UiArt.h(img);
+				int rw = Math.min(iw, (int) (ih * (double) cw / ch));
+				UiArt.strip(g, img, cx + 2, cy + 2, cw - 4, ch - 4, (iw - rw) / 2, 0, rw, ih, 0xFFFFFFFF);
+			}
+			g.fillGradient(cx + 2, cy + ch - 44, cx + cw - 2, cy + ch - 2, 0x00000000, 0xC0000000);
+			String l1 = "GREEN RUN";
+			Bo2Menus.raw(g, l1, cx + cw - 10 - Bo2Menus.tw(l1, 0.8f), cy + ch - 34, 0.8f, Bo2Menus.WHITE);
+			Bo2Menus.raw(g, title, cx + cw - 10 - Bo2Menus.tw(title, 0.7f), cy + ch - 20, 0.7f, Bo2Menus.WHITE);
+			Bo2Menus.hint(g, "ESC", "Leave", x, hintY);
 		}
 	}
 }
