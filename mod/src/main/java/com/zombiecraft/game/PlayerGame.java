@@ -60,6 +60,7 @@ public final class PlayerGame {
 		public Gun(String weapon, boolean pap) {
 			this.weapon = weapon; this.pap = pap;
 			refill();
+			if (!pap) reserve = base().startReserve(); // BO2 givestartammo: a freshly given gun starts below max
 		}
 
 		public WeaponDef base() { return Sheets.weapon(weapon); }

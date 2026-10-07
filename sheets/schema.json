@@ -179,6 +179,9 @@
    "reserve": {
     "t": "number"
    },
+   "startReserve": {
+    "t": "number"
+   },
    "reloadTime": {
     "t": "number"
    },

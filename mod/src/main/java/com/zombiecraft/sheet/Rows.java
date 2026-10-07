@@ -12,7 +12,7 @@ public final class Rows {
 			String cueAmbient, String cueAttack, String cueDeath, String cueSpawn, String cueTear, String cueRun, String status) {}
 
 	public record WeaponDef(String id, String name, String bo2Id, String kind, String fireMode, double damage, double damageMin, double rangeFull,
-			double rangeMin, double headMult, int pellets, double spreadDeg, double fireTime, int burstCount, double burstGap, int mag, int reserve,
+			double rangeMin, double headMult, int pellets, double spreadDeg, double fireTime, int burstCount, double burstGap, int mag, int reserve, int startReserve,
 			double reloadTime, double reloadEmptyTime, boolean projectile, double projSpeed, double explRadius, double range, Integer wallCost,
 			double boxWeight, boolean start, boolean upgrade, String papId, String papName, String cueFire, String cueDry, String cueReloadOut,
 			String cueReloadIn, String cueReloadEnd, String cueProjectile, String cueExplosion, String iconShape, String iconColor, String status) {}

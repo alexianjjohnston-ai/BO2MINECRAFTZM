@@ -114,7 +114,7 @@ public final class Interactions {
 				WeaponDef w = Sheets.weapon(t.wallbuy.weaponId());
 				int slot = WeaponSystem.slotHolding(pg, w.id());
 				pg.prompt = slot >= 0
-						? "Hold F for " + w.name() + " ammo [Cost: " + (int) (w.wallCost() * Sheets.sys("wallbuy_ammo_ratio")) + "]"
+						? "Hold F for " + w.name() + " ammo [Cost: " + ammoCost(w, pg.guns[slot]) + "]"
 						: "Hold F for " + w.name() + " [Cost: " + w.wallCost() + "]";
 				if (edge) buyWall(g, p, pg, w);
 			}
@@ -150,11 +150,16 @@ public final class Interactions {
 		pg.prevInteract = pg.interactHeld;
 	}
 
+	/** Half the wall price, or the flat Pack-a-Punch price when the gun in hand is upgraded. */
+	private static int ammoCost(WeaponDef w, Gun gun) {
+		return gun.pap ? Sheets.sysInt("pap_ammo_cost") : (int) (w.wallCost() * Sheets.sys("wallbuy_ammo_ratio"));
+	}
+
 	private static void buyWall(Game g, ServerPlayer p, PlayerGame pg, WeaponDef w) {
 		int slot = WeaponSystem.slotHolding(pg, w.id());
 		if (slot >= 0) {
 			Gun gun = pg.guns[slot];
-			int cost = (int) (w.wallCost() * Sheets.sys("wallbuy_ammo_ratio"));
+			int cost = ammoCost(w, gun);
 			if (gun.mag >= gun.magSize() && gun.reserve >= gun.reserveMax()) { pg.say("Ammo is already full", 40); return; }
 			if (pg.points < cost) { Cue.ui("zmb_no_cha_ching", p); return; }
 			pg.points -= cost; gun.refill();
