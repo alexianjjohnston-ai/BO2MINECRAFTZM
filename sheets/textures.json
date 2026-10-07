@@ -1,0 +1,250 @@
+[
+ {
+  "id": "*:minecraft:stone",
+  "map": "*",
+  "texture": "minecraft:stone",
+  "bo2": "metal_aluminum01_painted_dirty_col",
+  "opaque": true,
+  "note": "dirty painted concrete"
+ },
+ {
+  "id": "*:minecraft:andesite",
+  "map": "*",
+  "texture": "minecraft:andesite",
+  "bo2": "me_wall_metalpanels_1_col",
+  "opaque": true,
+  "note": "grey wall panel"
+ },
+ {
+  "id": "*:minecraft:polished_andesite",
+  "map": "*",
+  "texture": "minecraft:polished_andesite",
+  "bo2": "eb_art_wall_metal_panels_c",
+  "opaque": true,
+  "note": "smooth wall panel"
+ },
+ {
+  "id": "*:minecraft:smooth_stone",
+  "map": "*",
+  "texture": "minecraft:smooth_stone",
+  "bo2": "metal_aluminum01_painted_dirty_col",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:stone_bricks",
+  "map": "*",
+  "texture": "minecraft:stone_bricks",
+  "bo2": "ug_wall_brick_blue_col",
+  "opaque": true,
+  "tint": "#D8B898",
+  "note": "brick, warmed up (the plaster decal tiled badly)"
+ },
+ {
+  "id": "*:minecraft:deepslate_bricks",
+  "map": "*",
+  "texture": "minecraft:deepslate_bricks",
+  "bo2": "berlin_ceiling_wood_burnt_c",
+  "opaque": true,
+  "note": "burnt ceiling boards (roofs)"
+ },
+ {
+  "id": "*:minecraft:dark_oak_planks",
+  "map": "*",
+  "texture": "minecraft:dark_oak_planks",
+  "bo2": "rus_floor_wood_barn_c",
+  "opaque": true,
+  "note": "dark floor boards"
+ },
+ {
+  "id": "*:minecraft:oak_planks",
+  "map": "*",
+  "texture": "minecraft:oak_planks",
+  "bo2": "p6_wood_plank_rustic01_c",
+  "opaque": true,
+  "note": "rustic planks (barricade boards)"
+ },
+ {
+  "id": "*:minecraft:iron_block",
+  "map": "*",
+  "texture": "minecraft:iron_block",
+  "bo2": "metal_galvanised_ducting_dirty_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:iron_bars",
+  "map": "*",
+  "texture": "minecraft:iron_bars",
+  "bo2": "zombie_chainlink_fence_c",
+  "opaque": false,
+  "note": "chain-link fence"
+ },
+ {
+  "id": "*:minecraft:light_gray_concrete",
+  "map": "*",
+  "texture": "minecraft:light_gray_concrete",
+  "bo2": "asphalt_road_single_lane01_c",
+  "opaque": true,
+  "note": "road"
+ },
+ {
+  "id": "*:minecraft:black_concrete",
+  "map": "*",
+  "texture": "minecraft:black_concrete",
+  "bo2": "asphalt_road_cracks_col",
+  "opaque": true,
+  "note": "cracked road"
+ },
+ {
+  "id": "*:minecraft:green_concrete",
+  "map": "*",
+  "texture": "minecraft:green_concrete",
+  "bo2": "metal_darkgreen_col",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:light_blue_concrete",
+  "map": "*",
+  "texture": "minecraft:light_blue_concrete",
+  "bo2": "p6_zm_neon_cyan_c",
+  "opaque": true,
+  "note": "neon trim"
+ },
+ {
+  "id": "*:minecraft:sea_lantern",
+  "map": "*",
+  "texture": "minecraft:sea_lantern",
+  "bo2": "p6_zm_neon_white_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:shroomlight",
+  "map": "*",
+  "texture": "minecraft:shroomlight",
+  "bo2": "lightfluohang_yellow_c",
+  "opaque": true,
+  "note": "fluorescent light"
+ },
+ {
+  "id": "*:minecraft:dirt",
+  "map": "*",
+  "texture": "minecraft:dirt",
+  "bo2": "dirt_rocky01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:grass_block_top",
+  "map": "*",
+  "texture": "minecraft:grass_block_top",
+  "bo2": "afr_ground_grass_01_col",
+  "opaque": true,
+  "note": "dead grass (colormap is neutral in the pack)"
+ },
+ {
+  "id": "*:minecraft:grass_block_side",
+  "map": "*",
+  "texture": "minecraft:grass_block_side",
+  "bo2": "dirt_rocky01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:lava_still",
+  "map": "*",
+  "texture": "minecraft:lava_still",
+  "bo2": "rock_lava_cooling_c",
+  "opaque": true,
+  "note": "static; vanilla animation is dropped"
+ },
+ {
+  "id": "*:minecraft:lava_flow",
+  "map": "*",
+  "texture": "minecraft:lava_flow",
+  "bo2": "rock_lava_cooling_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:glass_brick",
+  "map": "*",
+  "texture": "zombiecraft:glass_brick",
+  "bo2": "cub_art_glass_brick_d",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:cinder_block",
+  "map": "*",
+  "texture": "zombiecraft:cinder_block",
+  "bo2": "ug_wall_brick_blue_col",
+  "opaque": true,
+  "tint": "#D8B898"
+ },
+ {
+  "id": "*:zombiecraft:asphalt",
+  "map": "*",
+  "texture": "zombiecraft:asphalt",
+  "bo2": "asphalt_road_single_lane01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:concrete_wall",
+  "map": "*",
+  "texture": "zombiecraft:concrete_wall",
+  "bo2": "metal_aluminum01_painted_dirty_col",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:metal_panel",
+  "map": "*",
+  "texture": "zombiecraft:metal_panel",
+  "bo2": "eb_art_wall_metal_panels_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:depot_tile",
+  "map": "*",
+  "texture": "zombiecraft:depot_tile",
+  "bo2": "checker:eb_art_wall_metal_panels_c+asphalt_road_single_lane01_c",
+  "opaque": true,
+  "note": "black and white floor, tiled from two BO2 images"
+ },
+ {
+  "id": "*:zombiecraft:wood_floor",
+  "map": "*",
+  "texture": "zombiecraft:wood_floor",
+  "bo2": "rus_floor_wood_barn_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:ground",
+  "map": "*",
+  "texture": "zombiecraft:ground",
+  "bo2": "dirt_rocky01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:grass",
+  "map": "*",
+  "texture": "zombiecraft:grass",
+  "bo2": "afr_ground_grass_01_col",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:barricade_board",
+  "map": "*",
+  "texture": "zombiecraft:barricade_board",
+  "bo2": "p6_wood_plank_rustic01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:fence",
+  "map": "*",
+  "texture": "zombiecraft:fence",
+  "bo2": "zombie_chainlink_fence_c",
+  "opaque": false
+ },
+ {
+  "id": "*:zombiecraft:neon",
+  "map": "*",
+  "texture": "zombiecraft:neon",
+  "bo2": "p6_zm_neon_cyan_c",
+  "opaque": true
+ }
+]

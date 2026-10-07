@@ -4,6 +4,8 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "ZcGuiMixin",
+    "ZcFogMixin",
+    "ZcSkyMixin",
     "ZcTabOverlayMixin",
     "ZcMouseHandlerMixin",
     "ZcItemInHandRendererMixin",

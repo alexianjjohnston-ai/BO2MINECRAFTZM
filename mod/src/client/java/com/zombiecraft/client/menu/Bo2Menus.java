@@ -36,7 +36,7 @@ public final class Bo2Menus {
 					// dev: -Dzombiecraft.debugOptions=title|root|settings|controls opens that Options page straight away
 					mc.execute(() -> {
 						Screen t = new Title(), root = new Bo2Options.Root(t);
-						mc.setScreen(switch (dbg) { case "settings" -> new Bo2Options.Settings(root); case "controls" -> new Bo2Options.Controls(root); case "title" -> t; default -> root; });
+						mc.setScreen(switch (dbg) { case "settings" -> new Bo2Options.Settings(root); case "controls" -> new Bo2Options.Controls(root); case "title" -> t; case "quit" -> new QuitDialog(t); default -> root; });
 					});
 				} else if (screen instanceof TitleScreen && !autoplay) {
 				mc.execute(() -> mc.setScreen(new Title()));
@@ -397,18 +397,23 @@ public final class Bo2Menus {
 
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			g.fillGradient(0, 0, width, height, 0xA0000000, 0xC0000000);
-			int bw = (int) (width * 0.28), bh = (int) (height * 0.3), bx = (width - bw) / 2, by = (height - bh) / 2;
+			// the box is sized to its content so the answers can never land on the text
+			int bw = Math.max((int) (width * 0.34), 300), pad = 16;
+			List<String> lines = wrap("If you leave, you will lose all progress. Are you sure you want to leave the game?", bw - 2 * pad - 8, 0.75f);
+			int titleH = (int) H(1.5f), lineH = (int) (H(0.75f) * 1.25f);
+			int bh = pad + titleH + 10 + lines.size() * lineH + 16 + 2 * step() + pad;
+			int bx = (width - bw) / 2, by = (height - bh) / 2;
 			g.fill(bx - 3, by - 3, bx + bw + 3, by + bh + 3, 0xFF6A645C);
 			g.fill(bx, by, bx + bw, by + bh, 0xF0141210);
-			text(g, "Quit Game", bx + 14, by + 10, 1.5f, WHITE);
-			int ty = by + 10 + (int) H(1.5f) + 6;
-			for (String line : wrap("If you leave, you will lose all progress. Are you sure you want to leave the game?", bw - 28, 0.75f)) {
-				text(g, line, bx + 14, ty, 0.75f, 0xFFD2CEC6);
-				ty += (int) (H(0.75f) * 1.15f);
+			text(g, "Quit Game", bx + pad, by + pad, 1.5f, WHITE);
+			int ty = by + pad + titleH + 10;
+			for (String line : lines) {
+				text(g, line, bx + pad, ty, 0.75f, 0xFFD2CEC6);
+				ty += lineH;
 			}
-			x = bx + 14; y0 = by + bh - 2 * step() - 12;
+			x = bx + pad; y0 = ty + 16;
 			drawItems(g, mx, my);
-			hint(g, "ESC", "Back", bx, by + bh + 10);
+			hint(g, "ESC", "Back", bx, by + bh + 12);
 		}
 	}
 }

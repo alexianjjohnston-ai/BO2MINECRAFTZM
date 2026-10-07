@@ -602,6 +602,68 @@
    }
   }
  },
+ "textures": {
+  "file": "textures.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "map": {
+    "t": "string"
+   },
+   "texture": {
+    "t": "string"
+   },
+   "bo2": {
+    "t": "string"
+   },
+   "opaque": {
+    "t": "boolean"
+   },
+   "tint": {
+    "t": "string",
+    "optional": true
+   },
+   "note": {
+    "t": "string",
+    "optional": true
+   }
+  }
+ },
+ "atmosphere": {
+  "file": "atmosphere.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "fogColor": {
+    "t": "string"
+   },
+   "fogStart": {
+    "t": "number"
+   },
+   "fogEnd": {
+    "t": "number"
+   },
+   "skyColor": {
+    "t": "string"
+   },
+   "cloudColor": {
+    "t": "string"
+   },
+   "stars": {
+    "t": "number"
+   },
+   "timeOfDay": {
+    "t": "number"
+   },
+   "note": {
+    "t": "string"
+   }
+  }
+ },
  "map_pap": {
   "file": "map_pap.json",
   "key": "id",

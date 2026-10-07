@@ -9,8 +9,8 @@
   "height": 2,
   "boards": 6,
   "room": "lobby",
-  "boardBlock": "minecraft:oak_planks",
-  "sillBlock": "minecraft:dark_oak_planks"
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
  },
  {
   "id": "w2",
@@ -22,8 +22,8 @@
   "height": 2,
   "boards": 6,
   "room": "lobby",
-  "boardBlock": "minecraft:oak_planks",
-  "sillBlock": "minecraft:dark_oak_planks"
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
  },
  {
   "id": "w3",
@@ -35,8 +35,8 @@
   "height": 2,
   "boards": 6,
   "room": "lobby",
-  "boardBlock": "minecraft:oak_planks",
-  "sillBlock": "minecraft:dark_oak_planks"
+  "boardBlock": "zombiecraft:barricade_board[axis=z]",
+  "sillBlock": "zombiecraft:wood_floor"
  },
  {
   "id": "w4",
@@ -48,8 +48,8 @@
   "height": 2,
   "boards": 6,
   "room": "wing",
-  "boardBlock": "minecraft:oak_planks",
-  "sillBlock": "minecraft:dark_oak_planks"
+  "boardBlock": "zombiecraft:barricade_board[axis=z]",
+  "sillBlock": "zombiecraft:wood_floor"
  },
  {
   "id": "w5",
@@ -61,8 +61,8 @@
   "height": 2,
   "boards": 6,
   "room": "back",
-  "boardBlock": "minecraft:oak_planks",
-  "sillBlock": "minecraft:dark_oak_planks"
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
  },
  {
   "id": "w6",
@@ -74,8 +74,8 @@
   "height": 2,
   "boards": 6,
   "room": "back",
-  "boardBlock": "minecraft:oak_planks",
-  "sillBlock": "minecraft:dark_oak_planks"
+  "boardBlock": "zombiecraft:barricade_board[axis=x]",
+  "sillBlock": "zombiecraft:wood_floor"
  },
  {
   "id": "w7",
@@ -87,7 +87,7 @@
   "height": 2,
   "boards": 6,
   "room": "back",
-  "boardBlock": "minecraft:oak_planks",
-  "sillBlock": "minecraft:dark_oak_planks"
+  "boardBlock": "zombiecraft:barricade_board[axis=z]",
+  "sillBlock": "zombiecraft:wood_floor"
  }
 ]

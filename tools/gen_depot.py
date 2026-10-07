@@ -14,9 +14,9 @@ def L(bx, bz):
 ops = []
 
 # ---- one palette so nothing clashes: weathered stone and dark wood
-WALL, WAINSCOT, TRIM, ROOF = 'stone_bricks', 'polished_andesite', 'dark_oak_planks', 'deepslate_bricks'
-FLOOR_A, FLOOR_B, FLOOR_C, GROUND = 'polished_andesite', 'andesite', 'stone', 'stone'
-LIGHT, METAL, GLASS = 'shroomlight', 'iron_block', 'black_stained_glass'
+WALL, WAINSCOT, TRIM, ROOF = 'zombiecraft:cinder_block', 'zombiecraft:concrete_wall', 'zombiecraft:wood_floor', 'zombiecraft:metal_panel'
+FLOOR_A, FLOOR_B, FLOOR_C, GROUND = 'zombiecraft:depot_tile', 'zombiecraft:concrete_wall', 'zombiecraft:asphalt', 'zombiecraft:ground'
+LIGHT, METAL, GLASS = 'shroomlight', 'iron_block', 'zombiecraft:glass_brick'
 
 
 def mc(b):
@@ -37,9 +37,9 @@ def fill(id, block, x1, y1, z1, x2, y2, z2, group, note, **k):
 # ---- ground, road, lot (the sheet frame is x -40..40, z -30..30 -> bx 0..80, bz 17..77)
 ops.append(dict(id='base', order=-1, op='fill', block='minecraft:dirt', block2=None, x1=-40, y1=-4, z1=-30, x2=40, y2=-1, z2=30, stepX=1, stepZ=1, group='ground', note='solid ground under the whole map'))
 ops.append(dict(id='clear', order=0, op='fill', block='minecraft:air', block2=None, x1=-40, y1=0, z1=-30, x2=40, y2=14, z2=30, stepX=1, stepZ=1, group='ground', note='wipe everything so the map can be rebuilt'))
-fill('grass', 'grass_block', 0, 0, 17, 80, 0, 77, 'ground', 'ground layer', order=1)
-fill('road', 'black_concrete', 0, 0, 20, 80, 0, 26, 'road', 'the bus road', order=2)
-op('road_line', 'checker', 'yellow_concrete', 0, 0, 23, 80, 0, 23, 'road', 'centre line', order=3, block2='black_concrete')
+fill('grass', 'zombiecraft:grass', 0, 0, 17, 80, 0, 77, 'ground', 'ground layer', order=1)
+fill('road', 'zombiecraft:asphalt', 0, 0, 20, 80, 0, 26, 'road', 'the bus road', order=2)
+op('road_line', 'checker', 'yellow_concrete', 0, 0, 23, 80, 0, 23, 'road', 'centre line', order=3, block2='zombiecraft:asphalt')
 fill('sidewalk', FLOOR_B, 0, 0, 27, 80, 0, 28, 'road', 'kerb', order=4)
 fill('plaza', GROUND, 14, 0, 29, 62, 0, 32, 'depot', 'forecourt in front of the depot', order=5)
 fill('apron_w', GROUND, 12, 0, 33, 19, 0, 55, 'depot', 'west side lot', order=6)
@@ -68,12 +68,12 @@ fill('canopy', 'dark_oak_slab[type=top]', 22, 6, 29, 54, 6, 32, 'depot', 'entran
 op('canopy_posts', 'grid', 'dark_oak_fence', 22, 1, 29, 54, 5, 29, 'depot', 'canopy posts', order=27, step=8)
 
 # ---- props
-fill('ticket_counter', 'polished_andesite', 40, 1, 36, 48, 1, 36, 'lobby', 'ticket counter', order=40)
+fill('ticket_counter', 'zombiecraft:concrete_wall', 40, 1, 36, 48, 1, 36, 'lobby', 'ticket counter', order=40)
 fill('ticket_top', 'dark_oak_slab[type=bottom]', 40, 2, 36, 48, 2, 36, 'lobby', 'ticket counter top', order=41)
 fill('bench_w', 'dark_oak_slab[type=bottom]', 31, 1, 41, 35, 1, 41, 'lobby', 'waiting bench', order=42)
 fill('bench_e', 'dark_oak_slab[type=bottom]', 50, 1, 41, 54, 1, 41, 'lobby', 'waiting bench', order=43)
 fill('lockers', METAL, 21, 1, 43, 21, 2, 45, 'wing', 'lockers', order=44)
-fill('pap_frame', 'light_blue_concrete', 22, 1, 34, 24, 3, 35, 'pap', 'Pack-a-Punch (placed in the depot so the game loop works)', order=47)
+fill('pap_frame', 'zombiecraft:neon', 22, 1, 34, 24, 3, 35, 'pap', 'Pack-a-Punch (placed in the depot so the game loop works)', order=47)
 fill('pap_glass', 'light_blue_stained_glass', 22, 2, 36, 24, 3, 36, 'pap', 'Pack-a-Punch front glass', order=48)
 fill('pap_top', 'sea_lantern', 22, 4, 34, 24, 4, 35, 'pap', 'Pack-a-Punch light', order=49)
 fill('turbine_table', 'smooth_stone', 25, 1, 50, 27, 1, 51, 'wing', 'turbine buildable table (bx 25, bz 48)', order=50)
@@ -102,7 +102,7 @@ def win(id, wall, fixed_b, a_b, room):
         fixed, a = fixed_b - 47, a_b - 40
     else:
         fixed, a = fixed_b - 40, a_b - 47
-    return dict(id=id, wall=wall, fixed=fixed, a=a, width=3, y0=2, height=2, boards=6, room=room, boardBlock='minecraft:oak_planks', sillBlock='minecraft:dark_oak_planks')
+    return dict(id=id, wall=wall, fixed=fixed, a=a, width=3, y0=2, height=2, boards=6, room=room, boardBlock='zombiecraft:barricade_board[axis=%s]' % ('x' if wall in ('N', 'S') else 'z'), sillBlock='zombiecraft:wood_floor')
 
 
 windows = [win('w1', 'N', 33, 32, 'lobby'), win('w2', 'N', 33, 47, 'lobby'), win('w3', 'E', 56, 38, 'lobby'), win('w4', 'W', 20, 39, 'wing'),

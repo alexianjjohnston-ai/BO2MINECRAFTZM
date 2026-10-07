@@ -156,7 +156,9 @@ public final class Game {
 			cmd("gamerule " + rule);
 		cmd("difficulty normal");
 		cmd("weather clear");
-		cmd("time set " + Sheets.sysInt("world_time"));
+		var atmo = Sheets.ATMOSPHERE.stream().filter(x -> x.id().equals("bus_depot")).findFirst()
+				.or(() -> Sheets.ATMOSPHERE.stream().filter(x -> x.id().equals("*")).findFirst());
+		cmd("time set " + (atmo.isPresent() && atmo.get().timeOfDay() >= 0 ? atmo.get().timeOfDay() : Sheets.sysInt("world_time")));
 		cmd(String.format("setworldspawn %d %d %d", origin.getX() + Sheets.PLAYER_SPAWNS.get(0).x(), origin.getY() + 1, origin.getZ() + Sheets.PLAYER_SPAWNS.get(0).z()));
 
 		round = 0; zombiesToSpawn = 0; roundsSurvived = 0;

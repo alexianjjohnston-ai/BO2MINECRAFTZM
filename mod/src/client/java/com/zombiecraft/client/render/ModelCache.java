@@ -27,12 +27,16 @@ public final class ModelCache {
 				Optional<Path> bo2 = Bo2Locator.find(game);
 				if (bo2.isEmpty()) return;
 				var dumps = Bo2Config.dumps(game);
+				boolean rebuilt = false;
 				if (!Bo2Assets.ready(game, bo2.get())) {
 					int n = Bo2Assets.prepare(game, bo2.get(), dumps, m -> ZombiecraftMod.LOG.info("Block Ops 2 models: {}", m));
 					ZombiecraftMod.LOG.info("Block Ops 2 models: {} ready", n);
+					rebuilt = true;
 				}
 				ready = true;
 				com.zombiecraft.game.LocalAssets.models = true;
+				boolean fresh = rebuilt;
+				Minecraft.getInstance().execute(() -> com.zombiecraft.client.PackSelector.enable(fresh));
 			} catch (IOException | RuntimeException e) {
 				ZombiecraftMod.LOG.warn("Block Ops 2 models unavailable: {}", e.toString());
 			} finally { working = false; }

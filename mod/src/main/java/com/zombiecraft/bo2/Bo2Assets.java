@@ -24,7 +24,7 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 5;
+	public static final int VERSION = 6;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
 	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit", "common_zm"};
@@ -189,6 +189,8 @@ public final class Bo2Assets {
 				Path f = z.resolve("xanim").resolve(a);
 				if (Files.isRegularFile(f)) { Files.copy(f, anims.resolve(a), StandardCopyOption.REPLACE_EXISTING); break; }
 			}
+		try { TexturePack.build(cache.getParent().getParent(), zoneDirs, TexturePack.configuredSize(), log); }
+		catch (IOException | RuntimeException e) { log.accept("texture pack skipped: " + e); }
 		if (!missing.isEmpty()) log.accept("models not found in this install: " + missing);
 		Properties p = new Properties();
 		p.setProperty("version", String.valueOf(VERSION));
