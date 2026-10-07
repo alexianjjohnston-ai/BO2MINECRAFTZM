@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/map_kiosk"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/map_kiosk",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/map_kiosk",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/map_kiosk",
+   "y": 270
+  }
+ }
+}

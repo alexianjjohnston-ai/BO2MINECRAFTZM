@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/sign_restrooms"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/sign_restrooms",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/sign_restrooms",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/sign_restrooms",
+   "y": 270
+  }
+ }
+}

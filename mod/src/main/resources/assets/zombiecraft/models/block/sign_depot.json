@@ -1,0 +1,41 @@
+{
+ "textures": {
+  "0": "zombiecraft:block/sign_depot",
+  "particle": "zombiecraft:block/sign_depot",
+  "1": "zombiecraft:block/sign_depot"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    3,
+    15
+   ],
+   "to": [
+    16,
+    13,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#0"
+    },
+    "south": {
+     "texture": "#1"
+    },
+    "east": {
+     "texture": "#1"
+    },
+    "west": {
+     "texture": "#1"
+    },
+    "up": {
+     "texture": "#1"
+    },
+    "down": {
+     "texture": "#1"
+    }
+   }
+  }
+ ]
+}

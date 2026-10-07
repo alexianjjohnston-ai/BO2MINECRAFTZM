@@ -25,6 +25,8 @@ public final class Barrier {
 	private final Deque<Integer> torn = new ArrayDeque<>();
 	private final List<Integer> tearOrder = new ArrayList<>();
 	private final BlockState boardState, sillState;
+	/** A torn cell is not air: players still cannot walk through the window (zombies and bullets can). */
+	private final BlockState clipState;
 	public final Vec3 outsideSpot, insideSpot, center;
 	/** Unit vector (x, z) pointing from the window towards the inside of the building. */
 	public final double insideX, insideZ;
@@ -43,6 +45,7 @@ public final class Barrier {
 		this.level = level; this.origin = origin; this.def = def;
 		this.boardState = parse(level, def.boardBlock());
 		this.sillState = parse(level, def.sillBlock());
+		this.clipState = parse(level, "zombiecraft:window_clip");
 		boolean horizontal = def.wall().equals("S") || def.wall().equals("N");
 		for (int i = 0; i < def.width(); i++)
 			for (int j = def.height() - 1; j >= 0; j--) {
@@ -86,7 +89,7 @@ public final class Barrier {
 				intact[idx] = false; torn.push(idx);
 				BlockPos p = cells.get(idx);
 				level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, boardState), p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, 10, 0.3, 0.3, 0.3, 0.05);
-				level.setBlock(p, Blocks.AIR.defaultBlockState(), FLAGS);
+				level.setBlock(p, clipState, FLAGS);
 				return true;
 			}
 		}

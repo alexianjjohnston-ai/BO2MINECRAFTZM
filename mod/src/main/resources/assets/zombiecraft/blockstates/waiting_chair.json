@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/waiting_chair"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/waiting_chair",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/waiting_chair",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/waiting_chair",
+   "y": 270
+  }
+ }
+}

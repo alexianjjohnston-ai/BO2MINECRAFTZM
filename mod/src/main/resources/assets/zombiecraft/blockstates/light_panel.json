@@ -1,0 +1,7 @@
+{
+ "variants": {
+  "": {
+   "model": "zombiecraft:block/light_panel"
+  }
+ }
+}

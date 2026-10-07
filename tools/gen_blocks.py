@@ -21,6 +21,16 @@ BLOCKS = {
     'glass_brick':    ('Glass Brick',    (127, 145, 140), 'cube'),
     'neon':           ('Neon',           (48, 200, 216),  'cube'),
     'barricade_board': ('Barricade Boards', (111, 96, 72), 'board'),
+    'light_panel':    ('Light Panel',    (235, 232, 205), 'cube'),
+    'plaster_wall':   ('Plaster Wall',   (176, 170, 150), 'cube'),
+    'concrete_floor': ('Concrete Floor', (112, 110, 104), 'cube'),
+    'yellow_trim':    ('Yellow Trim',    (214, 168, 34),  'cube'),
+    'green_panel':    ('Green Panel',    (64, 92, 78),    'cube'),
+    'red_brick':      ('Red Wall',       (140, 76, 66),   'cube'),
+    'door_metal':     ('Metal Door',     (96, 104, 100),  'cube'),
+    'door_wood':      ('Wooden Door',    (92, 66, 44),    'cube'),
+    'road_bus':       ('Road Paint BUS', (58, 58, 60),    'cube'),
+    'road_stop':      ('Road Paint STOP', (58, 58, 60),   'cube'),
 }
 
 
@@ -68,6 +78,8 @@ for bid, (title, col, kind) in BLOCKS.items():
         w(os.path.join(RES, 'blockstates', bid + '.json'), {'variants': {'': {'model': 'zombiecraft:block/' + bid}}})
         w(os.path.join(RES, 'models', 'block', bid + '.json'), {'parent': 'minecraft:block/cube_all', 'textures': {'all': 'zombiecraft:block/' + bid}})
     w(os.path.join(RES, 'items', bid + '.json'), {'model': {'type': 'minecraft:model', 'model': 'zombiecraft:block/' + bid}})
+
+exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gen_decor.py'), encoding='utf-8').read())
 
 json.dump(lang, open(lang_p, 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
 print(len(BLOCKS), 'blocks written')

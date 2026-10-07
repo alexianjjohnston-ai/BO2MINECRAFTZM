@@ -14,8 +14,9 @@ def L(bx, bz):
 ops = []
 
 # ---- one palette so nothing clashes: weathered stone and dark wood
+PLASTER = 'zombiecraft:plaster_wall'
 WALL, WAINSCOT, TRIM, ROOF = 'zombiecraft:cinder_block', 'zombiecraft:concrete_wall', 'zombiecraft:wood_floor', 'zombiecraft:metal_panel'
-FLOOR_A, FLOOR_B, FLOOR_C, GROUND = 'zombiecraft:depot_tile', 'zombiecraft:concrete_wall', 'zombiecraft:concrete_wall', 'zombiecraft:ground'
+FLOOR_A, FLOOR_B, FLOOR_C, GROUND = 'zombiecraft:depot_tile', 'zombiecraft:concrete_floor', 'zombiecraft:concrete_floor', 'zombiecraft:ground'
 LIGHT, METAL, GLASS = 'shroomlight', 'iron_block', 'zombiecraft:glass_brick'
 
 
@@ -57,37 +58,60 @@ fill('floor_part', FLOOR_C, 29, 0, 46, 55, 0, 46, 'back', 'partition footing', o
 op('shell', 'walls', WALL, 20, 1, 33, 56, 6, 53, 'building', 'outer walls', order=20)
 op('shell_wainscot', 'walls', WAINSCOT, 20, 1, 33, 56, 1, 53, 'building', 'stone base course', order=21)
 op('shell_trim', 'walls', TRIM, 20, 6, 33, 56, 6, 53, 'building', 'wooden eaves', order=21)
-fill('wing_wall', WALL, 28, 1, 34, 28, 6, 52, 'building', 'wall between the west wing and the hall', order=22)
-fill('partition', WALL, 29, 1, 46, 55, 6, 46, 'building', 'wall between the waiting hall and the back room', order=23)
+op('shell_neon', 'walls', 'zombiecraft:neon', 19, 5, 32, 57, 5, 54, 'building', 'cyan neon line around the outside of the building (reference)', order=21)
+fill('wing_wall', PLASTER, 28, 1, 34, 28, 6, 52, 'building', 'wall between the west wing and the hall', order=22)
+fill('partition', PLASTER, 29, 1, 46, 55, 6, 46, 'building', 'wall between the waiting hall and the back room', order=23)
 fill('door_b', 'air', 28, 1, 40, 28, 4, 42, 'building', 'opening to the west wing (BO2 electric door B)', order=24)
 fill('door_a', 'air', 28, 1, 47, 28, 4, 49, 'building', 'opening to the west wing from the back room (door A)', order=25)
 fill('door_750', 'air', 37, 1, 46, 40, 4, 46, 'building', 'the 750 door between the hall and the back room', order=26)
+for i, (x1, z1, x2, z2) in enumerate([(28, 39, 28, 39), (28, 43, 28, 43), (28, 46, 28, 46), (28, 50, 28, 50), (36, 46, 36, 46), (41, 46, 41, 46)]):
+    fill(f'jamb{i}', 'zombiecraft:yellow_trim', x1, 1, z1, x2, 4, z2, 'building', 'yellow door frame', order=26)
 fill('roof', ROOF, 20, 7, 33, 56, 7, 53, 'building', 'roof', order=27)
-# flush neon strips under the roof, each with a dim light block below it (dark and moody, still readable)
+# flush fluorescent panels under the roof, each with a dim light block below it (dark and moody, still readable)
 for i, (x1, z1, x2, z2) in enumerate([(32, 39, 36, 39), (40, 39, 44, 39), (48, 39, 52, 39), (32, 43, 36, 43), (40, 43, 44, 43), (48, 43, 52, 43),
                                       (24, 38, 24, 41), (24, 46, 24, 50), (32, 49, 36, 49), (44, 49, 48, 49)]):
-    fill(f'strip{i}', 'zombiecraft:neon', x1, 6, z1, x2, 6, z2, 'building', 'ceiling light strip', order=29)
-    fill(f'glow{i}', 'light[level=9]', (x1 + x2) // 2, 5, (z1 + z2) // 2, (x1 + x2) // 2, 5, (z1 + z2) // 2, 'building', 'light source under the strip', order=29)
+    fill(f'strip{i}', 'zombiecraft:light_panel', x1, 6, z1, x2, 6, z2, 'building', 'ceiling light panel', order=29)
+    fill(f'glow{i}', 'light[level=8]', (x1 + x2) // 2, 5, (z1 + z2) // 2, (x1 + x2) // 2, 5, (z1 + z2) // 2, 'building', 'light source under the panel', order=29)
 fill('canopy', 'dark_oak_slab[type=top]', 22, 6, 29, 54, 6, 32, 'depot', 'entrance canopy', order=28)
-op('canopy_posts', 'grid', 'dark_oak_fence', 22, 1, 29, 54, 5, 29, 'depot', 'canopy posts', order=27, step=8)
+op('canopy_posts', 'grid', 'zombiecraft:pillar_round', 22, 1, 29, 54, 5, 29, 'depot', 'canopy posts (round pillars)', order=27, step=8)
 
-# ---- props
-fill('ticket_counter', 'zombiecraft:concrete_wall', 40, 1, 36, 48, 1, 36, 'lobby', 'ticket counter', order=40)
-fill('ticket_top', 'dark_oak_slab[type=bottom]', 40, 2, 36, 48, 2, 36, 'lobby', 'ticket counter top', order=41)
-fill('bench_w', 'dark_oak_stairs[facing=north]', 31, 1, 41, 35, 1, 41, 'lobby', 'row of waiting chairs', order=42)
-fill('bench_e', 'dark_oak_stairs[facing=north]', 50, 1, 41, 54, 1, 41, 'lobby', 'row of waiting chairs', order=43)
-fill('board', 'gray_concrete', 40, 3, 34, 48, 5, 34, 'lobby', 'ticket map board', order=45)
-fill('board_head', 'yellow_concrete', 40, 5, 34, 48, 5, 34, 'lobby', 'BUS DEPOT header strip', order=45)
-fill('poster', 'orange_concrete', 31, 3, 45, 32, 4, 45, 'lobby', 'Ride the Bus poster', order=45)
-for i, (bx, bz) in enumerate([(35, 39), (51, 39)]):
-    fill(f'pillar{i}', 'stripped_birch_log', bx, 1, bz, bx, 5, bz, 'lobby', 'round pillar', order=45)
-    fill(f'pillar_band{i}', 'yellow_concrete', bx, 2, bz, bx, 3, bz, 'lobby', 'yellow trim band', order=46)
-for i, (bx, bz) in enumerate([(53, 34), (30, 44), (31, 52)]):
-    fill(f'bin{i}', 'cauldron', bx, 1, bz, bx, 1, bz, 'lobby', 'trash can', order=46)
-for i, (x1, z1, x2, z2) in enumerate([(29, 44, 30, 45), (30, 51, 31, 52), (53, 52, 54, 52)]):
+
+def put(id, block, bx, bz, facing=None, y=1, group='lobby', n=1, dx=0, dz=0, order=45):
+    """n copies of a decor block starting at (bx, y, bz), stepping (dx, dz); facing = direction the front looks at."""
+    st = block if facing is None else f'zombiecraft:{block}[facing={facing}]'
+    for i in range(n):
+        fill(f'{id}{i}' if n > 1 else id, st, bx + i * dx, y, bz + i * dz, bx + i * dx, y, bz + i * dz, group, id, order=order)
+
+
+# ---- props (decor blocks come from tools/gen_decor.py; facing = the way the front looks)
+put('ticket_counter', 'ticket_counter', 40, 36, 'south', n=9, dx=1, order=40)
+put('map_kiosk_a', 'map_kiosk', 47, 39, 'west', n=3, dz=1)
+put('map_kiosk_b', 'map_kiosk', 47, 39, 'west', n=3, dz=1, y=2)
+put('map_kiosk_c', 'map_kiosk', 47, 39, 'west', n=3, dz=1, y=3)
+put('sign_bus', 'sign_bus', 43, 34, 'south', y=4)
+put('sign_depot', 'sign_depot', 44, 34, 'south', y=4)
+put('wall_clock', 'wall_clock', 50, 34, 'south', y=4)
+put('sign_employees', 'sign_employees', 36, 45, 'north', y=3)
+put('sign_fire', 'sign_fire', 35, 45, 'north', y=3)
+put('poster_ride', 'poster_ride', 31, 45, 'north', y=2)
+put('sign_restrooms', 'sign_restrooms', 53, 45, 'north', y=3)
+put('chairs_w', 'waiting_chair', 31, 41, 'north', n=5, dx=1, order=42)
+put('chairs_e', 'waiting_chair', 50, 41, 'north', n=5, dx=1, order=43)
+put('chairs_back', 'waiting_chair', 38, 52, 'north', n=4, dx=1, group='back')
+for i, (bx, bz) in enumerate([(35, 39), (51, 39), (34, 44), (52, 44)]):
+    put(f'pillar{i}', 'pillar_round', bx, bz, 'north', n=1)
+    for y in (2, 3, 4, 5): fill(f'pillar{i}_{y}', 'zombiecraft:pillar_round[facing=north]', bx, y, bz, bx, y, bz, 'lobby', 'round pillar section', order=45)
+for i, (bx, bz) in enumerate([(29, 34), (54, 45), (31, 52), (53, 52)]):
+    put(f'bin{i}', 'trash_can', bx, bz, 'south', group='lobby')
+put('vending', 'vending', 53, 34, 'south')
+put('lockers_a', 'locker', 21, 43, 'east', n=3, dz=1, group='wing')
+put('lockers_b', 'locker', 21, 43, 'east', n=3, dz=1, group='wing', y=2)
+put('crates_a', 'crate', 30, 51, 'north', n=2, dx=1, group='back')
+put('crates_b', 'crate', 30, 51, 'north', y=2, group='back')
+put('barrels', 'barrel', 52, 52, 'north', group='back')
+for i, (x1, z1, x2, z2) in enumerate([(29, 44, 30, 45), (53, 52, 54, 52)]):
     fill(f'rubble{i}', 'gravel', x1, 1, z1, x2, 1, z2, 'lobby', 'rubble pile', order=46)
     fill(f'rubble_top{i}', 'cobblestone_slab', x1, 2, z1, x1, 2, z1, 'lobby', 'rubble pile top', order=46)
-fill('lockers', METAL, 21, 1, 43, 21, 2, 45, 'wing', 'lockers', order=44)
 fill('pap_frame', 'zombiecraft:neon', 22, 1, 34, 24, 3, 35, 'pap', 'Pack-a-Punch (placed in the depot so the game loop works)', order=47)
 fill('pap_glass', 'light_blue_stained_glass', 22, 2, 36, 24, 3, 36, 'pap', 'Pack-a-Punch front glass', order=48)
 fill('pap_top', 'sea_lantern', 22, 4, 34, 24, 4, 35, 'pap', 'Pack-a-Punch light', order=49)
@@ -101,10 +125,19 @@ fill('bus_stripe', 'green_concrete', 14, 1, 21, 24, 1, 25, 'bus', 'lower stripe'
 fill('bus_roof', 'light_gray_concrete', 14, 4, 21, 24, 4, 25, 'bus', 'bus roof', order=64)
 
 # ---- the town outside the windows: street-front buildings, a gas station, wrecks, bare trees, benches
-for i, (x1, z1, x2, z2, fx1, fz1, fx2, fz2) in enumerate([(0, 17, 80, 19, 0, 19, 80, 19), (0, 72, 80, 77, 0, 72, 80, 72), (0, 20, 3, 71, 3, 20, 3, 71), (77, 20, 80, 71, 77, 20, 77, 71)]):
-    fill(f'town{i}', 'zombiecraft:cinder_block', x1, 1, z1, x2, 9, z2, 'town', 'distant buildings closing the street', order=80)
-    op(f'town_win{i}', 'grid', 'black_stained_glass', fx1, 3, fz1, fx2, 4, fz2, 'town', 'building windows (on the street face)', order=81, step=3)
-    op(f'town_win2_{i}', 'grid', 'black_stained_glass', fx1, 6, fz1, fx2, 7, fz2, 'town', 'upper windows', order=81, step=3)
+FACADES = ['zombiecraft:cinder_block', 'zombiecraft:red_brick', 'zombiecraft:concrete_wall', 'zombiecraft:plaster_wall', 'zombiecraft:cinder_block', 'zombiecraft:green_panel']
+for i, (x1, z1, x2, z2, fx1, fz1, fx2, fz2, along) in enumerate([(0, 17, 80, 19, 0, 19, 80, 19, 'x'), (0, 72, 80, 77, 0, 72, 80, 72, 'x'),
+                                                                  (0, 20, 3, 71, 3, 20, 3, 71, 'z'), (77, 20, 80, 71, 77, 20, 77, 71, 'z')]):
+    lo, hi = (x1, x2) if along == 'x' else (z1, z2)
+    for k, c in enumerate(range(lo, hi + 1, 10)):   # one building per 10 blocks, each its own material and height
+        e = min(c + 9, hi)
+        hgt = 8 + (k * 5) % 4
+        a1 = (c, z1, e, z2) if along == 'x' else (x1, c, x2, e)
+        fill(f'town{i}_{k}', FACADES[(i + k) % len(FACADES)], a1[0], 1, a1[1], a1[2], hgt, a1[3], 'town', 'distant building', order=80)
+        f1 = (c, fz1, e, fz2) if along == 'x' else (fx1, c, fx2, e)
+        op(f'town_win{i}_{k}', 'grid', 'black_stained_glass', f1[0], 3, f1[1], f1[2], 4, f1[3], 'town', 'building windows (on the street face)', order=81, step=3)
+        op(f'town_win2_{i}_{k}', 'grid', 'black_stained_glass', f1[0], 6, f1[1], f1[2], 7, f1[3], 'town', 'upper windows', order=81, step=3)
+        fill(f'town_neon{i}_{k}', 'zombiecraft:neon', f1[0], 5, f1[1], f1[2], 5, f1[3], 'town', 'neon line (Tranzit)', order=81) if k % 3 == 1 else None
 fill('gas_roof', 'dark_oak_slab[type=top]', 66, 5, 34, 78, 5, 42, 'town', 'gas station canopy', order=82)
 op('gas_posts', 'grid', 'iron_bars', 67, 1, 35, 77, 4, 41, 'town', 'canopy posts', order=83, step=10)
 fill('pumps', 'blackstone', 70, 1, 38, 74, 2, 38, 'town', 'fuel pumps', order=84)
@@ -114,8 +147,18 @@ for i, (bx, bz, c) in enumerate([(22, 27, 'brown'), (52, 30, 'gray'), (62, 24, '
 for i, (bx, bz) in enumerate([(8, 30), (10, 60), (68, 48), (72, 62), (6, 38), (30, 62), (60, 62)]):
     fill(f'tree{i}', 'dark_oak_log', bx, 1, bz, bx, 4, bz, 'town', 'bare tree', order=86)
     fill(f'crown{i}', 'dark_oak_fence', bx - 1, 5, bz - 1, bx + 1, 5, bz + 1, 'town', 'bare branches', order=86)
-fill('stop_bar', 'white_concrete', 28, 0, 24, 36, 0, 24, 'road', 'bus stop line on the road', order=87)
-fill('stop_bench', 'dark_oak_slab[type=bottom]', 30, 1, 28, 33, 1, 28, 'road', 'bus stop bench', order=87)
+fill('road_bus', 'zombiecraft:road_bus', 30, 0, 24, 30, 0, 24, 'road', 'BUS painted on the road', order=87)
+fill('road_stop', 'zombiecraft:road_stop', 31, 0, 24, 31, 0, 24, 'road', 'STOP painted on the road', order=87)
+put('stop_bench', 'bench', 30, 28, 'north', n=4, dx=1, group='road', order=87)
+put('stop_sign', 'bus_stop_sign', 34, 28, 'north', group='road', order=87)
+for i, bx in enumerate((18, 40, 64)):
+    put(f'lamp{i}', 'street_lamp', bx, 27, group='road', n=1, order=88) if False else None
+    for y in (1, 2, 3): fill(f'lamp{i}_{y}', 'zombiecraft:street_lamp[facing=north]', bx, y, 27, bx, y, 27, 'road', 'street lamp pole', order=88)
+    put(f'lamp{i}_head', 'street_lamp_head', bx, 27, 'south', y=4, group='road', order=88)
+put('pump', 'gas_pump', 70, 38, 'south', n=2, dx=4, group='town', order=88)
+put('jersey', 'jersey_barrier', 66, 44, 'north', n=6, dx=1, group='town', order=88)
+put('town_barrel', 'barrel', 78, 36, 'north', n=3, dz=2, group='town', order=88)
+put('town_crate', 'crate', 8, 52, 'north', n=2, dx=1, group='town', order=88)
 
 # ---- lava pit behind the depot (BO2 depot_lava_pit), fenced
 fill('pit', 'lava', 36, -2, 60, 50, -1, 68, 'pit', 'lava pit', order=70)
@@ -167,9 +210,9 @@ machines = [machine('m_power', 'power', '', 21, 46, 'east', 'wing'), machine('m_
 def door(id, cost, bx1, bz1, bx2, bz2, block, opens, cue, label):
     a, b = at(bx1, bz1), at(bx2, bz2)
     return dict(id=id, cost=cost, x1=a[0], y1=1, z1=a[1], x2=b[0], y2=4, z2=b[1], block=mc(block), opens=opens, cue=cue, label=label, room='lobby')
-doors = [door('door_750', 750, 37, 46, 40, 46, 'dark_oak_planks', 'back', 'zmb_small_wood_door', 'Back Room'),
-         door('door_b', 1000, 28, 40, 28, 42, METAL, 'wing', 'zmb_power_door', 'West Wing'),
-         door('door_a', 1000, 28, 47, 28, 49, METAL, 'wing', 'zmb_power_door', 'West Wing')]
+doors = [door('door_750', 750, 37, 46, 40, 46, 'zombiecraft:door_wood', 'back', 'zmb_small_wood_door', 'Back Room'),
+         door('door_b', 1000, 28, 40, 28, 42, 'zombiecraft:door_metal', 'wing', 'zmb_power_door', 'West Wing'),
+         door('door_a', 1000, 28, 47, 28, 49, 'zombiecraft:door_metal', 'wing', 'zmb_power_door', 'West Wing')]
 p1 = L(22, 34)
 p2 = L(24, 36)   # include the front glass so targeting/model replacement covers the whole machine
 pap = [dict(id='pap1', x1=p1[0], y1=1, z1=p1[1], x2=p2[0], y2=4, z2=p2[1], facing='south', room='wing')]

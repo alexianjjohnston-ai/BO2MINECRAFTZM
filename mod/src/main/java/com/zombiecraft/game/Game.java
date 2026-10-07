@@ -323,9 +323,15 @@ public final class Game {
 		if (Boolean.getBoolean("zombiecraft.debugTour") && tick - startedAt >= 60 && (tick - startedAt) % 40 % 30 == 0) {
 			boolean snap = (tick - startedAt) % 40 == 30;
 			int i = (int) ((tick - startedAt - (snap ? 30 : 0)) / 40) - 2;
-			double[][] views = {{2, -7, 180}, {-6, -7, -90}, {2, -7, 0}, {0, -16, 0}, {0, -16, 180}, {2, 3, 180}, {-18, -10, 90}};
+			double[][] views = {{2, -7, 180}, {-6, -7, -90}, {-6, -6, 90}, {-6, -6, 90}, {8, -16, 0}, {0, -16, 180}, {2, 3, 180}, {-12, -6, 90}};
 			if (i >= 0 && i < views.length) for (ServerPlayer p : level.players()) {
 				if (snap) ServerPlayNetworking.send(p, new Payloads.Shot("tour_" + i));
+				else if (i == 3) { doors.openAll(); p.teleportTo(level, origin.getX() + views[i][0] + 0.5, origin.getY() + 1, origin.getZ() + views[i][1] + 0.5, Set.of(), (float) views[i][2], 0f, true); }
+				else if (i == 7) {   // a player cannot stand in a torn window (the clip block), the zombie nearby is not affected
+					Barrier w = barrierFor("w2"); while (w.tear()) { }
+					p.teleportTo(level, w.center.x, w.center.y + 1, w.center.z, Set.of(), 0f, 0f, true);
+					System.out.println("[tour] player fits in torn window: " + level.noCollision(p) + " (expect false)");
+				}
 				else p.teleportTo(level, origin.getX() + views[i][0] + 0.5, origin.getY() + 1, origin.getZ() + views[i][1] + 0.5, Set.of(), (float) views[i][2], 0f, true);
 			}
 		}

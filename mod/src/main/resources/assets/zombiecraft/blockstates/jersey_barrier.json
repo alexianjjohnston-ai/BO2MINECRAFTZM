@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/jersey_barrier"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/jersey_barrier",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/jersey_barrier",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/jersey_barrier",
+   "y": 270
+  }
+ }
+}

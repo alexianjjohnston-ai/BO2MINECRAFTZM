@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/pillar_round"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/pillar_round",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/pillar_round",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/pillar_round",
+   "y": 270
+  }
+ }
+}
