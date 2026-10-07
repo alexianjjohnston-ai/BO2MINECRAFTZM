@@ -149,7 +149,11 @@ public final class Bo2Menus {
 	/** True while the BO2 loading screen was drawn within the last half second. */
 	public static boolean loadingShown() { return System.nanoTime() - loadSeen < 500_000_000L; }
 
+	/** Online lobby: while the world loads for it, the menu look and music carry on instead of the loading screen (that comes when the match starts). */
+	public static boolean quietLoad;
+
 	public static void loading(GuiGraphics g, int w, int h) {
+		if (quietLoad) { Bo2Locations.quietLoading(g, w, h); return; }
 		MenuAudio.loadingMusic();
 		long now = System.nanoTime();
 		if (now - loadSeen > 2_000_000_000L) loadStart = now;

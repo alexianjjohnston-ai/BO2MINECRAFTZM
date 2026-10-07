@@ -89,14 +89,25 @@ final class Bo2Locations {
 		}, "zc-dev-shot");
 		t.setDaemon(true);
 		t.start();
-		// dev: -Dzombiecraft.debugToggleOnline=true presses ONLINE GAME on the match screen after 6 s and saves zc-lobby-toggle.png once the lobby is up
+		// dev: -Dzombiecraft.debugToggleOnline=true walks the online flow by itself and saves zc-flow-*.png: ONLINE GAME pressed at 6 s, loading, lobby, invite screen, START MATCH, countdown, start screen
 		if (Boolean.getBoolean("zombiecraft.debugToggleOnline") && out instanceof Match m) {
 			Thread t2 = new Thread(() -> {
 				Minecraft mc = Minecraft.getInstance();
-				try { Thread.sleep(6000); } catch (InterruptedException ignored) {}
-				mc.execute(() -> m.activate(1));
-				try { Thread.sleep(50000); } catch (InterruptedException ignored) {}
-				mc.execute(() -> net.minecraft.client.Screenshot.grab(mc.gameDirectory, "zc-lobby-toggle.png", mc.getMainRenderTarget(), c -> {}));
+				long t0 = System.currentTimeMillis();
+				String[][] plan = {{"6", "press"}, {"9", "zc-flow-1-loading"}, {"40", "zc-flow-2-lobby"}, {"41", "invite"}, {"43", "zc-flow-3-invite"}, {"44", "back"}, {"46", "start"}, {"48.6", "zc-flow-4-countdown"}, {"52", "zc-flow-5-starting"}};
+				for (String[] step : plan) {
+					try { Thread.sleep(Math.max(0, t0 + (long) (Double.parseDouble(step[0]) * 1000) - System.currentTimeMillis())); } catch (InterruptedException ignored) {}
+					String what = step[1];
+					mc.execute(() -> {
+						switch (what) {
+							case "press" -> m.activate(1);
+							case "invite" -> mc.setScreen(new Bo2Online.Invite());
+							case "back" -> mc.setScreen(null);
+							case "start" -> net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.zombiecraft.net.Payloads.StartMatch());
+							default -> net.minecraft.client.Screenshot.grab(mc.gameDirectory, what + ".png", mc.getMainRenderTarget(), c -> {});
+						}
+					});
+				}
 			}, "zc-dev-toggle");
 			t2.setDaemon(true);
 			t2.start();
@@ -237,7 +248,7 @@ final class Bo2Locations {
 		void activate(int i) {
 			if (startAt != 0) return;
 			if (i == 0) { startAt = System.currentTimeMillis() + 3000; MenuAudio.play("uin_lobby_join"); }
-			else if (i == 1) { host = true; Relay.reserve(); MenuAudio.play("uin_lobby_join"); launch(); } // online: the lobby opens at once so friends can join with the code
+			else if (i == 1) { host = true; Relay.reserve(); Bo2Menus.quietLoad = true; MenuAudio.play("uin_lobby_join"); launch(); } // online: the lobby opens at once so friends can join with the code
 			else { MenuAudio.play("uin_cmn_backout"); Minecraft.getInstance().setScreen(parent); }
 		}
 
@@ -337,6 +348,37 @@ final class Bo2Locations {
 			Bo2Menus.raw(g, l1, cx + cw - 10 - Bo2Menus.tw(l1, 0.8f), cy + ch - 34, 0.8f, Bo2Menus.WHITE);
 			Bo2Menus.raw(g, l2, cx + cw - 10 - Bo2Menus.tw(l2, 0.7f), cy + ch - 20, 0.7f, Bo2Menus.WHITE);
 			Bo2Menus.hint(g, "ESC", "Back", x, hintY);
+		}
+	}
+
+	/** What the world-loading screens show while an online lobby opens: the same backdrop and title as the lobby, with the menu music still playing. */
+	static void quietLoading(GuiGraphics g, int w, int h) {
+		MenuAudio.music();
+		topDown(g, w, h, true);
+		Loc loc = LOCS[0];
+		String title = loc.name() + " / " + loc.modes().get(loc.modes().size() - 1).name();
+		float ts = 2.0f;
+		while (ts > 1.0f && Bo2Menus.tw(title, ts) > w * 0.5) ts -= 0.1f;
+		int x = (int) (w * 0.05), y = (int) (h * 0.07);
+		Bo2Menus.raw(g, title, x, y, ts, Bo2Menus.WHITE);
+		Bo2Menus.raw(g, "Opening the lobby...", x, y + (int) Bo2Menus.H(ts) + 14, 1.25f, Bo2Menus.WHITE);
+	}
+
+	/** The start of the match, for everyone at once: the BO2 loading picture with its music, for a few seconds. */
+	static final class Starting extends Screen {
+		private final long until = System.currentTimeMillis() + 5000;
+
+		Starting() { super(Component.literal("Starting")); }
+
+		@Override public boolean shouldCloseOnEsc() { return false; }
+		@Override public boolean isPauseScreen() { return false; }
+		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
+
+		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
+			Bo2Menus.loadScreen = LOCS[0].loadscreen();
+			Bo2Menus.loadPlace = LOCS[0].name();
+			Bo2Menus.loading(g, width, height);
+			if (System.currentTimeMillis() > until) Minecraft.getInstance().setScreen(null);
 		}
 	}
 

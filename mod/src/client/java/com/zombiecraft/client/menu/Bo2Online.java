@@ -75,7 +75,7 @@ public final class Bo2Online {
 				});
 		});
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> {
-			MenuAudio.stopMusic();
+			if (!Bo2Menus.quietLoad) MenuAudio.stopMusic();
 			joinError = null;
 			if (!mc.hasSingleplayerServer() && Relay.joinCode != null) { Relay.joinedAt = System.currentTimeMillis(); net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.zombiecraft.net.Payloads.JoinCode(Relay.joinCode)); }
 			if (!hostPending || !mc.hasSingleplayerServer()) {
@@ -93,13 +93,18 @@ public final class Bo2Online {
 				if (ok) { showInvite = true; Relay.expose(port); }
 			});
 		});
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> { hostPending = false; showInvite = false; lobbyHosting = false; com.zombiecraft.game.Game.lobbyNext = false; Relay.stop(); Relay.joinCode = null; });
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> { hostPending = false; showInvite = false; lobbyHosting = false; com.zombiecraft.game.Game.lobbyNext = false; Bo2Menus.quietLoad = false; Relay.stop(); Relay.joinCode = null; });
 		// the invite box waits for the loading screen to finish; a hosted lobby has its own screen (with INVITE FRIENDS), so no box first
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			if (showInvite && mc.player != null && mc.screen == null) { showInvite = false; if (!lobbyHosting) mc.setScreen(new Invite()); }
 			boolean inLobby = mc.player != null && com.zombiecraft.client.ZombiecraftClient.state.phase() == com.zombiecraft.net.Payloads.PHASE_LOBBY;
 			if (inLobby && mc.screen == null) mc.setScreen(new Bo2Locations.Lobby());
-			else if (!inLobby && mc.screen instanceof Bo2Locations.Lobby) mc.setScreen(null);
+			else if (!inLobby && (mc.screen instanceof Bo2Locations.Lobby || mc.screen instanceof Invite)) {
+				// the host started the match: now, for everyone together, the menu music ends and the loading picture with its music shows
+				Bo2Menus.quietLoad = false;
+				MenuAudio.stopMusic();
+				mc.setScreen(new Bo2Locations.Starting());
+			}
 		});
 	}
 
@@ -140,6 +145,7 @@ public final class Bo2Online {
 	/** Same as pressing the Cancel button of vanilla's connecting screen. */
 	public static void cancel(Screen s) {
 		connectingScreen = null;
+		Bo2Menus.quietLoad = false;
 		for (var c : s.children()) if (c instanceof net.minecraft.client.gui.components.Button b) { b.onPress(); return; }
 		Minecraft.getInstance().setScreen(new net.minecraft.client.gui.screens.TitleScreen());
 	}
@@ -157,60 +163,73 @@ public final class Bo2Online {
 	}
 
 	/** What to forward, and where to get the address to share. */
-	static final class Invite extends MenuScreen {
-		Invite() { super("Online Game"); items = Relay.code != null ? new String[] {"COPY CODE", "OPEN PLAYIT.GG", "CONTINUE"} : new String[] {"OPEN PLAYIT.GG", "COPY PORT", "CONTINUE"}; scale = 1.1f; }
+	static final class Invite extends Screen {
+		private final String[] items = {"COPY CODE", "COPY INVITE MESSAGE", "BACK"};
+		private int sel, lastSel = -1, seenX = -1, seenY = -1;
+		private String flash = "";
+		private long flashUntil;
 
-		private int port() {
-			var s = Minecraft.getInstance().getSingleplayerServer();
-			return s == null ? DEFAULT_PORT : s.getPort();
+		Invite() { super(Component.literal("Invite friends")); }
+
+		@Override public boolean shouldCloseOnEsc() { return false; }
+		@Override public boolean isPauseScreen() { return false; }
+		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
+
+		private void activate(int i) {
+			Minecraft mc = Minecraft.getInstance();
+			if (i == 2) { MenuAudio.play("uin_cmn_backout"); mc.setScreen(null); return; } // the lobby screen comes back by itself
+			String code = Relay.code;
+			if (code == null) { MenuAudio.play("cac_cmn_deny"); return; }
+			mc.keyboardHandler.setClipboard(i == 0 ? code : "Join my Block Ops 2 lobby! Open the game, pick Join Game and type the code: " + code);
+			flash = i == 0 ? "Code copied." : "Invite message copied. Paste it to your friends.";
+			flashUntil = System.currentTimeMillis() + 2500;
+			MenuAudio.play("uin_main_nav");
 		}
 
-		@Override void activate(int i) {
-			Minecraft mc = Minecraft.getInstance();
-			if (Relay.code != null && i < 2) {
-				if (i == 0 && Relay.code != null) mc.keyboardHandler.setClipboard(Relay.code);
-				else if (i == 1) net.minecraft.Util.getPlatform().openUri("https://playit.gg/account/tunnels");
-				return;
-			}
-			switch (i) {
-				case 0 -> net.minecraft.Util.getPlatform().openUri("https://playit.gg/account/tunnels");
-				case 1 -> mc.keyboardHandler.setClipboard(String.valueOf(port()));
-				default -> { MenuAudio.play("uin_cmn_backout"); mc.setScreen(null); }
-			}
+		@Override public boolean mouseClicked(double mx, double my, int button) {
+			if (button == 0) { activate(sel); return true; }
+			return false;
 		}
 
 		@Override public boolean keyPressed(int key, int scan, int mods) {
-			if (key == GLFW.GLFW_KEY_ESCAPE) { activate(2); return true; }
-			return super.keyPressed(key, scan, mods);
+			if (key == GLFW.GLFW_KEY_ESCAPE) activate(2);
+			else if (key == GLFW.GLFW_KEY_DOWN) sel = (sel + 1) % items.length;
+			else if (key == GLFW.GLFW_KEY_UP) sel = (sel + items.length - 1) % items.length;
+			else if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) activate(sel);
+			else return super.keyPressed(key, scan, mods);
+			return true;
 		}
 
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
-			g.fillGradient(0, 0, width, height, 0xA0000000, 0xC0000000);
-			int bw = Math.max((int) (width * 0.5), 360), pad = 16;
-			String[] steps = Relay.code != null ? new String[] {
-				"Your game is open for friends. Join code: " + Relay.code,
-				"Friends pick Join Game and type the code."
-			} : new String[] {
-				"Your game is open for friends on port " + port() + " (TCP).",
-				"1. Start the playit.gg agent on this PC and sign in.",
-				"2. Create a tunnel of type Minecraft Java (TCP) with local address 127.0.0.1 and local port " + port() + ".",
-				"3. Send your friends the address playit shows. They pick Join Game and type it in."
-			};
-			int titleH = (int) Bo2Menus.H(1.5f), lineH = (int) (Bo2Menus.H(0.75f) * 1.25f);
-			int bodyH = 0;
-			for (String s : steps) bodyH += Bo2Menus.wrap(s, bw - 2 * pad - 8, 0.75f).size() * lineH + 4;
-			int bh = pad + titleH + 10 + bodyH + 12 + 3 * step() + pad;
-			int bx = (width - bw) / 2, by = (height - bh) / 2;
-			g.fill(bx - 3, by - 3, bx + bw + 3, by + bh + 3, 0xFF6A645C);
-			g.fill(bx, by, bx + bw, by + bh, 0xF0141210);
-			Bo2Menus.text(g, "Online Game", bx + pad, by + pad, 1.5f, Bo2Menus.WHITE);
-			int ty = by + pad + titleH + 10;
-			for (String s : steps) {
-				for (String line : Bo2Menus.wrap(s, bw - 2 * pad - 8, 0.75f)) { Bo2Menus.raw(g, line, bx + pad, ty, 0.75f, 0xFFD2CEC6); ty += lineH; }
-				ty += 4;
+			MenuAudio.music();
+			Bo2Locations.topDown(g, width, height, true);
+			boolean moved = seenX >= 0 && (mx != seenX || my != seenY);
+			seenX = mx; seenY = my;
+			int x = (int) (width * 0.05), y = (int) (height * 0.07);
+			Bo2Menus.raw(g, "INVITE FRIENDS", x, y, 2.0f, Bo2Menus.WHITE);
+			y += (int) Bo2Menus.H(2.0f) + 6;
+			String code = Relay.code;
+			Bo2Menus.raw(g, "JOIN CODE", x, y, 0.85f, Bo2Menus.GREY);
+			y += (int) Bo2Menus.H(0.85f) + 4;
+			if (code != null) Bo2Menus.raw(g, code, x, y, 2.4f, Bo2Menus.YELLOW);
+			else Bo2Menus.raw(g, Relay.status.isEmpty() ? "Getting your code..." : "No code yet", x, y, 1.4f, Bo2Menus.GREY);
+			y += (int) Bo2Menus.H(2.4f) + 6;
+			if (code == null && !Relay.status.isEmpty())
+				for (String line : Bo2Menus.wrap(Relay.status, (int) (width * 0.5), 0.8f)) { Bo2Menus.raw(g, line, x, y, 0.8f, 0xFFFF9A4A); y += (int) (Bo2Menus.H(0.8f) * 1.2f); }
+			String[] steps = {"1. Your friend opens Block Ops 2 and picks Join Game.", "2. They type the code above and press ENTER.", "3. They show up in your lobby. Press START MATCH when everyone is in.", "Up to 4 players. The code changes every lobby."};
+			for (String s : steps) { Bo2Menus.raw(g, s, x, y, 0.75f, 0xFFD2CEC6); y += (int) (Bo2Menus.H(0.75f) * 1.2f); }
+			y += 8;
+			int step = (int) (Bo2Menus.H(1.1f) * 1.2f);
+			for (int i = 0; i < items.length; i++) {
+				int iy = y + i * step, w = Bo2Menus.tw(items[i], 1.1f);
+				if (moved && mx >= x - 6 && mx <= x + w + 6 && my >= iy - 3 && my <= iy + step - 3) sel = i;
+				boolean on = i == sel;
+				if (on) g.renderOutline(x - 6, iy - 3, w + 12, step - 2, Bo2Menus.ORANGE);
+				Bo2Menus.raw(g, items[i], x, iy, 1.1f, code == null && i < 2 ? Bo2Menus.GREY : on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
 			}
-			x = bx + pad; y0 = ty + 12;
-			drawItems(g, mx, my);
+			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("uin_main_nav"); lastSel = sel; }
+			if (System.currentTimeMillis() < flashUntil) Bo2Menus.raw(g, flash, x + (int) (width * 0.3), y + 2, 0.9f, Bo2Menus.YELLOW);
+			Bo2Menus.hint(g, "ESC", "Back", x, height - 26);
 		}
 	}
 
@@ -226,6 +245,7 @@ public final class Bo2Online {
 			if (a.isEmpty() || !ServerAddress.isValidAddress(a)) { MenuAudio.play("cac_cmn_deny"); return; }
 			String viaCode;
 			try { viaCode = Relay.resolveJoin(a); } catch (java.io.IOException e) { joinError = e.getMessage(); MenuAudio.play("cac_cmn_deny"); return; }
+			Bo2Menus.quietLoad = true; // joining a lobby: no loading screen or loading music, the lobby screen follows
 			lastAddress = viaCode != null ? a.toUpperCase() : a;
 			if (viaCode != null) a = viaCode;
 			MenuAudio.play("uin_lobby_join");

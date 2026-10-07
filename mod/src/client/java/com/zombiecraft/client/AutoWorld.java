@@ -33,7 +33,7 @@ public final class AutoWorld {
 	}
 
 	public static void start(Minecraft mc, net.minecraft.client.gui.screens.Screen title) {
-		com.zombiecraft.client.audio.MenuAudio.stopMusic();
+		if (!com.zombiecraft.client.menu.Bo2Menus.quietLoad) com.zombiecraft.client.audio.MenuAudio.stopMusic();
 		try {
 			if (mc.getLevelSource().levelExists(WORLD)) {
 				ZombiecraftMod.LOG.info("Block Ops 2: opening the existing world");
