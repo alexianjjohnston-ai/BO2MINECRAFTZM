@@ -530,6 +530,13 @@
   "note": "map scenery"
  },
  {
+  "id": "prop_p6_zm_rocks_small_cluster_01",
+  "group": "prop",
+  "xmodel": "p6_zm_rocks_small_cluster_01",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
   "id": "prop_p6_zm_sign_restrooms",
   "group": "prop",
   "xmodel": "p6_zm_sign_restrooms",
@@ -649,9 +656,30 @@
   "note": "map scenery"
  },
  {
+  "id": "prop_veh_t6_civ_60s_coupe_dead",
+  "group": "prop",
+  "xmodel": "veh_t6_civ_60s_coupe_dead",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
   "id": "prop_veh_t6_civ_microbus_dead",
   "group": "prop",
   "xmodel": "veh_t6_civ_microbus_dead",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_veh_t6_civ_movingtrk_cab_dead",
+  "group": "prop",
+  "xmodel": "veh_t6_civ_movingtrk_cab_dead",
+  "world": "",
+  "note": "map scenery"
+ },
+ {
+  "id": "prop_veh_t6_civ_smallwagon_dead",
+  "group": "prop",
+  "xmodel": "veh_t6_civ_smallwagon_dead",
   "world": "",
   "note": "map scenery"
  }

@@ -14,7 +14,8 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 	public static final class State extends EntityRenderState {
 		int kind;
 		boolean powered, busy;
-		float yaw, sinceSec, scale;
+		float yaw, pitch, roll, sinceSec, scale;
+		boolean exact;
 		int lit;
 		String weapon = "";
 		int papState;
@@ -43,6 +44,9 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 		s.powered = e.getEntityData().get(ZcProp.POWERED);
 		s.busy = e.getEntityData().get(ZcProp.BUSY);
 		s.yaw = e.getYRot();
+		s.pitch = e.getXRot();
+		s.roll = e.getEntityData().get(ZcProp.ROLL);
+		s.exact = e.getEntityData().get(ZcProp.EXACT);
 		s.scale = e.getEntityData().get(ZcProp.PAP_DEPTH);
 		s.weapon = e.getEntityData().get(ZcProp.PAP_WEAPON);
 		s.papState = e.getEntityData().get(ZcProp.PAP_STATE);
@@ -135,6 +139,14 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 		float sc = SCALE * s.scale;
 		ps.pushPose();
 		ps.mulPose(Axis.YP.rotationDegrees(-s.yaw));
+		if (s.exact) {
+			// BO2 placement: the model's own origin on the spot, turned by yaw, then pitch (about the model's left axis = -z here), then roll (about its forward x axis)
+			ps.mulPose(Axis.ZP.rotationDegrees(-s.pitch));
+			ps.mulPose(Axis.XP.rotationDegrees(s.roll));
+			Bo2Mesh.draw(l, null, ps, buf, light, sc, 1);
+			ps.popPose();
+			return;
+		}
 		ps.translate(-l.cx * sc, -l.minZ * sc, l.cy * sc);
 		Bo2Mesh.draw(l, null, ps, buf, light, sc, 1);
 		ps.popPose();

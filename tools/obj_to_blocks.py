@@ -4,7 +4,7 @@ The mesh is the player's own export from their BO2 install (e.g. Greyhound / Cor
   python tools/obj_to_blocks.py <export.obj> [--up y|z] [--floor-z UNITS] [--scale S] [--check]
 Coordinates: BO2 game units, x east, y north, z up. A block is 40 units: bx = (x + 8400) / 40, bz = (6900 - y) / 40 (the same frame gen_depot.py / gen_bo2_depot.py use).
 --up y   the OBJ is Y-up (x, y, z)_obj = (x, z, -y)_game  (what most exporters write); --up z (default) keeps game axes. --scale converts the OBJ's unit to BO2 units.
---floor-z  game z of the walking floor (standing level). Default: the most common height of upward-facing surfaces inside the hall.
+--floor-z  game z (units) of the hall floor (standing level). Default -56: the floor/street height the entity file implies (perk struct, wrecks and the box room sit at -1.4 blocks, window sills 0.9 above).
 Only the playable area (REGION, as in gen_bo2_depot.py) is converted. Surfaces become one-block-thick shells (walls, floors, roofs); the ground under floors is filled down.
 Materials -> blocks by keyword (MATERIALS below, first match wins; horizontal faces use the floor variants), so the BO2 textures of the mod's own blocks apply.
 --check compares the result with the exact entity positions (windows must sit in walls, the box and wall guns must have air in front) and prints what is off."""
@@ -90,7 +90,7 @@ def rasterise(tri, step=0.3):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('obj'); ap.add_argument('--up', default='z', choices=['y', 'z']); ap.add_argument('--scale', type=float, default=1.0)
-    ap.add_argument('--floor-z', type=float, default=None); ap.add_argument('--check', action='store_true'); ap.add_argument('--name', default='bo2_depot')
+    ap.add_argument('--floor-z', type=float, default=-56.0); ap.add_argument('--check', action='store_true'); ap.add_argument('--name', default='bo2_depot')
     a = ap.parse_args()
     x0, z0, x1, z1 = REGION
     print('reading', a.obj)
@@ -104,12 +104,7 @@ def main():
     if not len(tri): sys.exit('nothing inside the region: check --up / --scale (expected block coords bx 0..72, bz 15..80 after the conversion)')
     nrm = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0]); ar = np.linalg.norm(nrm, axis=1) + 1e-9
     horiz = np.abs(nrm[:, 2]) / ar > 0.8
-    if a.floor_z is None:
-        zc = tri[horiz & (nrm[:, 2] > 0), :, 2].mean(axis=1); w = (ar[horiz & (nrm[:, 2] > 0)])
-        hist = collections.Counter(); [hist.update({round(float(z) * 4) / 4: float(wi)}) for z, wi in zip(zc, w)]
-        # the floor is the most common height among upward surfaces below head height of the lowest big one
-        floor = max(hist.items(), key=lambda kv: kv[1])[0]
-    else: floor = a.floor_z / 40
+    floor = a.floor_z / 40
     print('floor height (blocks):', floor)
     P, own = rasterise(tri)
     ix = np.floor(P[:, 0]).astype(int); iz = np.floor(P[:, 1]).astype(int); iy = np.floor(P[:, 2] - floor - 1e-3).astype(int) + 1

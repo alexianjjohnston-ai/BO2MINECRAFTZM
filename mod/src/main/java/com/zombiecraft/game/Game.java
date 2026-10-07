@@ -143,8 +143,10 @@ public final class Game {
 	private void placeProps() {
 		for (var p : Sheets.PROPS) {
 			ZcProp e = new ZcProp(ZcEntities.PROP, level);
-			e.moveTo(origin.getX() + p.x(), origin.getY() + p.y(), origin.getZ() + p.z(), (float) p.yaw(), 0f);
+			e.moveTo(origin.getX() + p.x(), origin.getY() + p.y(), origin.getZ() + p.z(), (float) p.yaw(), (float) p.pitch());
 			e.setYRot((float) p.yaw());
+			e.getEntityData().set(ZcProp.ROLL, (float) p.roll());
+			e.getEntityData().set(ZcProp.EXACT, p.exact());
 			e.addTag("zc"); e.addTag("zc_scenery");
 			e.getEntityData().set(ZcProp.KIND, ZcProp.SCENERY);
 			e.getEntityData().set(ZcProp.PAP_WEAPON, p.model());
@@ -157,6 +159,7 @@ public final class Game {
 			for (int x = c[0]; x <= c[3]; x++) for (int y = c[1]; y <= c[4]; y++) for (int z = c[2]; z <= c[5]; z++) {
 				BlockPos bp = origin.offset(x, y, z);
 				var st = level.getBlockState(bp);
+				if (p.fallback() != null && !net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(st.getBlock()).toString().equals(p.fallback())) continue; // only our stand-in blocks
 				if (!st.isAir())
 					level.setBlock(bp, st.getCollisionShape(level, bp).isEmpty() ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : net.minecraft.world.level.block.Blocks.BARRIER.defaultBlockState(), 3);
 			}

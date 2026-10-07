@@ -4,9 +4,13 @@ Everything comes from the map entities (assets_src/depot/ents.json, dumped from 
 the four wall guns, the doors, the player start and which zone each window belongs to. 1 block = 40 BO2 units; sheet frame x = bx - 40, z = bz - 47 (as gen_depot.py).
 Survival has NO perks and NO Pack-a-Punch in the depot (the in-game text says so, and the entities hold only a classic-mode Quick Revive), so none are written.
 The walls and floor are not in the entity file: they are pasted from maps_local/bo2_depot.json.gz (tools/obj_to_blocks.py, from a map export).
-Read from the scripts (Tranzit/zm_transit.gsc): zone_pri = the main hall (start), zone_station_ext = behind the 750 door (OnPriDoorYar2), zone_pri2 = the side rooms
-behind two electric doors that need the turbine's local power, which Survival has no way to switch on: they are written as doors nobody can pay for."""
-import json, math, os
+Read from the scripts (Tranzit/zm_transit_standard_station.gsc = the Survival depot, zm_transit.gsc zones): zone_pri = the main hall (start), zone_station_ext = behind the
+750 door (OnPriDoorYar2), zone_pri2 = the side rooms behind the two electric doors. The Survival script turns power on at the start and trigger_off()s every
+local_electric_door, so those two doors can never be used (cost -1 here); it removes the Quick Revive machine and puts a p_glo_tools_chest_tall in its place; it spawns
+the "game_mode_object" wrecks (cars, overturned truck cabs, rocks) that wall in the playable area, and a collision model that only exists in Survival.
+Door sizes come from the door leaf models the entity file places (60 units wide each, two leaves = 3 blocks, 100 units = 2.5 blocks tall)."""
+import glob, json, math, os, re
+import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ENTS = os.path.join(HERE, '..', 'assets_src', 'depot', 'ents.json')
@@ -59,7 +63,7 @@ for n in (1, 2, 3, 4, 5, 6, 7):
     if diag: print(f'NOTE w{n}: the BO2 barricade is diagonal (yaw {zb["angles"]}); snapped to a {wall} wall, check it against the real geometry')
 
 # ---- wall guns: the struct faces away from its wall; frame is one block up (y 2)
-GUN = {'rottweil72_zm': 'rottweil72', 'm14_zm': 'm14', '870mcs_zm': 'ak74u', 'mp5k_zm': 'mp5k'}  # TODO the Remington 870 MCS is not in weapons.json yet: ak74u stands in (the old depot's choice)
+GUN = {'rottweil72_zm': 'rottweil72', 'm14_zm': 'm14', '870mcs_zm': '870mcs', 'mp5k_zm': 'mp5k'}
 GUN_AT = [('rottweil72_zm', (36.88, 33.65)), ('m14_zm', (51.77, 38.75)), ('870mcs_zm', (21.82, 48.35)), ('mp5k_zm', (33.85, 69.2))]
 wall = []
 for i, (g, (bx, bz)) in enumerate(GUN_AT):
@@ -75,15 +79,68 @@ ps = by(classname='info_player_start')[0]
 px, pz, _ = B(ps['origin'])
 yaw = float(ps['angles'].split()[1])
 player = [dict(id='spawn', x=S(px, pz)[0], y=1, z=S(px, pz)[1], yaw=round(math.degrees(math.atan2(-math.cos(math.radians(yaw)), -math.sin(math.radians(yaw)))), 1), room='hall')]
-# door brushes have no extent in the entity file: widths follow the leaves ("rotate" brushes) around the trigger
+# doors: two leaf models each, 1.5 blocks wide, 2.5 tall (3 cells): 750 door leaves at x 37.2 / 40.2 (z 46.1), electric doors at z 39.8 / 42.8 (x 30.4) and x 25.6 / 28.5 (z 48.2)
+def cells(lo, hi): return math.floor(lo), math.floor(hi)
+
+
+dx1, dx2 = cells(37.2, 40.2); ez1, ez2 = cells(39.8, 42.8); fx1, fx2 = cells(25.6, 28.5)
 doors = [
-    dict(id='door_750', cost=750, x1=S(36.7, 46)[0], y1=1, z1=S(36.7, 46)[1], x2=S(40.7, 46)[0], y2=2, z2=S(36.7, 46)[1], block='zombiecraft:door_metal', opens='ext',
-         cue='zmb_bus_depot_dbl', label='Bus Station', room='hall'),
-    dict(id='door_west_a', cost=99999, x1=S(30.4, 39.8)[0], y1=1, z1=S(30.4, 39.8)[1], x2=S(30.4, 39.8)[0], y2=2, z2=S(30.4, 42.8)[1], block='zombiecraft:door_metal', opens='side',
-         cue='zmb_power_door', label='Needs power', room='hall'),
-    dict(id='door_west_b', cost=99999, x1=S(25.6, 48.1)[0], y1=1, z1=S(25.6, 48.1)[1], x2=S(28.5, 48.1)[0], y2=2, z2=S(25.6, 48.1)[1], block='zombiecraft:door_metal', opens='side',
-         cue='zmb_power_door', label='Needs power', room='ext'),
+    dict(id='door_750', cost=750, x1=dx1 - OX, y1=1, z1=46 - OZ, x2=dx2 - OX, y2=3, z2=46 - OZ, block='zombiecraft:door_metal', opens='ext', cue='zmb_power_door', label='Bus Station', room='hall'),
+    dict(id='door_west_a', cost=-1, x1=30 - OX, y1=1, z1=ez1 - OZ, x2=30 - OX, y2=3, z2=ez2 - OZ, block='zombiecraft:door_metal', opens='side', cue='zmb_power_door', label='Switched off in Survival', room='hall'),
+    dict(id='door_west_b', cost=-1, x1=fx1 - OX, y1=1, z1=48 - OZ, x2=fx2 - OX, y2=3, z2=48 - OZ, block='zombiecraft:door_metal', opens='side', cue='zmb_power_door', label='Switched off in Survival', room='ext'),
 ]
+
+# ---- the exact Survival props: wrecks that wall the area in, the rocks, and the tool chest where Quick Revive would stand (all BO2 models, placed by their own origin)
+DUMP = os.environ.get('BO2_DUMP', r'C:\Users\alexi\bo2-dump')
+SCALE = 0.025 / 0.0225        # the prop renderer draws 0.0225 blocks per unit; the map is 40 units per block
+FLOOR_Z = -1.4                # BO2 z (blocks) of the floor and street: the perk struct, the box room and every wreck sit at -1.4, and the barricade origins (the window sill, ~0.9 up) at -0.6. Same as obj_to_blocks.py's --floor-z default (-56 units)
+
+
+def model_points(name):
+    for f in glob.glob(os.path.join(DUMP, 'out*', '*', 'model_export', name + '_lod0.xmodel_export')):
+        t = open(f, errors='ignore').read()
+        return np.array([[float(v) for v in m.groups()] for m in re.finditer(r'^OFFSET (-?[\d.e+-]+), (-?[\d.e+-]+), (-?[\d.e+-]+)\s*$', t, re.M)])
+    return None
+
+
+def rot(pitch, yaw, roll):
+    """BO2 angles: yaw about z, then pitch about y (positive = nose down), then roll about x, applied to model points as Rz Ry Rx."""
+    c = lambda d: math.cos(math.radians(d)); sn = lambda d: math.sin(math.radians(d))
+    Rz = np.array([[c(yaw), -sn(yaw), 0], [sn(yaw), c(yaw), 0], [0, 0, 1]])
+    Ry = np.array([[c(pitch), 0, sn(pitch)], [0, 1, 0], [-sn(pitch), 0, c(pitch)]])
+    Rx = np.array([[1, 0, 0], [0, c(roll), -sn(roll)], [0, sn(roll), c(roll)]])
+    return Rz @ Ry @ Rx
+
+
+FALLBACK = {'p6_zm_rocks_small_cluster_01': 'minecraft:cobblestone', 'p_glo_tools_chest_tall': 'zombiecraft:crate'}
+prop_list = []   # (id, model, struct origin, angles)
+for i, st in enumerate(e for e in ents if e.get('targetname') == 'game_mode_object' and e.get('script_noteworthy') == 'station'):
+    prop_list.append((f'wreck{i}', st['model'], st['origin'], st['angles']))
+rv = by(classname='script_struct', targetname='zm_perk_machine', script_noteworthy='specialty_quickrevive')[0]
+prop_list.append(('tool_chest', 'p_glo_tools_chest_tall', rv['origin'], rv['angles']))
+props, ops_cells = [], []
+for pid, model, origin, angles in prop_list:
+    pitch, yaw, roll = (float(v) for v in angles.split())
+    pitch, roll = ((pitch + 180) % 360) - 180, ((roll + 180) % 360) - 180
+    bx, bz, bz_up = B(origin)
+    h0 = bz_up - FLOOR_Z
+    pts = model_points(model)
+    hide, cellset = 'none', {}
+    if pts is not None:
+        w = (rot(pitch, yaw, roll) @ pts.T).T / 40.0           # blocks: x east, y north, z up
+        X, Zb, Y = bx + w[:, 0], bz - w[:, 1], 1 + h0 + w[:, 2]  # block x, block z (south), standing-level height
+        for xi, zi, yi in zip(np.floor(X).astype(int), np.floor(Zb).astype(int), np.floor(Y).astype(int)):
+            lo, hi = cellset.get((xi, zi), (yi, yi)); cellset[(xi, zi)] = (min(lo, yi), max(hi, yi))
+        cellset = {k: (max(1, lo), hi) for k, (lo, hi) in cellset.items() if hi >= 1}
+    fb = FALLBACK.get(model, 'minecraft:gray_concrete')
+    for (xi, zi), (lo, hi) in sorted(cellset.items()):
+        ops_cells.append((pid, int(xi - OX), int(lo), int(zi - OZ), int(hi), fb))
+    if cellset:
+        xs = [int(k[0] - OX) for k in cellset]; zs = [int(k[1] - OZ) for k in cellset]; ys = [int(v) for lh in cellset.values() for v in lh]
+        hide = f'{min(xs)},{min(ys)},{min(zs)},{max(xs)},{max(ys)},{max(zs)}'
+    props.append(dict(id=pid, model=model, x=round(bx - OX, 3), y=round(1 + h0, 3), z=round(bz - OZ, 3), yaw=round(-yaw, 2), scale=round(SCALE, 4), hide=hide, room='ext',
+                      pitch=round(pitch, 2), roll=round(roll, 2), exact=True, fallback=(fb if cellset else None)))
+
 
 # ---- build: paste the exported geometry, then an invisible wall round the playable area (BO2 pathnodes span bx 1..70, bz 17..77)
 x0, z0, x1, z1 = REGION
@@ -91,6 +148,11 @@ ops = [dict(id='bo2_depot', order=0, op='import', block='bo2_depot', block2=None
             note='Bus Depot geometry from the player\'s own BO2 map export (tools/obj_to_blocks.py); x/z = where its corner lands in the sheet frame'),
        dict(id='barrier_ring', order=90, op='walls', block='minecraft:barrier', block2=None, x1=x0 - OX + 1, y1=1, z1=z0 - OZ + 1, x2=x1 - OX - 1, y2=14, z2=z1 - OZ - 1, stepX=1, stepZ=1,
             group='ground', note='invisible wall round the playable area so nobody walks off the cut')]
+
+
+for k, (pid, x, y1, z, y2, fb) in enumerate(ops_cells):
+    ops.append(dict(id=f'{pid}_c{k}', order=50, op='fill', block=fb, block2=None, x1=x, y1=y1, z1=z, x2=x, y2=y2, z2=z, stepX=1, stepZ=1, group='props',
+                    note='stand-in blocks for ' + pid + ' (they become invisible barriers when the BO2 model is drawn)'))
 
 
 def dump(name, rows):
@@ -101,9 +163,9 @@ def dump(name, rows):
 
 
 for n, r in (('map_ops', ops), ('map_windows', windows), ('map_spawns', spawns), ('map_wallbuys', wall), ('map_boxes', boxes), ('map_doors', doors), ('map_player', player),
-             ('map_machines', []), ('map_pap', []), ('map_props', [])):
+             ('map_machines', []), ('map_pap', []), ('map_props', props)):
     dump(n + '.json', r)
-print(len(windows), 'windows', len(spawns), 'spawns', len(wall), 'wall guns, 1 box,', len(doors), 'doors; no perks/PaP (Survival)')
+print(len(props), 'exact props,', len(ops_cells), 'stand-in cells;', len(windows), 'windows', len(spawns), 'spawns', len(wall), 'wall guns, 1 box,', len(doors), 'doors; no perks/PaP (Survival)')
 for w in windows: print(' ', w['id'], w['wall'], 'fixed', w['fixed'], 'a', w['a'], w['room'])
 for g in wall: print(' ', g['id'], g['weaponId'], g['x'], g['z'], g['facing'])
 print('  box', boxes[0]['x'], boxes[0]['z'], boxes[0]['facing'], '| player', player[0]['x'], player[0]['z'], player[0]['yaw'])

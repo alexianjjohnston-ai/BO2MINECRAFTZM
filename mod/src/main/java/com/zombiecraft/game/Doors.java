@@ -58,7 +58,7 @@ public final class Doors {
 	public DoorDef at(BlockPos p) {
 		BlockPos o = game.origin;
 		for (DoorDef d : Sheets.DOORS) {
-			if (opened.contains(d.id())) continue;
+			if (opened.contains(d.id()) || d.cost() < 0) continue; // cost < 0: switched off for good (BO2 trigger_off), nothing to buy
 			if (p.getX() >= o.getX() + Math.min(d.x1(), d.x2()) && p.getX() <= o.getX() + Math.max(d.x1(), d.x2())
 					&& p.getY() >= o.getY() + Math.min(d.y1(), d.y2()) && p.getY() <= o.getY() + Math.max(d.y1(), d.y2())
 					&& p.getZ() >= o.getZ() + Math.min(d.z1(), d.z2()) && p.getZ() <= o.getZ() + Math.max(d.z1(), d.z2())) return d;

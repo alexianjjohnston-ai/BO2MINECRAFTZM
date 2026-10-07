@@ -34,6 +34,9 @@ public class ZcProp extends Entity {
 	public static final EntityDataAccessor<Integer> PAP_DURATION = SynchedEntityData.defineId(ZcProp.class, EntityDataSerializers.INT);
 	public static final EntityDataAccessor<Boolean> PAP_MODELED = SynchedEntityData.defineId(ZcProp.class, EntityDataSerializers.BOOLEAN);
 	public static final EntityDataAccessor<Float> PAP_DEPTH = SynchedEntityData.defineId(ZcProp.class, EntityDataSerializers.FLOAT);
+	/** Scenery only: roll in degrees (pitch is the entity's own x rotation) and "placed by the model's own origin" (BO2-exact props). */
+	public static final EntityDataAccessor<Float> ROLL = SynchedEntityData.defineId(ZcProp.class, EntityDataSerializers.FLOAT);
+	public static final EntityDataAccessor<Boolean> EXACT = SynchedEntityData.defineId(ZcProp.class, EntityDataSerializers.BOOLEAN);
 
 	public ZcProp(EntityType<? extends ZcProp> type, Level level) {
 		super(type, level);
@@ -59,7 +62,7 @@ public class ZcProp extends Entity {
 	@Override protected void defineSynchedData(SynchedEntityData.Builder b) {
 		b.define(KIND, JUG).define(POWERED, false).define(BUSY, false).define(SINCE, 0);
 		b.define(PAP_STATE, PapVisual.IDLE).define(PAP_SINCE, 0L).define(PAP_WEAPON, "")
-				.define(PAP_DURATION, 0).define(PAP_MODELED, false).define(PAP_DEPTH, 1f);
+				.define(PAP_DURATION, 0).define(PAP_MODELED, false).define(PAP_DEPTH, 1f).define(ROLL, 0f).define(EXACT, false);
 	}
 
 	@Override public boolean hurtServer(ServerLevel level, DamageSource source, float amount) { return false; }
