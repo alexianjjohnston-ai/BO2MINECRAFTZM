@@ -53,6 +53,7 @@ schema = {
  "map_spawns": {"file": "map_spawns.json", "key": "id", "columns": {"id": STR, "window": ref("map_windows.id"), "x": NUM, "y": NUM, "z": NUM}},
  "map_wallbuys": {"file": "map_wallbuys.json", "key": "id", "columns": {"id": STR, "weaponId": ref("weapons.id"), "x": NUM, "y": NUM, "z": NUM, "facing": FACING, "room": STR}},
  "map_boxes": {"file": "map_boxes.json", "key": "id", "columns": {"id": STR, "x": NUM, "y": NUM, "z": NUM, "facing": FACING, "initial": BOOL, "room": STR}},
+ "map_machines": {"file": "map_machines.json", "key": "id", "columns": {"id": STR, "kind": enum("power", "perk"), "perk": opt(STR), "x": NUM, "y": NUM, "z": NUM, "facing": FACING, "room": STR}},
  "map_pap": {"file": "map_pap.json", "key": "id", "columns": {"id": STR, "x1": NUM, "y1": NUM, "z1": NUM, "x2": NUM, "y2": NUM, "z2": NUM, "facing": FACING, "room": STR}},
  "map_player": {"file": "map_player.json", "key": "id", "columns": {"id": STR, "x": NUM, "y": NUM, "z": NUM, "yaw": NUM, "room": STR}},
  "audio": {"file": "audio.json", "key": "cue", "columns": {"cue": STR, "category": enum("music", "ui", "world", "vox", "weapon"), "soundSource": enum("MASTER", "MUSIC", "PLAYERS", "HOSTILE", "BLOCKS", "AMBIENT"),

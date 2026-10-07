@@ -515,6 +515,47 @@
    }
   }
  },
+ "map_machines": {
+  "file": "map_machines.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "kind": {
+    "t": "string",
+    "enum": [
+     "power",
+     "perk"
+    ]
+   },
+   "perk": {
+    "t": "string",
+    "optional": true
+   },
+   "x": {
+    "t": "number"
+   },
+   "y": {
+    "t": "number"
+   },
+   "z": {
+    "t": "number"
+   },
+   "facing": {
+    "t": "string",
+    "enum": [
+     "north",
+     "south",
+     "east",
+     "west"
+    ]
+   },
+   "room": {
+    "t": "string"
+   }
+  }
+ },
  "map_pap": {
   "file": "map_pap.json",
   "key": "id",

@@ -290,6 +290,188 @@
    "soundSource": "MUSIC",
    "volume": 0.8,
    "fallback": "minecraft:music_disc.chirp"
+  },
+  "zmb_perks_power_on": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.beacon.activate",
+   "loop": false
+  },
+  "zmb_power_on_quad": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.beacon.activate",
+   "loop": false
+  },
+  "zmb_perks_machine_loop": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 0.5,
+   "fallback": "minecraft:block.beacon.ambient",
+   "loop": true
+  },
+  "evt_perk_bottle_open": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.8,
+   "fallback": "minecraft:item.bottle.fill",
+   "loop": false
+  },
+  "evt_perk_swallow": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.8,
+   "fallback": "minecraft:entity.generic.drink",
+   "loop": false
+  },
+  "evt_perk_deny": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.8,
+   "fallback": "minecraft:block.note_block.bass",
+   "loop": false
+  },
+  "mus_perks_jugganog_jingle": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 0.9,
+   "fallback": "minecraft:block.note_block.chime",
+   "loop": false
+  },
+  "mus_perks_jugganog_sting": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.bell.use",
+   "loop": false
+  },
+  "mus_perks_speed_jingle": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 0.9,
+   "fallback": "minecraft:block.note_block.chime",
+   "loop": false
+  },
+  "mus_perks_speed_sting": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.bell.use",
+   "loop": false
+  },
+  "mus_perks_doubletap_jingle": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 0.9,
+   "fallback": "minecraft:block.note_block.chime",
+   "loop": false
+  },
+  "mus_perks_doubletap_sting": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.bell.use",
+   "loop": false
+  },
+  "mus_perks_revive_jingle": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 0.9,
+   "fallback": "minecraft:block.note_block.chime",
+   "loop": false
+  },
+  "mus_perks_revive_sting": {
+   "category": "music",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.bell.use",
+   "loop": false
+  },
+  "zmb_spawn_powerup": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 0.9,
+   "fallback": "minecraft:entity.experience_orb.pickup",
+   "loop": false
+  },
+  "zmb_spawn_powerup_loop": {
+   "category": "world",
+   "soundSource": "BLOCKS",
+   "volume": 0.6,
+   "fallback": "minecraft:block.beacon.ambient",
+   "loop": true
+  },
+  "zmb_powerup_grabbed": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:entity.player.levelup",
+   "loop": false
+  },
+  "zmb_full_ammo": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:item.armor.equip_iron",
+   "loop": false
+  },
+  "zmb_insta_kill": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:entity.wither.spawn",
+   "loop": false
+  },
+  "zmb_points_loop_off": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.note_block.bass",
+   "loop": false
+  },
+  "evt_nuke_flash": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:entity.generic.explode",
+   "loop": false
+  },
+  "evt_nuked": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:entity.generic.explode",
+   "loop": false
+  },
+  "evt_carpenter": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.wood.place",
+   "loop": false
+  },
+  "evt_carpenter_end": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.9,
+   "fallback": "minecraft:block.wood.place",
+   "loop": false
+  },
+  "zmb_insta_kill_loop": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.4,
+   "fallback": "minecraft:block.beacon.ambient",
+   "loop": true
+  },
+  "zmb_double_point_loop": {
+   "category": "ui",
+   "soundSource": "MASTER",
+   "volume": 0.4,
+   "fallback": "minecraft:block.beacon.ambient",
+   "loop": true
   }
  },
  "roles": {

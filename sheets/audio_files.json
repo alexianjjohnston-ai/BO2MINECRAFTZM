@@ -176,6 +176,83 @@
   "frames": 20848
  },
  {
+  "id": "evt_carpenter#0",
+  "cue": "evt_carpenter",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 1515781453,
+  "size": 454332,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 113583
+ },
+ {
+  "id": "evt_carpenter_end#0",
+  "cue": "evt_carpenter_end",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 1539724493,
+  "size": 872276,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 218069
+ },
+ {
+  "id": "evt_nuke_flash#0",
+  "cue": "evt_nuke_flash",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 3902423643,
+  "size": 265920,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 66480
+ },
+ {
+  "id": "evt_nuked#0",
+  "cue": "evt_nuked",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2070037737,
+  "size": 161240,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 80620
+ },
+ {
+  "id": "evt_perk_bottle_open#0",
+  "cue": "evt_perk_bottle_open",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 3334189733,
+  "size": 105216,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 52608
+ },
+ {
+  "id": "evt_perk_deny#0",
+  "cue": "evt_perk_deny",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 3941464841,
+  "size": 29118,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 14559
+ },
+ {
+  "id": "evt_perk_swallow#0",
+  "cue": "evt_perk_swallow",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 1326304147,
+  "size": 40958,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 20479
+ },
+ {
   "id": "evt_player_death#0",
   "cue": "evt_player_death",
   "bank": "cmn_root.all.sabs",
@@ -748,6 +825,50 @@
   "frames": 1058432
  },
  {
+  "id": "mus_perks_doubletap_jingle#0",
+  "cue": "mus_perks_doubletap_jingle",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 3239911973,
+  "size": 2370334,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 1714205
+ },
+ {
+  "id": "mus_perks_doubletap_sting#0",
+  "cue": "mus_perks_doubletap_sting",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 559230035,
+  "size": 331394,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 253249
+ },
+ {
+  "id": "mus_perks_jugganog_jingle#0",
+  "cue": "mus_perks_jugganog_jingle",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 1221894079,
+  "size": 1709461,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 1433659
+ },
+ {
+  "id": "mus_perks_jugganog_sting#0",
+  "cue": "mus_perks_jugganog_sting",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 4175603769,
+  "size": 240232,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 201719
+ },
+ {
   "id": "mus_perks_packa_sting#0",
   "cue": "mus_perks_packa_sting",
   "bank": "zmb_common.all.sabs",
@@ -757,6 +878,50 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 426585
+ },
+ {
+  "id": "mus_perks_revive_jingle#0",
+  "cue": "mus_perks_revive_jingle",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 1338958842,
+  "size": 1744224,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 1332518
+ },
+ {
+  "id": "mus_perks_revive_sting#0",
+  "cue": "mus_perks_revive_sting",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 292332862,
+  "size": 401978,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 331135
+ },
+ {
+  "id": "mus_perks_speed_jingle#0",
+  "cue": "mus_perks_speed_jingle",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 2228999568,
+  "size": 1991680,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 1440000
+ },
+ {
+  "id": "mus_perks_speed_sting#0",
+  "cue": "mus_perks_speed_sting",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 287043112,
+  "size": 279836,
+  "format": "flac",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 223487
  },
  {
   "id": "mus_zombie_game_over#0",
@@ -1452,6 +1617,50 @@
   "frames": 133120
  },
  {
+  "id": "zmb_double_point_loop#0",
+  "cue": "zmb_double_point_loop",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 1824520159,
+  "size": 463696,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 115924
+ },
+ {
+  "id": "zmb_full_ammo#0",
+  "cue": "zmb_full_ammo",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 3431044779,
+  "size": 521828,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 130457
+ },
+ {
+  "id": "zmb_insta_kill#0",
+  "cue": "zmb_insta_kill",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2670761201,
+  "size": 420088,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 105022
+ },
+ {
+  "id": "zmb_insta_kill_loop#0",
+  "cue": "zmb_insta_kill_loop",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 892033904,
+  "size": 316964,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 79241
+ },
+ {
   "id": "zmb_laugh_child#0",
   "cue": "zmb_laugh_child",
   "bank": "zmb_code_post_gfx.all.sabs",
@@ -1573,6 +1782,17 @@
   "frames": 9935
  },
  {
+  "id": "zmb_perks_machine_loop#0",
+  "cue": "zmb_perks_machine_loop",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 874365517,
+  "size": 185516,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 92758
+ },
+ {
   "id": "zmb_perks_packa_deny#0",
   "cue": "zmb_perks_packa_deny",
   "bank": "zmb_common.all.sabl",
@@ -1628,6 +1848,50 @@
   "frames": 282795
  },
  {
+  "id": "zmb_perks_power_on#0",
+  "cue": "zmb_perks_power_on",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2433241960,
+  "size": 431078,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 215539
+ },
+ {
+  "id": "zmb_points_loop_off#0",
+  "cue": "zmb_points_loop_off",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 373616695,
+  "size": 1068364,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 267091
+ },
+ {
+  "id": "zmb_power_on_quad#0",
+  "cue": "zmb_power_on_quad",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 3156565739,
+  "size": 2101490,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 1981407
+ },
+ {
+  "id": "zmb_powerup_grabbed#0",
+  "cue": "zmb_powerup_grabbed",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2287865323,
+  "size": 248308,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 62077
+ },
+ {
   "id": "zmb_repair_boards#0",
   "cue": "zmb_repair_boards",
   "bank": "zmb_common.all.sabl",
@@ -1637,6 +1901,28 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 165753
+ },
+ {
+  "id": "zmb_spawn_powerup#0",
+  "cue": "zmb_spawn_powerup",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 3857487596,
+  "size": 91200,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 45600
+ },
+ {
+  "id": "zmb_spawn_powerup_loop#0",
+  "cue": "zmb_spawn_powerup_loop",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2727175532,
+  "size": 282316,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 141158
  },
  {
   "id": "zmb_ui_globe_spin_start#0",

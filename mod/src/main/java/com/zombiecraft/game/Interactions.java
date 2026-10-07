@@ -1,6 +1,7 @@
 package com.zombiecraft.game;
 
 import com.zombiecraft.game.PlayerGame.Gun;
+import com.zombiecraft.sheet.Rows.MachineDef;
 import com.zombiecraft.sheet.Rows.WallBuyDef;
 import com.zombiecraft.sheet.Rows.WeaponDef;
 import com.zombiecraft.sheet.Sheets;
@@ -20,9 +21,10 @@ import java.util.Optional;
 public final class Interactions {
 	private Interactions() {}
 
-	enum Kind { NONE, WALLBUY, BOX, PAP, BARRIER }
+	enum Kind { NONE, WALLBUY, BOX, PAP, MACHINE, BARRIER }
 
-	record Target(Kind kind, WallBuyDef wallbuy, Barrier barrier) {
+	record Target(Kind kind, WallBuyDef wallbuy, Barrier barrier, MachineDef machine) {
+		Target(Kind kind, WallBuyDef wallbuy, Barrier barrier) { this(kind, wallbuy, barrier, null); }
 		static final Target NONE = new Target(Kind.NONE, null, null);
 	}
 
@@ -49,6 +51,7 @@ public final class Interactions {
 			BlockPos bp = bh.getBlockPos();
 			if (g.box != null && g.box.state != BoxSystem.State.GONE && bp.equals(g.box.chestPos())) return new Target(Kind.BOX, null, null);
 			if (g.pap != null && g.pap.contains(bp)) return new Target(Kind.PAP, null, null);
+			if (g.machines != null) { MachineDef md = g.machines.at(bp); if (md != null) return new Target(Kind.MACHINE, null, null, md); }
 		}
 		// windows: any damaged window within reach on the inside, wherever the player is looking
 		Barrier nearest = null; double nd = 1e9;
@@ -87,6 +90,10 @@ public final class Interactions {
 				pg.prompt = g.pap.promptFor(p, pg);
 				if (edge) g.pap.use(p, pg);
 			}
+			case MACHINE -> {
+				pg.prompt = g.machines.promptFor(t.machine, pg);
+				if (edge) g.machines.use(t.machine, p, pg);
+			}
 			case BARRIER -> {
 				pg.prompt = "Hold F to repair the window";
 				if (pg.interactHeld && g.tick - pg.lastBoardRepair >= Sheets.sysInt("board_repair_ticks") && t.barrier.repair()) {
@@ -95,7 +102,7 @@ public final class Interactions {
 					int pts = Sheets.sysInt("board_repair_points");
 					int cap = Math.min(Sheets.sysInt("board_cap_max"), Sheets.sysInt("board_cap_mult") * Math.max(1, g.round));
 					pg.boardPointsThisRound += pts;
-					if (pg.boardPointsThisRound < cap) pg.points += pts;
+					if (pg.boardPointsThisRound < cap) pg.earn(pts);
 				}
 			}
 			default -> pg.prompt = "";

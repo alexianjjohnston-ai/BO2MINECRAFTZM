@@ -18,14 +18,14 @@ public final class ZombieHealth {
 		z.hp -= dmg;
 		ServerPlayNetworking.send(p, new Payloads.CombatFeedback(Payloads.FEEDBACK_HIT, -1, "", 0, head, z.hp <= 0));
 		if (z.hp > 0) {
-			pg.points += Sheets.sysInt("hit_points");
+			pg.earn(Sheets.sysInt("hit_points"));
 			level.broadcastEntityEvent(z, (byte) 2);
 			z.knockback(0.2, p.getX() - z.getX(), p.getZ() - z.getZ());
 			return;
 		}
 		z.hp = 0;
 		int bonus = melee ? Sheets.sysInt("bonus_melee") : head ? Sheets.sysInt("bonus_head") : Sheets.sysInt("bonus_torso");
-		pg.points += Sheets.sysInt("kill_points") + bonus;
+		pg.earn(Sheets.sysInt("kill_points") + bonus);
 		ZombieTier t = Sheets.tier(z.tier);
 		Cue.at(t.cueDeath(), level, z.position());
 		if (head && !melee) Cue.at("zmb_zombie_head_gib", level, z.getEyePosition());

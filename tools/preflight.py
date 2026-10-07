@@ -232,6 +232,12 @@ for r in data.get('map_boxes', []):
     if vox.get(back, AIR) == AIR: err(f"[map_boxes.{r['id']}] chest has nothing behind it at {back}")
     front = (p[0] + d[0], p[1], p[2] + d[2])
     if not air(front): err(f"[map_boxes.{r['id']}] nothing free in front of the chest at {front}")
+for r in data.get('map_machines', []):
+    p = (r['x'], r['y'], r['z']); d = DIR[r['facing']]; back = (p[0] - d[0], p[1], p[2] - d[2])
+    if not (air(p) and air((p[0], p[1] + 1, p[2]))): err(f"[map_machines.{r['id']}] machine cell {p} is not free air")
+    if vox.get(back, AIR) == AIR: err(f"[map_machines.{r['id']}] nothing behind the machine at {back}")
+    front = (p[0] + d[0], p[1], p[2] + d[2])
+    if not air(front): err(f"[map_machines.{r['id']}] nothing free in front of the machine at {front}")
 for r in data.get('map_pap', []):
     d = DIR[r['facing']]
     cx = (r['x1'] + r['x2']) // 2; cz = (r['z1'] + r['z2']) // 2

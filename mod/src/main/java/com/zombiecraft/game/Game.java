@@ -40,6 +40,11 @@ public final class Game {
 	public final Set<ZcZombie> alive = new HashSet<>();
 	public BoxSystem box;
 	public PapSystem pap;
+	public Machines machines;
+	public PowerUps powerups;
+	/** Points the whole team has earned this game (drives power-up drops). */
+	public int teamEarned;
+	private final java.util.TreeMap<Long, List<Runnable>> scheduled = new java.util.TreeMap<>();
 	private final Random rng = new Random();
 
 	private Game(MinecraftServer server) { this.server = server; }
@@ -70,6 +75,7 @@ public final class Game {
 			if (entity instanceof ServerPlayer p && INSTANCE != null && INSTANCE.phase != Payloads.PHASE_IDLE) {
 				if (INSTANCE.phase == Payloads.PHASE_GAMEOVER) return false;
 				PlayerGame pg = INSTANCE.players.get(p.getUUID());
+				if (pg != null && INSTANCE.tick < pg.shieldUntil) return false;
 				if (pg != null) pg.lastHurtTick = INSTANCE.tick;
 				if (source.getEntity() instanceof ZcZombie) Cue.ui("evt_player_swiped", p);
 			}
@@ -77,6 +83,8 @@ public final class Game {
 		});
 		ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, amount) -> {
 			if (entity instanceof ServerPlayer p && INSTANCE != null && INSTANCE.phase != Payloads.PHASE_IDLE) {
+				PlayerGame pg = INSTANCE.players.get(p.getUUID());
+				if (pg != null && INSTANCE.phase != Payloads.PHASE_GAMEOVER && INSTANCE.machines.revive(p, pg)) return false;
 				INSTANCE.gameOver(p);
 				return false;
 			}
@@ -93,6 +101,9 @@ public final class Game {
 		for (Barrier b : barriers) if (b.def.id().equals(windowId)) return b;
 		return null;
 	}
+
+	/** Runs {@code r} on the server after the given number of ticks. */
+	public void later(int ticks, Runnable r) { scheduled.computeIfAbsent(tick + ticks, k -> new ArrayList<>()).add(r); }
 
 	public PlayerGame pg(ServerPlayer p) { return players.computeIfAbsent(p.getUUID(), PlayerGame::new); }
 
@@ -129,6 +140,12 @@ public final class Game {
 		placeWallBuys();
 		box = new BoxSystem(this);
 		pap = new PapSystem(this);
+		if (machines != null) machines.shutdown();
+		if (powerups != null) powerups.shutdown();
+		machines = new Machines(this);
+		powerups = new PowerUps(this);
+		teamEarned = 0;
+		scheduled.clear();
 
 		for (String rule : new String[]{"doMobSpawning false", "doDaylightCycle false", "doWeatherCycle false", "naturalRegeneration false",
 				"mobGriefing false", "doFireTick false", "keepInventory true", "announceAdvancements false", "doImmediateRespawn true",
@@ -184,6 +201,7 @@ public final class Game {
 		spawnCooldown = 40;
 		phase = Payloads.PHASE_ACTIVE;
 		for (PlayerGame pg : players.values()) pg.boardPointsThisRound = 0;
+		if (powerups != null) powerups.newRound();
 		Cue.all("mus_zombie_round_start", level);
 		for (ServerPlayer p : level.players()) pg(p).say("Round " + n, 80);
 	}
@@ -219,7 +237,10 @@ public final class Game {
 		return z;
 	}
 
-	public void onZombieKilled(ZcZombie z) { alive.remove(z); }
+	public void onZombieKilled(ZcZombie z) {
+		alive.remove(z);
+		if (powerups != null) powerups.onKill(z.position());
+	}
 
 	public void gameOver(ServerPlayer p) {
 		if (phase == Payloads.PHASE_GAMEOVER) return;
@@ -232,6 +253,8 @@ public final class Game {
 		Cue.ui("evt_player_death", p);
 		Cue.ui("mus_zombie_game_over", p);
 		for (String c : AMBIENCE) Cue.stopAll(c, level);
+		machines.shutdown();
+		powerups.shutdown();
 		cmd("kill @e[type=zombiecraft:zombie]");
 		alive.clear();
 	}
@@ -276,7 +299,12 @@ public final class Game {
 		if (phase != Payloads.PHASE_GAMEOVER) {
 			box.tick();
 			pap.tick();
+			machines.tick();
+			powerups.tick();
 		}
+		var due = scheduled.headMap(tick, true);
+		for (var list : new ArrayList<>(due.values())) for (Runnable r : list) r.run();
+		due.clear();
 		for (ServerPlayer p : level.players()) tickPlayer(p);
 	}
 
@@ -298,6 +326,7 @@ public final class Game {
 		int sec = phase == Payloads.PHASE_COUNTDOWN ? (countdown + 19) / 20 : phase == Payloads.PHASE_INTERMISSION ? (intermission + 19) / 20 : 0;
 		ServerPlayNetworking.send(p, new Payloads.StateSync(phase, round, pg.points, g == null ? -1 : g.mag, g == null ? 0 : g.reserve,
 				g == null ? "" : g.displayName(), pg.prompt, pg.messageTicks > 0 ? pg.message : "", pg.interactable,
-				zombiesToSpawn + alive.size(), sec, roundsSurvived));
+				zombiesToSpawn + alive.size(), sec, roundsSurvived,
+				pg.perks | (machines.power ? 256 : 0), powerups.instaTicks / 20, powerups.doubleTicks / 20));
 	}
 }

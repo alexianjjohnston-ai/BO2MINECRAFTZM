@@ -26,7 +26,7 @@ import net.minecraft.world.InteractionResult;
 import org.lwjgl.glfw.GLFW;
 
 public class ZombiecraftClient implements ClientModInitializer {
-	public static volatile Payloads.StateSync state = new Payloads.StateSync(0, 0, 0, -1, 0, "", "", "", false, 0, 0, 0);
+	public static volatile Payloads.StateSync state = new Payloads.StateSync(0, 0, 0, -1, 0, "", "", "", false, 0, 0, 0, 0, 0, 0);
 	private static KeyMapping interactKey, reloadKey;
 	private static boolean lastFire, lastInteract, lastAttack;
 	private static int lastWeaponSlot;
@@ -72,7 +72,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 	}
 
 	private static void resetSession() {
-		state = new Payloads.StateSync(Payloads.PHASE_IDLE, 0, 0, -1, 0, "", "", "", false, 0, 0, 0);
+		state = new Payloads.StateSync(Payloads.PHASE_IDLE, 0, 0, -1, 0, "", "", "", false, 0, 0, 0, 0, 0, 0);
 		lastFire = lastInteract = lastAttack = false;
 		lastWeaponSlot = 0;
 		GunFeedback.reset();

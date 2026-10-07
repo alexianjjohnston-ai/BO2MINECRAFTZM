@@ -28,6 +28,10 @@ public final class PlayerGame {
 	/** Perks and power-ups that change how guns behave. */
 	public double perkReloadFactor = 1.0, perkFireFactor = 1.0;
 	public boolean instaKill;
+	/** Bit per perk (see Machines.Perk), Quick Revive purchases so far, drinking in progress, and a safety window after a revive. */
+	public int perks, revivesBought;
+	public boolean drinking;
+	public long shieldUntil;
 
 	public String message = "";
 	public int messageTicks;
@@ -54,6 +58,14 @@ public final class PlayerGame {
 		public int reserveMax() { return def().reserve(); }
 		public String displayName() { return def().name(); }
 		public void refill() { mag = magSize(); reserve = reserveMax(); }
+	}
+
+	/** Points earned from kills and repairs: doubled during Double Points and counted toward power-up drops. */
+	public void earn(int n) {
+		Game g = Game.INSTANCE;
+		int m = g != null && g.powerups != null && g.powerups.doubleTicks > 0 ? 2 : 1;
+		points += n * m;
+		if (g != null) g.teamEarned += n * m;
 	}
 
 	public void say(String text, int ticks) { message = text; messageTicks = ticks; }
