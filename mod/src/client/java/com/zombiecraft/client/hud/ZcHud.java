@@ -119,6 +119,7 @@ public final class ZcHud {
 			case "m1911" -> "menu_mp_weapons_1911_big";
 			case "rottweil72" -> "menu_mp_weapons_olympia_big";
 			case "mp5k" -> "menu_mp_weapons_mp5_big";
+			case "fnfal" -> "menu_mp_weapons_fal_big";
 			case "ray_gun" -> "menu_zm_weapons_raygun_big";
 			default -> "menu_mp_weapons_" + id + "_big";
 		};

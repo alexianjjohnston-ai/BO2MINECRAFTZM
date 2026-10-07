@@ -135,6 +135,9 @@ public final class PapSystem {
 		if (prop != null) { prop.discard(); prop = null; }
 	}
 
+	/** Dev only (-Dzombiecraft.debugPap): show the machine holding a gun in the given phase, for screenshots. */
+	public void debugShow(State st, String gun) { state = st; weapon = gun; timer = phaseDuration = 100000; }
+
 	public void tick() {
 		if (state == State.UPGRADING && --timer <= 0) {
 			Cue.stopAll("zmb_perks_packa_loop", level);

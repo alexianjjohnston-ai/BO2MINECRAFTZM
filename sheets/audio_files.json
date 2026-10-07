@@ -374,6 +374,39 @@
   "frames": 6662
  },
  {
+  "id": "fly_fnfal_charge#0",
+  "cue": "fly_fnfal_charge",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2067306534,
+  "size": 34766,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 17383
+ },
+ {
+  "id": "fly_fnfal_mag_in#0",
+  "cue": "fly_fnfal_mag_in",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2276958244,
+  "size": 32732,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 16366
+ },
+ {
+  "id": "fly_fnfal_mag_out#0",
+  "cue": "fly_fnfal_mag_out",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2226484905,
+  "size": 16976,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 8488
+ },
+ {
   "id": "fly_galil_charge#0",
   "cue": "fly_galil_charge",
   "bank": "cmn_root.all.sabl",
@@ -405,6 +438,50 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 29026
+ },
+ {
+  "id": "fly_judge_close#0",
+  "cue": "fly_judge_close",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 143084779,
+  "size": 30412,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 15206
+ },
+ {
+  "id": "fly_judge_load#0",
+  "cue": "fly_judge_load",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 1951214110,
+  "size": 42680,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 21340
+ },
+ {
+  "id": "fly_judge_load#1",
+  "cue": "fly_judge_load",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 1087719199,
+  "size": 49626,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 24813
+ },
+ {
+  "id": "fly_judge_open#0",
+  "cue": "fly_judge_open",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 4198727313,
+  "size": 30780,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 15390
  },
  {
   "id": "fly_m14_bolt_release#0",
@@ -537,6 +614,72 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 15390
+ },
+ {
+  "id": "fly_rpd_close#0",
+  "cue": "fly_rpd_close",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2568955376,
+  "size": 100596,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 25149
+ },
+ {
+  "id": "fly_rpd_mag_in#0",
+  "cue": "fly_rpd_mag_in",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 4061265779,
+  "size": 101752,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 25438
+ },
+ {
+  "id": "fly_rpd_mag_out#0",
+  "cue": "fly_rpd_mag_out",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 272755482,
+  "size": 400376,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 100094
+ },
+ {
+  "id": "fly_saiga12_mag_in#0",
+  "cue": "fly_saiga12_mag_in",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 837994405,
+  "size": 62042,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 31021
+ },
+ {
+  "id": "fly_saiga12_mag_out#0",
+  "cue": "fly_saiga12_mag_out",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2428841832,
+  "size": 17732,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 8866
+ },
+ {
+  "id": "fly_saiga12_release#0",
+  "cue": "fly_saiga12_release",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 3669262976,
+  "size": 19200,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 9600
  },
  {
   "id": "fly_step_run_npc_ceramic#0",
@@ -1067,6 +1210,39 @@
   "frames": 23514
  },
  {
+  "id": "wpn_fnfal_dryfire_plr#0",
+  "cue": "wpn_fnfal_dryfire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 926472278,
+  "size": 29356,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 7339
+ },
+ {
+  "id": "wpn_fnfal_fire_plr#0",
+  "cue": "wpn_fnfal_fire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2977904809,
+  "size": 332968,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 83242
+ },
+ {
+  "id": "wpn_fnfal_fire_plr_pap#0",
+  "cue": "wpn_fnfal_fire_plr_pap",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2937998377,
+  "size": 94056,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 23514
+ },
+ {
   "id": "wpn_galil_dryfire_plr#0",
   "cue": "wpn_galil_dryfire_plr",
   "bank": "cmn_root.all.sabl",
@@ -1091,6 +1267,39 @@
  {
   "id": "wpn_galil_fire_plr_pap#0",
   "cue": "wpn_galil_fire_plr_pap",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2937998377,
+  "size": 94056,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 23514
+ },
+ {
+  "id": "wpn_judge_dryfire_plr#0",
+  "cue": "wpn_judge_dryfire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 473710914,
+  "size": 41572,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 10393
+ },
+ {
+  "id": "wpn_judge_fire_plr#0",
+  "cue": "wpn_judge_fire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 4264023919,
+  "size": 155920,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 38980
+ },
+ {
+  "id": "wpn_judge_fire_plr_pap#0",
+  "cue": "wpn_judge_fire_plr_pap",
   "bank": "zmb_common.all.sabl",
   "entryId": 2937998377,
   "size": 94056,
@@ -1450,6 +1659,72 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 30334
+ },
+ {
+  "id": "wpn_rpd_dryfire_plr#0",
+  "cue": "wpn_rpd_dryfire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2249588717,
+  "size": 29840,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 7460
+ },
+ {
+  "id": "wpn_rpd_fire_plr#0",
+  "cue": "wpn_rpd_fire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 3849513084,
+  "size": 192128,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 48032
+ },
+ {
+  "id": "wpn_rpd_fire_plr_pap#0",
+  "cue": "wpn_rpd_fire_plr_pap",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2937998377,
+  "size": 94056,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 23514
+ },
+ {
+  "id": "wpn_saiga12_dryfire_plr#0",
+  "cue": "wpn_saiga12_dryfire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2970292461,
+  "size": 29940,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 7485
+ },
+ {
+  "id": "wpn_saiga12_fire_plr#0",
+  "cue": "wpn_saiga12_fire_plr",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 273108969,
+  "size": 171652,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 42913
+ },
+ {
+  "id": "wpn_saiga12_fire_plr_pap#0",
+  "cue": "wpn_saiga12_fire_plr_pap",
+  "bank": "zmb_common.all.sabl",
+  "entryId": 2937998377,
+  "size": 94056,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 23514
  },
  {
   "id": "zmb_board_slam#0",
@@ -1870,6 +2145,17 @@
   "frames": 267091
  },
  {
+  "id": "zmb_power_door#0",
+  "cue": "zmb_power_door",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 632077501,
+  "size": 370781,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 152578
+ },
+ {
   "id": "zmb_power_on_quad#0",
   "cue": "zmb_power_on_quad",
   "bank": "zmb_common.all.sabs",
@@ -1901,6 +2187,17 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 165753
+ },
+ {
+  "id": "zmb_small_wood_door#0",
+  "cue": "zmb_small_wood_door",
+  "bank": "zmb_common.all.sabs",
+  "entryId": 1850033842,
+  "size": 88529,
+  "format": "flac",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 61400
  },
  {
   "id": "zmb_spawn_powerup#0",
@@ -2660,27 +2957,5 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 156318
- },
- {
-  "id": "zmb_power_door#0",
-  "cue": "zmb_power_door",
-  "bank": "zmb_common.all.sabs",
-  "entryId": 632077501,
-  "size": 370781,
-  "format": "flac",
-  "channels": 2,
-  "rateHz": 48000,
-  "frames": 152578
- },
- {
-  "id": "zmb_small_wood_door#0",
-  "cue": "zmb_small_wood_door",
-  "bank": "zmb_common.all.sabs",
-  "entryId": 1850033842,
-  "size": 88529,
-  "format": "flac",
-  "channels": 2,
-  "rateHz": 48000,
-  "frames": 61400
  }
 ]

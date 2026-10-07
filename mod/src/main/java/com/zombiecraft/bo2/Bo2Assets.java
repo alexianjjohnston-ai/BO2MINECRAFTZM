@@ -24,10 +24,12 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 6;
+	public static final int VERSION = 7;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
 	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit", "common_zm"};
+	/** First-person clips copied for every gun that has an {@code anim} prefix in bo2_models.json (a gun may lack some). */
+	public static final String[] GUN_CLIPS = {"idle", "fire", "reload", "reload_empty", "pullout", "first_raise"};
 	static final String[] ASSET_TYPES = {"xmodel", "material", "image", "xanim"};
 	/** Animations copied into the cache (compiled xanim files are small). The renderer picks them by these names. */
 	public static final String[] ANIMS = {"ai_zombie_walk_v1", "ai_zombie_walk_v2", "ai_zombie_walk_v3", "ai_zombie_walk_v4",
@@ -37,10 +39,15 @@ public final class Bo2Assets {
 
 	public static Path cacheDir(Path gameDir) { return gameDir.resolve("zombiecraft").resolve("bo2"); }
 
+	/** Changes whenever the texture or model sheet does, so the cache and the texture pack are rebuilt for new rows. */
+	private static String sheetsHash() {
+		return String.valueOf(com.zombiecraft.sheet.Sheets.TEXTURES.toString().hashCode() * 31 + com.zombiecraft.sheet.Sheets.BO2_MODELS.toString().hashCode());
+	}
+
 	public static boolean ready(Path gameDir, Path bo2Dir) {
 		Properties p = manifest(cacheDir(gameDir));
 		return p != null && p.getProperty("version", "").equals(String.valueOf(VERSION)) && p.getProperty("fingerprint", "").equals(fingerprint(bo2Dir))
-				&& p.getProperty("textures-sheet", "").equals(String.valueOf(com.zombiecraft.sheet.Sheets.TEXTURES.toString().hashCode()));
+				&& p.getProperty("textures-sheet", "").equals(sheetsHash());
 	}
 
 	private static Properties manifest(Path cache) {
@@ -185,7 +192,11 @@ public final class Bo2Assets {
 		}
 		Path anims = cache.resolve("anims");
 		Files.createDirectories(anims);
-		for (String a : ANIMS)
+		java.util.List<String> animNames = new java.util.ArrayList<>(java.util.Arrays.asList(ANIMS));
+		for (Bo2Model m : com.zombiecraft.sheet.Sheets.BO2_MODELS)
+			if (m.anim() != null && !m.anim().isEmpty())
+				for (String clip : GUN_CLIPS) animNames.add("viewmodel_" + m.anim() + "_" + clip);
+		for (String a : animNames)
 			for (Path z : zoneDirs) {
 				Path f = z.resolve("xanim").resolve(a);
 				if (Files.isRegularFile(f)) { Files.copy(f, anims.resolve(a), StandardCopyOption.REPLACE_EXISTING); break; }
@@ -198,7 +209,7 @@ public final class Bo2Assets {
 		p.setProperty("fingerprint", fingerprint(bo2Dir));
 		p.setProperty("models", String.valueOf(written));
 		p.setProperty("textures", String.valueOf(textures));
-		p.setProperty("textures-sheet", String.valueOf(com.zombiecraft.sheet.Sheets.TEXTURES.toString().hashCode()));
+		p.setProperty("textures-sheet", sheetsHash());
 		try (var out = Files.newOutputStream(cache.resolve("manifest.properties"))) { p.store(out, "Zombiecraft Black Ops II asset cache (generated on this PC)"); }
 		log.accept("Black Ops II models ready: " + written + " models, " + textures + " textures");
 		return written;

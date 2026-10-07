@@ -1,7 +1,6 @@
 {
  "key.zombiecraft.interact": "Buy / Use / Repair",
  "key.zombiecraft.reload": "Reload",
- "key.zombiecraft.prone": "Prone (crawl)",
  "key.categories.zombiecraft": "Block Ops 2",
  "item.zombiecraft.m1911": "M1911",
  "item.zombiecraft.rottweil72": "Olympia",
@@ -12,18 +11,11 @@
  "item.zombiecraft.galil": "Galil",
  "item.zombiecraft.python": "Python",
  "item.zombiecraft.ray_gun": "Ray Gun",
+ "item.zombiecraft.fnfal": "FAL",
+ "item.zombiecraft.saiga12": "Saiga 12",
+ "item.zombiecraft.rpd": "RPD",
+ "item.zombiecraft.judge": "Executioner",
  "item.zombiecraft.teddy": "Teddy Bear",
  "item.zombiecraft.mystery_box": "Mystery Box",
- "entity.zombiecraft.zombie": "Zombie",
- "block.zombiecraft.cinder_block": "Cinder Block",
- "block.zombiecraft.concrete_wall": "Concrete Wall",
- "block.zombiecraft.metal_panel": "Metal Panel",
- "block.zombiecraft.asphalt": "Asphalt",
- "block.zombiecraft.depot_tile": "Depot Tile",
- "block.zombiecraft.wood_floor": "Wood Floor",
- "block.zombiecraft.ground": "Hard Ground",
- "block.zombiecraft.grass": "Dead Grass",
- "block.zombiecraft.glass_brick": "Glass Brick",
- "block.zombiecraft.neon": "Neon",
- "block.zombiecraft.barricade_board": "Barricade Boards"
+ "entity.zombiecraft.zombie": "Zombie"
 }

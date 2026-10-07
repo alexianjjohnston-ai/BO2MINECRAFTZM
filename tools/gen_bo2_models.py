@@ -5,22 +5,29 @@ import json, os
 SH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'sheets')
 
 rows = []
-def add(id, group, xmodel, world="", note=""):
-    rows.append(dict(id=id, group=group, xmodel=xmodel, world=world, note=note))
+def add(id, group, xmodel, world="", note="", anim=""):
+    row = dict(id=id, group=group, xmodel=xmodel, world=world, note=note)
+    if anim: row["anim"] = anim
+    rows.append(row)
 
-def gun(id, stem, note=""):
-    add(id, "gun", f"t6_wpn_{stem}_view", f"t6_wpn_{stem}_world", note)
+def gun(id, stem, anim, note=""):
+    """anim = BO2 viewmodel clip prefix: the clips are viewmodel_<anim>_idle / _fire / _reload / _reload_empty / _pullout / _first_raise."""
+    add(id, "gun", f"t6_wpn_{stem}_view", f"t6_wpn_{stem}_world", note, anim)
 
-gun("m1911", "pistol_m1911")
-gun("rottweil72", "shotty_olympia")
-gun("mp5k", "smg_mp5")
-gun("ak74u", "smg_ak74u")
-gun("m14", "ar_m14")
-gun("m16", "ar_m16a2")
-gun("galil", "ar_galil")
-gun("python", "pistol_python")
-gun("ray_gun", "zmb_raygun2")
-gun("ray_gun_pap", "zmb_raygun2_upg")
+gun("m1911", "pistol_m1911", "m1911")
+gun("rottweil72", "shotty_olympia", "olympia")
+gun("mp5k", "smg_mp5", "mp5_t6")
+gun("ak74u", "smg_ak74u", "ak74u_t6")
+gun("m14", "ar_m14", "m14")
+gun("m16", "ar_m16a2", "m16a2")
+gun("galil", "ar_galil", "galil_t6")
+gun("python", "pistol_python", "python_sw")
+gun("fnfal", "ar_fal", "fal_t6")
+gun("saiga12", "shotty_saiga", "saiga12")
+gun("rpd", "lmg_rpd", "rpd")
+gun("judge", "pistol_judge", "judge")
+gun("ray_gun", "zmb_raygun2", "raygun_mk2")
+gun("ray_gun_pap", "zmb_raygun2_upg", "raygun_mk2")
 
 add("zombie_a", "zombie", "c_zom_zombie1_body01", note="clothed zombie, straitjacket")
 add("zombie_b", "zombie", "c_zom_zombie1_body02")
@@ -46,6 +53,9 @@ for perk, stem in (("jugg", "jugg"), ("speed", "sleight"), ("doubletap", "double
 
 for pid, stem in (("max_ammo", "zombie_ammocan"), ("insta_kill", "zombie_skull"), ("double_points", "zombie_x2_icon"), ("nuke", "zombie_bomb"), ("carpenter", "zombie_carpenter")):
     add(f"powerup_{pid}", "prop", stem)
+
+for p in ("engineer", "farmgirl", "oldman", "reporter"):
+    add(f"viewhands_{p}", "viewhands", f"c_zom_{p}_viewhands")
 
 for p in ("engineer", "farmgirl", "oldman", "reporter"):
     add(f"player_{p}", "player", f"c_zom_player_{p}_fb")

@@ -102,19 +102,38 @@ public final class BoxSystem {
 		else level.blockEvent(chestPos(), Blocks.CHEST, 1, open ? 1 : 0);
 	}
 
+	/** With BO2 models the offered gun is a glowing prop that rises out of the box; otherwise the old floating item. */
+	private com.zombiecraft.entity.ZcProp gunProp;
+
 	private void display(String weapon) {
 		Vec3 c = center();
 		game.cmd("kill @e[tag=zc_boxdisp]");
+		if (gunProp != null) { gunProp.discard(); gunProp = null; }
+		if (LocalAssets.models) {
+			gunProp = new com.zombiecraft.entity.ZcProp(com.zombiecraft.entity.ZcEntities.PROP, level);
+			gunProp.moveTo(c.x, c.y + 0.2, c.z, Machines.yawOf(loc().facing()), 0f);
+			gunProp.setYRot(Machines.yawOf(loc().facing()));
+			gunProp.addTag("zc"); gunProp.addTag("zc_boxdisp");
+			gunProp.getEntityData().set(com.zombiecraft.entity.ZcProp.KIND, com.zombiecraft.entity.ZcProp.BOXGUN);
+			gunProp.getEntityData().set(com.zombiecraft.entity.ZcProp.PAP_WEAPON, weapon);
+			gunProp.getEntityData().set(com.zombiecraft.entity.ZcProp.SINCE, (int) level.getGameTime());
+			level.addFreshEntity(gunProp);
+			return;
+		}
 		game.cmd(String.format(Locale.ROOT,
 				"summon item_display %.2f %.2f %.2f {item:{id:\"zombiecraft:%s\",count:1},billboard:\"center\",Tags:[\"zc\",\"zc_boxdisp\"],transformation:{translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[1.6f,1.6f,1.6f],right_rotation:[0f,0f,0f,1f]}}",
 				c.x, c.y + 1.3, c.z, weapon));
 	}
 
 	private void showItem(String id) {
+		if (gunProp != null) { gunProp.getEntityData().set(com.zombiecraft.entity.ZcProp.PAP_WEAPON, id.replace("zombiecraft:", "")); return; }
 		game.cmd("data merge entity @e[tag=zc_boxdisp,limit=1] {item:{id:\"" + id + "\",count:1}}");
 	}
 
-	private void clearDisplay() { game.cmd("kill @e[tag=zc_boxdisp]"); }
+	private void clearDisplay() {
+		game.cmd("kill @e[tag=zc_boxdisp]");
+		if (gunProp != null) { gunProp.discard(); gunProp = null; }
+	}
 
 	public void use(ServerPlayer p, PlayerGame pg) {
 		int cost = Sheets.sysInt("box_cost");

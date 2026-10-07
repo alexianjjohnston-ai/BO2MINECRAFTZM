@@ -68,6 +68,8 @@ public final class ZcItemModels {
 			// vanilla puts the hand at (+-0.56, -0.52, -0.72) from the camera; view models are authored around the eye
 			float side = ctx == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 1f : -1f;
 			ps.translate(-side * 0.56f, 0.52f, 0.72f);
+			float pt = net.minecraft.client.Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+			if (ViewModel.draw(key, pt, ps, buf, light)) { ps.popPose(); return true; }
 			ps.translate(side * VIEW_X, VIEW_Y, VIEW_Z);
 			sway(ps);
 			Bo2Mesh.draw(l, null, ps, buf, light, Bo2Mesh.INCH * VIEW_SCALE, 2);

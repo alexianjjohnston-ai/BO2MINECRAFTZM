@@ -135,6 +135,22 @@ public final class Pose {
 		}
 	}
 
+	/**
+	 * Like {@link #build()} but for a part carried by another skeleton (a gun in the hands): every bone is placed relative to
+	 * {@code parent}'s bone {@code tag} (its animated world matrix), e.g. the gun's j_gun on the hands' tag_weapon.
+	 */
+	public void buildOn(Pose parent, String tag) {
+		build();
+		int tb = parent.model.boneIndex(tag);
+		if (tb < 0) return;
+		float[] tmp = new float[12];
+		for (int i = 0; i < n; i++) {
+			mul34(parent.world, tb * 12, world, i * 12, tmp, 0);
+			System.arraycopy(tmp, 0, world, i * 12, 12);
+			mul34(world, i * 12, invBind, i * 12, skin, i * 12);
+		}
+	}
+
 	/** Skins vertex v into out (3 floats), position only. */
 	public void skinPos(int v, float[] out) {
 		float x = model.pos[v * 3], y = model.pos[v * 3 + 1], z = model.pos[v * 3 + 2];

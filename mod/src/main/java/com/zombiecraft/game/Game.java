@@ -315,14 +315,40 @@ public final class Game {
 			float yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
 			for (ServerPlayer p : level.players()) p.teleportTo(level, px, cp.getY(), pz, Set.of(), yaw, 22f, true);
 		}
-		// dev: -Dzombiecraft.debugGun=true saves the gun at rest, then during a reload (for checking the BO2 first-person rig)
-		if (Boolean.getBoolean("zombiecraft.debugGun")) {
+		// dev: -Dzombiecraft.debugPap=true shows Pack-a-Punch holding a gun (upgrading, then ready) and saves screenshots
+		if (Boolean.getBoolean("zombiecraft.debugPap") && pap != null && machines != null) {
+			long t = tick - startedAt;
+			if (t == 50) {
+				var d = pap.def();
+				var f = net.minecraft.core.Direction.valueOf(d.facing().toUpperCase());
+				double px = origin.getX() + (d.x1() + d.x2()) / 2.0 + 0.5 + f.getStepX() * 3.2, pz = origin.getZ() + (d.z1() + d.z2()) / 2.0 + 0.5 + f.getStepZ() * 3.2;
+				float yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
+				for (ServerPlayer p : level.players()) p.teleportTo(level, px, origin.getY() + d.y1(), pz, Set.of(), yaw, 12f, true);
+			}
+			if (t == 60) pap.debugShow(PapSystem.State.UPGRADING, "m14");
+			if (t == 75 || t == 95) for (ServerPlayer p : level.players()) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("pap_work_" + t));
+			if (t == 100) pap.debugShow(PapSystem.State.READY, "m14");
+			if (t == 112 || t == 140) for (ServerPlayer p : level.players()) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("pap_ready_" + t));
+		}
+		// dev: -Dzombiecraft.debugDrink=true (with debugPower) buys Juggernog and screenshots the bottle animation
+		if (Boolean.getBoolean("zombiecraft.debugDrink") && machines != null) {
 			long t = tick - startedAt;
 			for (ServerPlayer p : level.players()) {
+				if (t == 70) { pg(p).points = 9000; for (var md : Sheets.MACHINES) if (md.perk() != null && md.perk().equals("jug")) machines.use(md, p, pg(p)); }
+				if (t == 85 || t == 95 || t == 105 || t == 115 || t == 125) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("drink_" + t));
+			}
+		}
+		// dev: -Dzombiecraft.debugGun=true puts every gun in the hand in turn (60 ticks each) and saves an idle and a reload screenshot
+		if (Boolean.getBoolean("zombiecraft.debugGun")) {
+			long t = tick - startedAt - 60;
+			var ids = Sheets.WEAPONS.stream().filter(w -> !w.upgrade()).map(com.zombiecraft.sheet.Rows.WeaponDef::id).toList();
+			int idx = (int) (t / 70), ph = (int) (t % 70);
+			if (t >= 0 && idx < ids.size()) for (ServerPlayer p : level.players()) {
 				var gun = WeaponSystem.active(p, pg(p));
-				if (t == 70) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("gun_idle"));
-				if (t == 90 && gun != null) { gun.mag = Math.min(gun.mag, 2); WeaponSystem.startReload(this, p, pg(p)); }
-				if (t == 100 || t == 115 || t == 130) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("gun_reload_" + t));
+				if (ph == 0) { WeaponSystem.give(p, pg(p), 0, ids.get(idx), false); p.getInventory().selected = 0; }
+				if (ph == 25) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("gun_" + ids.get(idx) + "_idle"));
+				if (ph == 30 && gun != null) { gun.mag = Math.min(gun.mag, 1); WeaponSystem.startReload(this, p, pg(p)); }
+				if (ph == 48) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("gun_" + ids.get(idx) + "_reload"));
 			}
 		}
 		// dev: -Dzombiecraft.debugPowerups=true lays out every power-up in an arc in front of the player and saves a screenshot
