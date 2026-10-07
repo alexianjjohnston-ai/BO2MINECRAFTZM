@@ -182,6 +182,8 @@ public final class Machines {
 	public boolean revive(ServerPlayer p, PlayerGame pg) {
 		if ((pg.perks & (1 << Perk.REVIVE.bit)) == 0) return false;
 		pg.perks &= ~(1 << Perk.REVIVE.bit);
+		pg.downs++;
+		pg.revives++;
 		p.setHealth(p.getMaxHealth());
 		pg.shieldUntil = game.tick + 80;
 		Cue.ui("mus_perks_revive_sting", p);

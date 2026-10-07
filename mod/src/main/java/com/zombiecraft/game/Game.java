@@ -251,6 +251,7 @@ public final class Game {
 		phase = Payloads.PHASE_GAMEOVER;
 		for (ServerPlayer player : level.players()) WeaponSystem.cancelReload(player, pg(player));
 		roundsSurvived = round;
+		pg(p).downs++;
 		gameOverTicks = Sheets.sysInt("game_over_delay_s") * 20;
 		p.setHealth(p.getMaxHealth());
 		p.setInvulnerable(true);
@@ -367,6 +368,7 @@ public final class Game {
 		ServerPlayNetworking.send(p, new Payloads.StateSync(phase, round, pg.points, g == null ? -1 : g.mag, g == null ? 0 : g.reserve,
 				g == null ? "" : g.displayName(), pg.prompt, pg.messageTicks > 0 ? pg.message : "", pg.interactable,
 				zombiesToSpawn + alive.size(), sec, roundsSurvived,
-				pg.perks | (machines.power ? 256 : 0), powerups.instaTicks / 20, powerups.doubleTicks / 20));
+				pg.perks | (machines.power ? 256 : 0), powerups.instaTicks / 20, powerups.doubleTicks / 20,
+				pg.kills, pg.headshots, pg.downs, pg.revives));
 	}
 }

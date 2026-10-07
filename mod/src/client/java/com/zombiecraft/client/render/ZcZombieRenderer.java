@@ -27,7 +27,7 @@ public class ZcZombieRenderer extends HumanoidMobRenderer<Zombie, ZcZombieState,
 	/** BO2 inches to blocks, with the zombie a touch under 2 blocks tall. */
 	private static final float SCALE = Bo2Mesh.INCH * 1.02f;
 
-	private static final java.util.Set<String> LOGGED = new java.util.HashSet<>();
+	private static final java.util.Map<String, Float> LIFT = new java.util.HashMap<>();
 	private final java.util.Map<Bo2Mesh.Loaded, Pose> poses = new java.util.HashMap<>();
 
 	public ZcZombieRenderer(EntityRendererProvider.Context ctx) {
@@ -75,14 +75,15 @@ public class ZcZombieRenderer extends HumanoidMobRenderer<Zombie, ZcZombieState,
 			bp.apply(a, frame, 1f);
 		}
 		bp.build();
-		if (a != null && LOGGED.add(name)) { // dev: lowest point of each clip, to catch clips that sink the model
+		if (a != null && !LIFT.containsKey(name)) { // the clips put the model about 37 inches under the floor: find each clip's lowest point once and lift by it
 			float lo = 1e9f; float[] t3 = new float[3];
-			for (int f = 0; f <= a.numFrames; f += Math.max(1, a.numFrames / 6)) { bp.reset(); bp.apply(a, f, 1f); bp.build(); for (int v = 0; v < body.model.vertCount; v += 7) { bp.skinPos(v, t3); lo = Math.min(lo, t3[2]); } }
-			com.zombiecraft.ZombiecraftMod.LOG.info("zombie clip {} frames={} lowest z={}", name, a.numFrames, lo);
+			for (int f = 0; f <= a.numFrames; f += Math.max(1, a.numFrames / 8)) { bp.reset(); bp.apply(a, f, 1f); bp.build(); for (int v = 0; v < body.model.vertCount; v += 5) { bp.skinPos(v, t3); lo = Math.min(lo, t3[2]); } }
+			LIFT.put(name, -lo);
 			bp.reset(); bp.apply(a, 0f, 1f); bp.build();
 		}
 		ps.pushPose();
 		ps.mulPose(Axis.YP.rotationDegrees(-s.bodyRot));
+		ps.translate(0f, LIFT.getOrDefault(name, 0f) * SCALE, 0f);
 		Bo2Mesh.draw(body, bp, ps, buf, light, SCALE, 0);
 		if (head != null) {
 			Pose hp = pose(head);

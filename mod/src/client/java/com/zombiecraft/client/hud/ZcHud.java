@@ -160,6 +160,32 @@ public final class ZcHud {
 		UiFont.draw(g, s, px, y, height, color, true);
 	}
 
+	/** BO2's tab screen: one row per player (just the local one for now) with score, kills, downs, revives, headshots and ping. */
+	private static void scoreboard(GuiGraphics g, Minecraft mc, Payloads.StateSync s) {
+		if (s.phase() != Payloads.PHASE_GAMEOVER && !mc.options.keyPlayerList.isDown()) return;
+		Font font = mc.font;
+		int w = g.guiWidth(), h = g.guiHeight();
+		int pw = Math.min(w - 40, 560), x0 = (w - pw) / 2, y0 = (int) (h * 0.32), rowH = 18, rows = 4;
+		int nameX = x0 + (int) (pw * 0.2);
+		int[] colX = new int[5];
+		for (int i = 0; i < 5; i++) colX[i] = x0 + (int) (pw * (0.58 + 0.08 * i));
+		String[] heads = {"Score", "Kills", "Downs", "Revives", "Headshots"};
+		g.fill(x0, y0, x0 + pw, y0 + rowH, 0xD0101010);
+		text(g, font, "Survival - Green Run", x0 + 10, y0 + 2, 0.9f, 0xFFFFFFFF, false);
+		for (int i = 0; i < 5; i++) text(g, font, heads[i], colX[i], y0 + 4, 0.65f, 0xFFBBBBBB, true);
+		text(g, font, "Ping", x0 + pw - 14, y0 + 4, 0.65f, 0xFFBBBBBB, true);
+		g.fill(x0, y0 + rowH + 1, x0 + pw, y0 + rowH + 1 + rowH * rows, 0xA0000000);
+		// the gold column bands behind the stats
+		for (int i = 0; i < 5; i += 2) g.fill(colX[i] - 22, y0 + rowH + 1, colX[i] + 22, y0 + rowH + 1 + rowH * rows, 0x60B09020);
+		int ry = y0 + rowH + 2;
+		g.renderOutline(x0 + pw / 10, ry, pw - pw / 10, rowH, 0xFFE8760A);
+		text(g, font, mc.getUser().getName(), nameX, ry + 2, 0.8f, 0xFFF0D060, false);
+		int[] vals = {s.points(), s.kills(), s.downs(), s.revives(), s.headshots()};
+		for (int i = 0; i < 5; i++) text(g, font, String.valueOf(vals[i]), colX[i], ry + 3, 0.7f, 0xFFFFFFFF, true);
+		var info = mc.getConnection() == null ? null : mc.getConnection().getPlayerInfo(mc.player.getUUID());
+		text(g, font, String.valueOf(info == null ? 0 : info.getLatency()), x0 + pw - 14, ry + 3, 0.7f, 0xFFFFFFFF, true);
+	}
+
 	public static void render(GuiGraphics g, DeltaTracker dt) {
 		Minecraft mc = Minecraft.getInstance();
 		if (!usesWeaponHud(mc) || mc.options.hideGui) return;
@@ -175,8 +201,10 @@ public final class ZcHud {
 		else if (audio == com.zombiecraft.client.audio.AudioCache.Status.NO_BO2) text(g, font, "Black Ops II not found: using Minecraft sounds (see config/zombiecraft.properties)", 8, 6, 1f, 0xFFCC9944, false);
 
 		if (s.phase() == Payloads.PHASE_GAMEOVER) {
-			text(g, font, "GAME OVER", w / 2, h / 2 - 40, 4f, 0xFFCC1111, true);
-			text(g, font, "You survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " round" : " rounds"), w / 2, h / 2 + 8, 2f, 0xFFFFFFFF, true);
+			// BO2: white, upper centre, over the red death tint
+			text(g, font, "GAME OVER", w / 2, h / 5, 3f, 0xFFFFFFFF, true);
+			text(g, font, "You Survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " Round" : " Rounds"), w / 2, h / 5 + 42, 1.5f, 0xFFFFFFFF, true);
+			scoreboard(g, mc, s);
 			return;
 		}
 		hitMarker(g, mc, partialTick);
@@ -229,6 +257,8 @@ public final class ZcHud {
 
 		// banners
 		if (!s.message().isEmpty()) text(g, font, s.message(), w / 2, h / 4 + 24, 3f, 0xFFD8A020, true);
+
+		scoreboard(g, mc, s);
 
 		// prompt (lower middle)
 		if (!s.prompt().isEmpty()) text(g, font, s.prompt(), w / 2, h / 2 + 46, 1.2f, 0xFFFFFFFF, true);
