@@ -50,7 +50,7 @@ loom {
 			if (project.hasProperty("devProps")) {
 				project.property("devProps").split(",").each { vmArg(it.contains("=") ? "-Dzombiecraft.${it}" : "-Dzombiecraft.${it}=true") }
 				if (!project.property("devProps").contains("debugOptions")) vmArg "-Dzombiecraft.autoplay=true"
-				runDir "run/shot"
+				runDir(project.findProperty("devDir") ?: "run/shot")
 			}
 			if (project.hasProperty("papBench")) {
 				vmArg "-Dzombiecraft.papBench=true"

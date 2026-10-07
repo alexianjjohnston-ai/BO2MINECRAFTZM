@@ -25,6 +25,14 @@ public final class Payloads {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** The player was hurt by something at (x, z): drives the red hit-direction arc. */
+	public record HitDirection(double x, double z) implements CustomPacketPayload {
+		public static final Type<HitDirection> TYPE = new Type<>(id("hit_direction"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, HitDirection> CODEC = StreamCodec.ofMember(
+				(p, b) -> { b.writeDouble(p.x); b.writeDouble(p.z); }, b -> new HitDirection(b.readDouble(), b.readDouble()));
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	/** Everything the HUD needs, sent a few times a second. */
 	public record StateSync(int phase, int round, int points, int mag, int reserve, String gun, String prompt, String message,
 			boolean interactable, int zombiesLeft, int countdownSec, int roundsSurvived,
@@ -93,6 +101,7 @@ public final class Payloads {
 	public static void register() {
 		PayloadTypeRegistry.playS2C().register(StateSync.TYPE, StateSync.CODEC);
 		PayloadTypeRegistry.playS2C().register(CombatFeedback.TYPE, CombatFeedback.CODEC);
+		PayloadTypeRegistry.playS2C().register(HitDirection.TYPE, HitDirection.CODEC);
 		PayloadTypeRegistry.playS2C().register(CuePlay.TYPE, CuePlay.CODEC);
 		PayloadTypeRegistry.playS2C().register(CueStop.TYPE, CueStop.CODEC);
 		PayloadTypeRegistry.playS2C().register(Shot.TYPE, Shot.CODEC);

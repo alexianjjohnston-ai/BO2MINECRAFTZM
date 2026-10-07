@@ -178,3 +178,15 @@ Built so new maps are data, not code:
 - Checked against scripts and already right: kill 50 / head +50 / neck +20 / torso +10 / melee +80, hit 10, box 950, PaP 5000, board points cap.
 - Bench: the zombie-through-window step used old diner coordinates (player now parked at the map spawn); full bench green on the Bus Depot (41 pass, 0 fail).
 - Not yet done in A: rounds 1-10 hand playthrough, stuck-zombie teleport/respawn, bounds/exploit checks, Max Ammo/nuke/carpenter numbers vs scripts, drop rates, down/revive numbers, `-PpapBench`.
+
+## Map look, stream B (2026-10-07)
+`tools/gen_depot.py` (re-run, don't hand-edit sheets): indoor floors are concrete (no asphalt road lines inside); floating lamp cubes replaced by flush neon strips with dim `light[level=9]` blocks under them; set dressing (ticket board, chairs as stairs, yellow-band pillars, bins, rubble, poster); a town outside the windows (street-front buildings with dark windows closing all four sides, gas-station canopy, wrecked cars, bare trees, bus-stop line). Player spawn now faces north (windows, ticket board, a wall gun). `atmosphere.json` bus_depot: dusk haze (timeOfDay 11800, orange-brown fog 4..48) so the outside is lit and the inside stays dark from its own lights. Preflight 0 errors.
+Dev: `-PdevProps=debugTour` visits 7 viewpoints and writes `zc-tour_N.png`; `-PdevDir=run/shot-x` gives a private run folder (several chats can run at once).
+Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulations: signs need NBT text), no wall clock/ticket-counter detail/lockers upgrade, no glass-block wall with a cracked hole, tour shows only blocky approximations, neon strips are cyan placeholder texture, no flicker.
+
+## Stream D (first-person rig), first pass
+- Viewmodel raised (`zombiecraft.vmY`, default 0.06) so both hands show; before, the right hand sat below the screen on long guns (looked like a "missing hand").
+- Sleeves are now dark cloth and all characters use BO2's black arm map. The skin still reads brownish in debugGun shots (the `_skin` surface may not be the gloves); needs a closer look.
+- Not done: black patches check, per-gun clip audit (debugGun shots in run/shot/screenshots), sprint/walk bob, ADS, grenade/knife clips.
+- C, tested in game (dev switch `-PdevProps=debugZombies`, three free zombies, one hit then killed; screenshots `zc-zombies_*`): zombies read well (real BO2 body/head, torn dirty clothes); blood spray works; body stays on the floor after the kill. Dust particles are square, so blood uses small sizes (0.55-1.1) to avoid big pixel clumps.
+- Test tip: another chat holding `run/shot` locks the world; copy it (`cp -r run/shot run/ctest`, delete `session.lock`) and pass `-PdevDir=run/ctest`.

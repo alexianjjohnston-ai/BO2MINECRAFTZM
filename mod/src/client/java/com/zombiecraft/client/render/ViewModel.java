@@ -22,7 +22,7 @@ public final class ViewModel {
 	/** Which character's arms: -Dzombiecraft.character=oldman|engineer|farmgirl|reporter. */
 	private static final String HANDS = "c_zom_" + System.getProperty("zombiecraft.character", "oldman") + "_viewhands";
 	/** Placement and size of the rig relative to the eye (blocks per BO2 inch is INCH; tuned by eye). */
-	static float VM_X = 0f, VM_Y = 0f, VM_Z = 0f, VM_SCALE = 1.0f;
+	static float VM_X = 0f, VM_Y = Float.parseFloat(System.getProperty("zombiecraft.vmY", "0.06")), VM_Z = 0f, VM_SCALE = 1.0f;
 
 	private static final boolean DEBUG = Boolean.getBoolean("zombiecraft.debugVm");
 	private static final java.util.Set<String> logged = new java.util.HashSet<>();
@@ -35,10 +35,10 @@ public final class ViewModel {
 	private static net.minecraft.resources.ResourceLocation cloth() {
 		if (cloth == null) {
 			int[] c = switch (System.getProperty("zombiecraft.character", "oldman")) {
-				case "engineer" -> new int[] {62, 72, 84};
-				case "farmgirl" -> new int[] {122, 92, 72};
-				case "reporter" -> new int[] {72, 62, 56};
-				default -> new int[] {88, 80, 58};
+				case "engineer" -> new int[] {34, 38, 44};
+				case "farmgirl" -> new int[] {54, 44, 38};
+				case "reporter" -> new int[] {40, 36, 34};
+				default -> new int[] {36, 36, 32};
 			};
 			var img = new com.mojang.blaze3d.platform.NativeImage(8, 8, false);
 			java.util.Random r = new java.util.Random(11);
@@ -55,7 +55,8 @@ public final class ViewModel {
 	/** The skin material points at a rim mask; use BO2's real arm skin, and plain cloth where the sleeve image is missing. */
 	private static void fixHands(Bo2Mesh.Loaded h) {
 		if (!FIXED.add(h)) return;
-		String skinFile = HANDS.contains("engineer") ? "~-gc_gen_arm_clean_black_c.dds" : "~-gc_gen_arm_dirty_asian_c.dds";
+		// BO2 Zombies shows dark gloves for every character
+		String skinFile = "~-gc_gen_arm_clean_black_c.dds";
 		var skin = Bo2Mesh.texture(skinFile);
 		for (int s = 0; s < h.surfaceTextures().length; s++) {
 			String mat = h.model.materials.get(h.model.surfaces.get(s).material).name();

@@ -54,6 +54,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 			GunFeedback.accept(payload);
 			FeedbackBench.received(payload);
 		});
+		ClientPlayNetworking.registerGlobalReceiver(Payloads.HitDirection.TYPE, (payload, ctx) -> com.zombiecraft.client.hud.ZcHud.hitFrom(payload.x(), payload.z()));
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> resetSession());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> resetSession());
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.CuePlay.TYPE, (payload, ctx) -> CuePlayer.play(payload));

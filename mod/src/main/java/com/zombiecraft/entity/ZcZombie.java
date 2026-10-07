@@ -31,6 +31,7 @@ public class ZcZombie extends Zombie {
 	public double hp = 150, hpMax = 150;
 	public String tier = "walk";
 	public boolean headGibbed;
+	private static final int BODY_TICKS = 160;
 	private int tearTicks, stuckTicks, vocalTimer;
 	private double stepDist;
 	/** Synced to clients for animation: stage (0-3) in the low bits, speed tier (0 walk, 1 run, 2 sprint) times 4 above. */
@@ -102,6 +103,12 @@ public class ZcZombie extends Zombie {
 			if (stepDist >= (tier.equals("walk") ? 1.5 : 1.1)) { stepDist = 0; Cue.at(tier.equals("walk") ? "fly_step_walk_npc_ceramic" : "fly_step_run_npc_ceramic", sl, position()); }
 		}
 		if (getY() < -200) discard();
+	}
+
+	/** BO2 leaves bodies on the floor for a while; vanilla removes them after 1 s with a white poof cloud. */
+	@Override protected void tickDeath() {
+		if (deathTime < Integer.MAX_VALUE - 1) deathTime++;
+		if (deathTime >= BODY_TICKS && !level().isClientSide() && !isRemoved()) discard();
 	}
 
 	@Override protected boolean isSunSensitive() { return false; }

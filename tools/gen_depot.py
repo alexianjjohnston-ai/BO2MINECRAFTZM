@@ -15,7 +15,7 @@ ops = []
 
 # ---- one palette so nothing clashes: weathered stone and dark wood
 WALL, WAINSCOT, TRIM, ROOF = 'zombiecraft:cinder_block', 'zombiecraft:concrete_wall', 'zombiecraft:wood_floor', 'zombiecraft:metal_panel'
-FLOOR_A, FLOOR_B, FLOOR_C, GROUND = 'zombiecraft:depot_tile', 'zombiecraft:concrete_wall', 'zombiecraft:asphalt', 'zombiecraft:ground'
+FLOOR_A, FLOOR_B, FLOOR_C, GROUND = 'zombiecraft:depot_tile', 'zombiecraft:concrete_wall', 'zombiecraft:concrete_wall', 'zombiecraft:ground'
 LIGHT, METAL, GLASS = 'shroomlight', 'iron_block', 'zombiecraft:glass_brick'
 
 
@@ -63,15 +63,30 @@ fill('door_b', 'air', 28, 1, 40, 28, 4, 42, 'building', 'opening to the west win
 fill('door_a', 'air', 28, 1, 47, 28, 4, 49, 'building', 'opening to the west wing from the back room (door A)', order=25)
 fill('door_750', 'air', 37, 1, 46, 40, 4, 46, 'building', 'the 750 door between the hall and the back room', order=26)
 fill('roof', ROOF, 20, 7, 33, 56, 7, 53, 'building', 'roof', order=27)
-op('lamps', 'grid', LIGHT, 23, 6, 36, 53, 6, 51, 'building', 'ceiling lamps', order=29, step=5)
+# flush neon strips under the roof, each with a dim light block below it (dark and moody, still readable)
+for i, (x1, z1, x2, z2) in enumerate([(32, 39, 36, 39), (40, 39, 44, 39), (48, 39, 52, 39), (32, 43, 36, 43), (40, 43, 44, 43), (48, 43, 52, 43),
+                                      (24, 38, 24, 41), (24, 46, 24, 50), (32, 49, 36, 49), (44, 49, 48, 49)]):
+    fill(f'strip{i}', 'zombiecraft:neon', x1, 6, z1, x2, 6, z2, 'building', 'ceiling light strip', order=29)
+    fill(f'glow{i}', 'light[level=9]', (x1 + x2) // 2, 5, (z1 + z2) // 2, (x1 + x2) // 2, 5, (z1 + z2) // 2, 'building', 'light source under the strip', order=29)
 fill('canopy', 'dark_oak_slab[type=top]', 22, 6, 29, 54, 6, 32, 'depot', 'entrance canopy', order=28)
 op('canopy_posts', 'grid', 'dark_oak_fence', 22, 1, 29, 54, 5, 29, 'depot', 'canopy posts', order=27, step=8)
 
 # ---- props
 fill('ticket_counter', 'zombiecraft:concrete_wall', 40, 1, 36, 48, 1, 36, 'lobby', 'ticket counter', order=40)
 fill('ticket_top', 'dark_oak_slab[type=bottom]', 40, 2, 36, 48, 2, 36, 'lobby', 'ticket counter top', order=41)
-fill('bench_w', 'dark_oak_slab[type=bottom]', 31, 1, 41, 35, 1, 41, 'lobby', 'waiting bench', order=42)
-fill('bench_e', 'dark_oak_slab[type=bottom]', 50, 1, 41, 54, 1, 41, 'lobby', 'waiting bench', order=43)
+fill('bench_w', 'dark_oak_stairs[facing=north]', 31, 1, 41, 35, 1, 41, 'lobby', 'row of waiting chairs', order=42)
+fill('bench_e', 'dark_oak_stairs[facing=north]', 50, 1, 41, 54, 1, 41, 'lobby', 'row of waiting chairs', order=43)
+fill('board', 'gray_concrete', 40, 3, 34, 48, 5, 34, 'lobby', 'ticket map board', order=45)
+fill('board_head', 'yellow_concrete', 40, 5, 34, 48, 5, 34, 'lobby', 'BUS DEPOT header strip', order=45)
+fill('poster', 'orange_concrete', 31, 3, 45, 32, 4, 45, 'lobby', 'Ride the Bus poster', order=45)
+for i, (bx, bz) in enumerate([(35, 39), (51, 39)]):
+    fill(f'pillar{i}', 'stripped_birch_log', bx, 1, bz, bx, 5, bz, 'lobby', 'round pillar', order=45)
+    fill(f'pillar_band{i}', 'yellow_concrete', bx, 2, bz, bx, 3, bz, 'lobby', 'yellow trim band', order=46)
+for i, (bx, bz) in enumerate([(53, 34), (30, 44), (31, 52)]):
+    fill(f'bin{i}', 'cauldron', bx, 1, bz, bx, 1, bz, 'lobby', 'trash can', order=46)
+for i, (x1, z1, x2, z2) in enumerate([(29, 44, 30, 45), (30, 51, 31, 52), (53, 52, 54, 52)]):
+    fill(f'rubble{i}', 'gravel', x1, 1, z1, x2, 1, z2, 'lobby', 'rubble pile', order=46)
+    fill(f'rubble_top{i}', 'cobblestone_slab', x1, 2, z1, x1, 2, z1, 'lobby', 'rubble pile top', order=46)
 fill('lockers', METAL, 21, 1, 43, 21, 2, 45, 'wing', 'lockers', order=44)
 fill('pap_frame', 'zombiecraft:neon', 22, 1, 34, 24, 3, 35, 'pap', 'Pack-a-Punch (placed in the depot so the game loop works)', order=47)
 fill('pap_glass', 'light_blue_stained_glass', 22, 2, 36, 24, 3, 36, 'pap', 'Pack-a-Punch front glass', order=48)
@@ -84,6 +99,23 @@ fill('bus_hollow', 'air', 15, 1, 22, 23, 2, 24, 'bus', 'bus interior', order=61)
 op('bus_windows', 'grid', GLASS, 15, 2, 21, 23, 2, 25, 'bus', 'bus windows', order=62, step=2)
 fill('bus_stripe', 'green_concrete', 14, 1, 21, 24, 1, 25, 'bus', 'lower stripe', order=63)
 fill('bus_roof', 'light_gray_concrete', 14, 4, 21, 24, 4, 25, 'bus', 'bus roof', order=64)
+
+# ---- the town outside the windows: street-front buildings, a gas station, wrecks, bare trees, benches
+for i, (x1, z1, x2, z2, fx1, fz1, fx2, fz2) in enumerate([(0, 17, 80, 19, 0, 19, 80, 19), (0, 72, 80, 77, 0, 72, 80, 72), (0, 20, 3, 71, 3, 20, 3, 71), (77, 20, 80, 71, 77, 20, 77, 71)]):
+    fill(f'town{i}', 'zombiecraft:cinder_block', x1, 1, z1, x2, 9, z2, 'town', 'distant buildings closing the street', order=80)
+    op(f'town_win{i}', 'grid', 'black_stained_glass', fx1, 3, fz1, fx2, 4, fz2, 'town', 'building windows (on the street face)', order=81, step=3)
+    op(f'town_win2_{i}', 'grid', 'black_stained_glass', fx1, 6, fz1, fx2, 7, fz2, 'town', 'upper windows', order=81, step=3)
+fill('gas_roof', 'dark_oak_slab[type=top]', 66, 5, 34, 78, 5, 42, 'town', 'gas station canopy', order=82)
+op('gas_posts', 'grid', 'iron_bars', 67, 1, 35, 77, 4, 41, 'town', 'canopy posts', order=83, step=10)
+fill('pumps', 'blackstone', 70, 1, 38, 74, 2, 38, 'town', 'fuel pumps', order=84)
+for i, (bx, bz, c) in enumerate([(22, 27, 'brown'), (52, 30, 'gray'), (62, 24, 'red'), (8, 45, 'brown'), (66, 54, 'gray')]):
+    fill(f'car{i}', f'{c}_concrete', bx, 1, bz, bx + 3, 1, bz + 1, 'town', 'wrecked car', order=85)
+    fill(f'car_top{i}', 'black_stained_glass', bx + 1, 2, bz, bx + 2, 2, bz + 1, 'town', 'wrecked car cabin', order=85)
+for i, (bx, bz) in enumerate([(8, 30), (10, 60), (68, 48), (72, 62), (6, 38), (30, 62), (60, 62)]):
+    fill(f'tree{i}', 'dark_oak_log', bx, 1, bz, bx, 4, bz, 'town', 'bare tree', order=86)
+    fill(f'crown{i}', 'dark_oak_fence', bx - 1, 5, bz - 1, bx + 1, 5, bz + 1, 'town', 'bare branches', order=86)
+fill('stop_bar', 'white_concrete', 28, 0, 24, 36, 0, 24, 'road', 'bus stop line on the road', order=87)
+fill('stop_bench', 'dark_oak_slab[type=bottom]', 30, 1, 28, 33, 1, 28, 'road', 'bus stop bench', order=87)
 
 # ---- lava pit behind the depot (BO2 depot_lava_pit), fenced
 fill('pit', 'lava', 36, -2, 60, 50, -1, 68, 'pit', 'lava pit', order=70)
@@ -142,7 +174,8 @@ p1 = L(22, 34)
 p2 = L(24, 36)   # include the front glass so targeting/model replacement covers the whole machine
 pap = [dict(id='pap1', x1=p1[0], y1=1, z1=p1[1], x2=p2[0], y2=4, z2=p2[1], facing='south', room='wing')]
 ps = L(42, 40)
-player = [dict(id='spawn', x=ps[0], y=1, z=ps[1], yaw=0.0, room='lobby')]
+player = [dict(id='spawn', x=ps[0], y=1, z=ps[1], yaw=180.0,  # facing north: windows, ticket board and a wall gun in view
+                room='lobby')]
 
 
 def dump(name, rows):
