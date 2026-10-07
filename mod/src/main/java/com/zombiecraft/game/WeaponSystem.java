@@ -169,7 +169,7 @@ public final class WeaponSystem {
 		for (int i = 0; i < Math.max(1, w.pellets()); i++) {
 			Vec3 dir = spread(look, w.spreadDeg() * Revive.spreadFactor(p, pg));
 			Vec3 end = eye.add(dir.scale(w.range()));
-			BlockHitResult bh = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
+			BlockHitResult bh = Barrier.shotClip(level, eye, end);
 			double maxDist = bh.getType() == HitResult.Type.MISS ? w.range() : bh.getLocation().distanceTo(eye);
 			ZcZombie best = null; double bestDist = maxDist; Vec3 bestPos = null;
 			AABB box = new AABB(eye, end).inflate(1.0);

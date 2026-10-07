@@ -11,7 +11,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.*;
 
@@ -39,6 +45,18 @@ public final class Barrier {
 		} catch (CommandSyntaxException e) {
 			throw new IllegalStateException("bad block in sheet: " + s, e);
 		}
+	}
+
+	/** A bullet's ray: boards and window clips do not stop it, so shots go out (and zombies get shot) through windows like in BO2. */
+	public static BlockHitResult shotClip(ServerLevel level, Vec3 from, Vec3 to) {
+		return level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()) {
+			@Override
+			public VoxelShape getBlockShape(BlockState state, BlockGetter world, BlockPos pos) {
+				String id = state.getBlock().builtInRegistryHolder().key().location().getPath();
+				if (id.equals("barricade_board") || id.equals("window_clip")) return Shapes.empty();
+				return super.getBlockShape(state, world, pos);
+			}
+		});
 	}
 
 	public Barrier(ServerLevel level, BlockPos origin, WindowDef def) {

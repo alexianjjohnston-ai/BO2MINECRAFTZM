@@ -42,10 +42,19 @@ public final class Bo2Locator {
 			for (String rel : new String[]{"SteamLibrary", "Steam", "Games/Steam", "Program Files (x86)/Steam", "Program Files/Steam", "Games/SteamLibrary"})
 				candidates.add(root.resolve(rel).resolve("steamapps").resolve("common").resolve(FOLDER));
 		}
+		// several installs may exist (a partial copy next to the full one): take the one that has the most of the sound banks the cues need
+		Path best = null; int bestScore = -1;
+		java.util.Set<String> banks = new java.util.HashSet<>();
+		for (var f : com.zombiecraft.sheet.Sheets.CUE_FILES) banks.add(f.bank());
 		for (Path c : candidates) {
-			try { if (valid(c)) return Optional.of(c); } catch (RuntimeException ignored) {}
+			try {
+				if (!valid(c)) continue;
+				int score = 0;
+				for (String b : banks) if (Files.isRegularFile(c.resolve("sound").resolve(b))) score++;
+				if (score > bestScore) { best = c; bestScore = score; }
+			} catch (RuntimeException ignored) {}
 		}
-		return Optional.empty();
+		return Optional.ofNullable(best);
 	}
 
 	private static List<Path> steamLibraries() {

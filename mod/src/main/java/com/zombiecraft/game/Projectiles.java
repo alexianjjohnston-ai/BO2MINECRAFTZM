@@ -47,7 +47,7 @@ public final class Projectiles {
 			if (--s.life <= 0) { it.remove(); continue; }
 			Vec3 next = s.pos.add(s.dir.scale(s.w.projSpeed() * 0.05));
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(s.owner);
-			BlockHitResult bh = level.clip(new ClipContext(s.pos, next, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
+			BlockHitResult bh = Barrier.shotClip(level, s.pos, next);
 			Vec3 end = bh.getType() == HitResult.Type.MISS ? next : bh.getLocation();
 			ZcZombie hitZ = null; double best = Double.MAX_VALUE; Vec3 hitPos = null;
 			for (ZcZombie z : level.getEntitiesOfClass(ZcZombie.class, new AABB(s.pos, end).inflate(1.0), e -> e.isAlive())) {

@@ -32,7 +32,10 @@ public final class CueExtractor {
 		Map<String, List<CueFile>> byBank = new TreeMap<>();
 		for (CueFile f : Sheets.CUE_FILES) byBank.computeIfAbsent(f.bank(), k -> new ArrayList<>()).add(f);
 		Map<String, Long> sizes = new TreeMap<>();
-		for (String b : byBank.keySet()) sizes.put(b, Files.size(sound.resolve(b)));
+		for (String b : new ArrayList<>(byBank.keySet())) {
+			if (!Files.isRegularFile(sound.resolve(b))) { warn.accept("bank " + b + " is missing from this install, its sounds use Minecraft sounds"); byBank.remove(b); continue; }
+			sizes.put(b, Files.size(sound.resolve(b)));
+		}
 
 		Path manifestPath = cacheDir.resolve("manifest.json");
 		Gson gson = new Gson();
@@ -40,7 +43,7 @@ public final class CueExtractor {
 			try {
 				Manifest m = gson.fromJson(Files.readString(manifestPath), Manifest.class);
 				if (m != null && sizes.equals(m.bankSizes()) && m.files() > 0
-						&& Sheets.CUE_FILES.stream().allMatch(f -> Files.isRegularFile(cacheDir.resolve(fileName(f)))))
+						&& Sheets.CUE_FILES.stream().filter(f -> sizes.containsKey(f.bank())).allMatch(f -> Files.isRegularFile(cacheDir.resolve(fileName(f)))))
 					return new Result(m.files(), 0, 0, true);
 			} catch (RuntimeException ignored) { /* rebuild below */ }
 		}
