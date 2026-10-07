@@ -96,6 +96,22 @@ public final class TexturePack {
 			}
 	}
 
+	/** Cut-out blocks (leaves, glass, plants, doors, chains ...) keep Minecraft's shape: the alpha of the vanilla texture is stretched over the BO2 pixels. */
+	private static void applyShape(BufferedImage img, String texture) {
+		String ns = texture.contains(":") ? texture.substring(0, texture.indexOf(':')) : "minecraft";
+		String name = texture.substring(texture.indexOf(':') + 1);
+		try (var in = TexturePack.class.getResourceAsStream("/assets/" + ns + "/textures/block/" + name + ".png")) {
+			if (in == null) return;
+			BufferedImage v = ImageIO.read(in);
+			int vs = Math.min(v.getWidth(), v.getHeight()); // animated strips: the first frame
+			for (int y = 0; y < img.getHeight(); y++)
+				for (int x = 0; x < img.getWidth(); x++) {
+					int a = v.getRGB(x * vs / img.getWidth(), y * vs / img.getHeight()) >>> 24;
+					img.setRGB(x, y, (img.getRGB(x, y) & 0x00FFFFFF) | a << 24);
+				}
+		} catch (IOException | RuntimeException ignored) {}
+	}
+
 	private static BufferedImage load(List<Path> zones, TextureDef d, int size) {
 		if (d.bo2().startsWith("checker:")) {
 			String[] two = d.bo2().substring(8).split("\\+");
@@ -115,7 +131,7 @@ public final class TexturePack {
 		// flatten at full size so the average comes from real pixels, then shrink
 		BufferedImage copy = new BufferedImage(b.getWidth(), b.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = copy.createGraphics(); g.drawImage(b, 0, 0, null); g.dispose();
-		if (d.opaque()) flatten(copy);
+		if (d.opaque() || d.mask()) flatten(copy);
 		return scale(copy, size);
 	}
 
@@ -137,6 +153,7 @@ public final class TexturePack {
 			BufferedImage img = load(zones, d, size);
 			if (img == null) { missing.add(d.bo2()); continue; }
 			tint(img, d.tint());
+			if (d.mask()) applyShape(img, d.texture());
 			String ns = d.texture().contains(":") ? d.texture().substring(0, d.texture().indexOf(':')) : "minecraft";
 			String name = d.texture().substring(d.texture().indexOf(':') + 1);
 			Path out = root.resolve("assets").resolve(ns).resolve("textures").resolve("block").resolve(name + ".png");

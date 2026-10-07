@@ -628,6 +628,10 @@
     "t": "string",
     "optional": true
    },
+   "mask": {
+    "t": "boolean",
+    "optional": true
+   },
    "note": {
     "t": "string",
     "optional": true

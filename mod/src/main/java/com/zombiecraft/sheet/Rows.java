@@ -55,7 +55,7 @@ public final class Rows {
 
 	/** A Black Ops II model the game converts from the player's own install (see tools/gen_bo2_models.py). */
 	/** One block texture drawn from a BO2 image (see tools/gen_textures.py). */
-	public record TextureDef(String id, String map, String texture, String bo2, boolean opaque, String tint, String note) {}
+	public record TextureDef(String id, String map, String texture, String bo2, boolean opaque, String tint, boolean mask, String note) {}
 
 	/** Fog, sky and clock for a map; "*" is the default. */
 	public record AtmosphereDef(String id, String fogColor, double fogStart, double fogEnd, String skyColor, String cloudColor, double stars, int timeOfDay, String note) {}

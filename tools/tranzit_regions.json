@@ -29,12 +29,12 @@
  },
  "farm": {
   "box": [
-   -144,
-   288,
-   -1,
-   367
+   -210,
+   270,
+   10,
+   420
   ],
-  "label": "farm (barn with 90 barrels, fences, pond)"
+  "label": "farm: barn, farmhouse, silo, pond, field (wider cut so the whole yard and its barricades fit)"
  },
  "diner": {
   "box": [

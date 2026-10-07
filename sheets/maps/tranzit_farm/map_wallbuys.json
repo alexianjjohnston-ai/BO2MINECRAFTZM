@@ -1,0 +1,20 @@
+[
+ {
+  "id": "wb1",
+  "weaponId": "rottweil72",
+  "x": 3,
+  "y": 2,
+  "z": -7,
+  "facing": "south",
+  "room": "hall"
+ },
+ {
+  "id": "wb2",
+  "weaponId": "mp5k",
+  "x": 0,
+  "y": 2,
+  "z": 23,
+  "facing": "south",
+  "room": "hall"
+ }
+]

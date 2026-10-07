@@ -14,4 +14,8 @@ play.bat.new
 maps_local/*
 !maps_local/depot.json.gz
 !maps_local/depot_scenery.json.gz
+!maps_local/town.json.gz
+!maps_local/farm.json.gz
+!maps_local/power.json.gz
+tools/texture_catalog.json
 .bo2dir

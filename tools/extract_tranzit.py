@@ -107,6 +107,21 @@ def preview(grid, pal, ground):
 	return im.resize((im.width * 4, im.height * 4), Image.NEAREST)
 
 
+def lift_floors(grid, pal, gr):
+	"""The game stands everything on y=0 (the grass layer): wherever the floor or the ground is lower (a sunken building floor, a ditch, a lawn round a lowered yard), fill up to y=0 with the surface block."""
+	solid = np.array([not (p.startswith('minecraft:air') or any(k in p for k in FOLIAGE) or 'water' in p) for p in pal])
+	notleaf = np.array(['leaves' not in p for p in pal])
+	n = 0
+	for z in range(grid.shape[1]):
+		for x in range(grid.shape[2]):
+			col = grid[:, z, x]
+			if solid[col[gr]] or solid[col[gr + 1]] or solid[col[gr + 2]]: continue
+			for y in range(gr - 1, max(-1, gr - 7), -1):
+				if solid[col[y]]:
+					grid[y + 1:gr + 1, z, x] = col[y]; n += 1; break
+	return n
+
+
 def main():
 	src, only = sys.argv[1], sys.argv[2:]
 	regions = json.load(open(os.path.join(HERE, 'tranzit_regions.json')))
@@ -124,6 +139,7 @@ def main():
 		lo = max(0, ground - 14 - y0)  # drop deep natural fill
 		hi = int(np.flatnonzero((grid != 0).any(axis=(1, 2)))[-1]) + 1  # drop the empty sky sections
 		grid = grid[lo:hi]; y0 += lo
+		lifted = lift_floors(grid, pal, ground - y0)
 		used = sorted(set(np.unique(grid).tolist()) | {0})
 		lut = np.zeros(len(pal), np.int32)
 		for i, o in enumerate(used): lut[o] = i
@@ -140,7 +156,7 @@ def main():
 		ImageDraw.Draw(im).text((6, 6), rid, fill=(255, 255, 255))
 		im.save(os.path.join(OUT, rid + '.png'))
 		tiles.append(im)
-		print(rid, doc['size'], 'grass layer row', doc['groundRow'], 'palette', len(used), 'spawners', len(doc['spawners']),
+		print(rid, 'sunken floor columns lifted', lifted, doc['size'], 'grass layer row', doc['groundRow'], 'palette', len(used), 'spawners', len(doc['spawners']),
 			'signs', [e['text'] for e in ents if 'text' in e])
 	if tiles:
 		W = 3000; sheet = Image.new('RGB', (W, 4000)); x = y = rh = 0

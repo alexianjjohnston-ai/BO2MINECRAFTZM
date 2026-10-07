@@ -1,0 +1,42 @@
+[
+ {
+  "id": "m_jug",
+  "kind": "perk",
+  "perk": "jug",
+  "x": -9,
+  "y": 1,
+  "z": 29,
+  "facing": "west",
+  "room": "hall"
+ },
+ {
+  "id": "m_revive",
+  "kind": "perk",
+  "perk": "revive",
+  "x": 9,
+  "y": 1,
+  "z": -15,
+  "facing": "north",
+  "room": "hall"
+ },
+ {
+  "id": "m_doubletap",
+  "kind": "perk",
+  "perk": "doubletap",
+  "x": 17,
+  "y": 1,
+  "z": 26,
+  "facing": "north",
+  "room": "hall"
+ },
+ {
+  "id": "m_speed",
+  "kind": "perk",
+  "perk": "speed",
+  "x": -15,
+  "y": 1,
+  "z": -8,
+  "facing": "north",
+  "room": "hall"
+ }
+]

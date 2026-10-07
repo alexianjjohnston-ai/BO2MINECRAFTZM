@@ -94,6 +94,12 @@ t('minecraft:yellow_concrete', 'decal_grunge_painted04_c', tint='#D9A91C')
 t('minecraft:orange_concrete', 'decal_grunge_painted04_c', tint='#D0702A')
 t('minecraft:blackstone', 'global_metal_c')
 
+# every other vanilla texture the maps use gets a BO2 image too (tools/texture_auto.py picks them; rerun it after a map changes): no block stays vanilla
+auto_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'texture_auto.json')
+if os.path.exists(auto_path):
+    have = {r['texture'] for r in T}
+    T.extend(r for r in json.load(open(auto_path, encoding='utf-8')) if r['texture'] not in have)
+
 json.dump(T, open(os.path.join(SH, 'textures.json'), 'w'), indent=1)
 
 # fog and sky: colours as #RRGGBB, distances in blocks, stars 0..1, timeOfDay in ticks (18000 = midnight, -1 = leave the world's clock)

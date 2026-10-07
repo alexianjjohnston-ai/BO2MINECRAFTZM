@@ -1,0 +1,36 @@
+[
+ {
+  "id": "tranzit_power",
+  "order": 0,
+  "op": "import",
+  "block": "power",
+  "block2": null,
+  "x1": -51,
+  "y1": 0,
+  "z1": -74,
+  "x2": -51,
+  "y2": 0,
+  "z2": -74,
+  "stepX": 1,
+  "stepZ": 1,
+  "group": "ground",
+  "note": "Tranzit Reimagined Power Station, cut out by tools/extract_tranzit.py (x/z = where its corner lands in the sheet frame, y = grass layer)"
+ },
+ {
+  "id": "barrier_ring",
+  "order": 90,
+  "op": "walls",
+  "block": "minecraft:barrier",
+  "block2": null,
+  "x1": -49,
+  "y1": 1,
+  "z1": -72,
+  "x2": 97,
+  "y2": 14,
+  "z2": 74,
+  "stepX": 1,
+  "stepZ": 1,
+  "group": "ground",
+  "note": "invisible wall round the cut so nobody walks off its edge"
+ }
+]

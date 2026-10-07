@@ -1,0 +1,36 @@
+[
+ {
+  "id": "tranzit_farm",
+  "order": 0,
+  "op": "import",
+  "block": "farm",
+  "block2": null,
+  "x1": -78,
+  "y1": 0,
+  "z1": -70,
+  "x2": -78,
+  "y2": 0,
+  "z2": -70,
+  "stepX": 1,
+  "stepZ": 1,
+  "group": "ground",
+  "note": "Tranzit Reimagined Farm, cut out by tools/extract_tranzit.py (x/z = where its corner lands in the sheet frame, y = grass layer)"
+ },
+ {
+  "id": "barrier_ring",
+  "order": 90,
+  "op": "walls",
+  "block": "minecraft:barrier",
+  "block2": null,
+  "x1": -76,
+  "y1": 1,
+  "z1": -68,
+  "x2": 140,
+  "y2": 14,
+  "z2": 78,
+  "stepX": 1,
+  "stepZ": 1,
+  "group": "ground",
+  "note": "invisible wall round the cut so nobody walks off its edge"
+ }
+]
