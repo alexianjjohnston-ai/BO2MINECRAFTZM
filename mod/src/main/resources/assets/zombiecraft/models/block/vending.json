@@ -1,0 +1,41 @@
+{
+ "textures": {
+  "0": "zombiecraft:block/vending",
+  "particle": "zombiecraft:block/vending",
+  "1": "zombiecraft:block/vending_b"
+ },
+ "elements": [
+  {
+   "from": [
+    1,
+    0,
+    1
+   ],
+   "to": [
+    15,
+    16,
+    15
+   ],
+   "faces": {
+    "north": {
+     "texture": "#0"
+    },
+    "south": {
+     "texture": "#1"
+    },
+    "east": {
+     "texture": "#1"
+    },
+    "west": {
+     "texture": "#1"
+    },
+    "up": {
+     "texture": "#1"
+    },
+    "down": {
+     "texture": "#1"
+    }
+   }
+  }
+ ]
+}

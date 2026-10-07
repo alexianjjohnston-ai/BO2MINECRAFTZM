@@ -1,0 +1,41 @@
+{
+ "textures": {
+  "0": "zombiecraft:block/sign_restrooms",
+  "particle": "zombiecraft:block/sign_restrooms",
+  "1": "zombiecraft:block/sign_restrooms"
+ },
+ "elements": [
+  {
+   "from": [
+    1,
+    5,
+    15.5
+   ],
+   "to": [
+    15,
+    11,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#0"
+    },
+    "south": {
+     "texture": "#1"
+    },
+    "east": {
+     "texture": "#1"
+    },
+    "west": {
+     "texture": "#1"
+    },
+    "up": {
+     "texture": "#1"
+    },
+    "down": {
+     "texture": "#1"
+    }
+   }
+  }
+ ]
+}

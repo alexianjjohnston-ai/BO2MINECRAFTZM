@@ -1,0 +1,266 @@
+{
+ "bench": {
+  "box": [
+   0,
+   0,
+   3,
+   16,
+   15,
+   13
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "waiting_chair": {
+  "box": [
+   3,
+   0,
+   3,
+   13,
+   16,
+   13
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "trash_can": {
+  "box": [
+   3,
+   0,
+   3,
+   13,
+   12,
+   13
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "locker": {
+  "box": [
+   1,
+   0,
+   1,
+   15,
+   16,
+   15
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "crate": {
+  "box": [
+   1,
+   0,
+   1,
+   15,
+   14,
+   15
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "barrel": {
+  "box": [
+   3,
+   0,
+   3,
+   13,
+   13,
+   13
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "street_lamp": {
+  "box": [
+   7,
+   0,
+   7,
+   9,
+   16,
+   9
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "street_lamp_head": {
+  "box": [
+   6,
+   0,
+   0,
+   10,
+   12.5,
+   9
+  ],
+  "collide": true,
+  "light": 14
+ },
+ "bus_stop_sign": {
+  "box": [
+   2,
+   0,
+   7.5,
+   14,
+   15,
+   9.5
+  ],
+  "collide": false,
+  "light": 0
+ },
+ "sign_bus": {
+  "box": [
+   0,
+   3,
+   15,
+   16,
+   13,
+   16
+  ],
+  "collide": false,
+  "light": 0
+ },
+ "sign_depot": {
+  "box": [
+   0,
+   3,
+   15,
+   16,
+   13,
+   16
+  ],
+  "collide": false,
+  "light": 0
+ },
+ "sign_employees": {
+  "box": [
+   2,
+   4,
+   15.5,
+   14,
+   12,
+   16
+  ],
+  "collide": false,
+  "light": 0
+ },
+ "sign_fire": {
+  "box": [
+   2,
+   4,
+   15.5,
+   14,
+   12,
+   16
+  ],
+  "collide": false,
+  "light": 0
+ },
+ "sign_restrooms": {
+  "box": [
+   1,
+   5,
+   15.5,
+   15,
+   11,
+   16
+  ],
+  "collide": false,
+  "light": 0
+ },
+ "poster_ride": {
+  "box": [
+   2,
+   1,
+   15.5,
+   14,
+   15,
+   16
+  ],
+  "collide": false,
+  "light": 0
+ },
+ "wall_clock": {
+  "box": [
+   3,
+   3,
+   15,
+   13,
+   13,
+   16
+  ],
+  "collide": false,
+  "light": 0
+ },
+ "pillar_round": {
+  "box": [
+   2,
+   0,
+   2,
+   14,
+   16,
+   14
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "ticket_counter": {
+  "box": [
+   0,
+   0,
+   1,
+   16,
+   14,
+   15
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "vending": {
+  "box": [
+   1,
+   0,
+   1,
+   15,
+   16,
+   15
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "gas_pump": {
+  "box": [
+   2,
+   0,
+   3,
+   14,
+   16,
+   13
+  ],
+  "collide": true,
+  "light": 0
+ },
+ "map_kiosk": {
+  "box": [
+   0,
+   0,
+   4,
+   16,
+   16,
+   11
+  ],
+  "collide": true,
+  "light": 6
+ },
+ "jersey_barrier": {
+  "box": [
+   0,
+   0,
+   3,
+   16,
+   12,
+   13
+  ],
+  "collide": true,
+  "light": 0
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "textures": {
+  "0": "zombiecraft:block/sign_employees",
+  "particle": "zombiecraft:block/sign_employees",
+  "1": "zombiecraft:block/sign_employees"
+ },
+ "elements": [
+  {
+   "from": [
+    2,
+    4,
+    15.5
+   ],
+   "to": [
+    14,
+    12,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#0"
+    },
+    "south": {
+     "texture": "#1"
+    },
+    "east": {
+     "texture": "#1"
+    },
+    "west": {
+     "texture": "#1"
+    },
+    "up": {
+     "texture": "#1"
+    },
+    "down": {
+     "texture": "#1"
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/gas_pump"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/gas_pump",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/gas_pump",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/gas_pump",
+   "y": 270
+  }
+ }
+}

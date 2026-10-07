@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/ticket_counter"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/ticket_counter",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/ticket_counter",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/ticket_counter",
+   "y": 270
+  }
+ }
+}

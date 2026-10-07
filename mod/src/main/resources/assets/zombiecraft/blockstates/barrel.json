@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/barrel"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/barrel",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/barrel",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/barrel",
+   "y": 270
+  }
+ }
+}

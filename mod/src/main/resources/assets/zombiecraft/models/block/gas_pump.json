@@ -1,0 +1,73 @@
+{
+ "textures": {
+  "0": "zombiecraft:block/gas_pump",
+  "particle": "zombiecraft:block/gas_pump",
+  "1": "zombiecraft:block/gas_pump_b"
+ },
+ "elements": [
+  {
+   "from": [
+    3,
+    0,
+    4
+   ],
+   "to": [
+    13,
+    14,
+    12
+   ],
+   "faces": {
+    "north": {
+     "texture": "#0"
+    },
+    "south": {
+     "texture": "#0"
+    },
+    "east": {
+     "texture": "#1"
+    },
+    "west": {
+     "texture": "#1"
+    },
+    "up": {
+     "texture": "#1"
+    },
+    "down": {
+     "texture": "#1"
+    }
+   }
+  },
+  {
+   "from": [
+    2,
+    14,
+    3
+   ],
+   "to": [
+    14,
+    16,
+    13
+   ],
+   "faces": {
+    "north": {
+     "texture": "#1"
+    },
+    "south": {
+     "texture": "#1"
+    },
+    "east": {
+     "texture": "#1"
+    },
+    "west": {
+     "texture": "#1"
+    },
+    "up": {
+     "texture": "#1"
+    },
+    "down": {
+     "texture": "#1"
+    }
+   }
+  }
+ ]
+}

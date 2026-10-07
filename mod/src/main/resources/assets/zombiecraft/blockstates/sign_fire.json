@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/sign_fire"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/sign_fire",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/sign_fire",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/sign_fire",
+   "y": 270
+  }
+ }
+}

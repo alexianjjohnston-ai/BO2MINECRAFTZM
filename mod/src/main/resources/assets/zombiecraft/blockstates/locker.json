@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/locker"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/locker",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/locker",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/locker",
+   "y": 270
+  }
+ }
+}

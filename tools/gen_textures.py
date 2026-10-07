@@ -59,14 +59,51 @@ t('zombiecraft:barricade_board', 'p6_wood_plank_rustic01_c', opaque=True)
 t('zombiecraft:fence', 'zombie_chainlink_fence_c', opaque=False)
 t('zombiecraft:neon', 'p6_zm_neon_cyan_c')
 
+# ---- depot blocks and decor (tools/gen_blocks.py, gen_decor.py)
+t('zombiecraft:light_panel', 'pent_art_light_fluorescent02_c', note='flush fluorescent panel')
+t('zombiecraft:plaster_wall', 'decal_grunge_painted04_c', tint='#D8CDB0', note='off-white painted plaster')
+t('zombiecraft:concrete_floor', 'jun_ter_rubble_ash_01_c', note='rough concrete')
+t('zombiecraft:yellow_trim', 'decal_grunge_painted04_c', tint='#D9A91C', note='yellow painted band')
+t('zombiecraft:green_panel', 'eb_art_wall_metal_panel_green_c')
+t('zombiecraft:red_brick', 'metal_wall_red01_c')
+t('zombiecraft:door_metal', 'door_metal02b_c', note='grey door with an inset panel (Tranzit bus station doors)')
+t('zombiecraft:door_wood', 'rus_floor_wood_barn_c', note='plank door')
+t('zombiecraft:road_bus', 'decal_signage_road_bus_c', note='BUS painted on the road')
+t('zombiecraft:road_stop', 'decal_signage_road_stop_c', note='STOP painted on the road')
+t('zombiecraft:bench', 'p_jun_int_bench_c')
+t('zombiecraft:crate', 'p6_wood_plank_rustic01_c')
+t('zombiecraft:barrel', 'metal_wall_red01_c')
+t('zombiecraft:street_lamp', 'rus_metal_grey_c')
+t('zombiecraft:street_lamp_head', 'rus_metal_grey_c')
+t('zombiecraft:locker_b', 'p_rus_locker_c')
+t('zombiecraft:pillar_round', 'metal_aluminum01_painted_dirty_col')
+t('zombiecraft:pillar_round_b', 'decal_grunge_painted04_c', tint='#D9A91C')
+t('zombiecraft:ticket_counter', 'metal_aluminum01_painted_dirty_col')
+t('zombiecraft:ticket_counter_b', 'rus_floor_wood_barn_c')
+t('zombiecraft:jersey_barrier', 'me_metal_grey01_col')
+t('zombiecraft:gas_pump_b', 'rus_metal_grey_c')
+t('zombiecraft:bus_stop_sign', 'rus_metal_grey_c')
+# ---- vanilla blocks the map uses
+t('minecraft:dark_oak_log', 't5_foliage_burnt_bark01_c', note='burnt bare trunks')
+t('minecraft:dark_oak_log_top', 'wood_post_cap_c')
+t('minecraft:gravel', 'jun_ter_rubble_ash_01_c')
+t('minecraft:cobblestone', 'glo_dec_dest_brick_grey_01_c', note='rubble')
+t('minecraft:gray_concrete', 'rus_metal_grey_c')
+t('minecraft:brown_concrete', 'metal_maroon01_col')
+t('minecraft:red_concrete', 'metal_wall_red01_c')
+t('minecraft:white_concrete', 'decal_grunge_painted05_c')
+t('minecraft:yellow_concrete', 'decal_grunge_painted04_c', tint='#D9A91C')
+t('minecraft:orange_concrete', 'decal_grunge_painted04_c', tint='#D0702A')
+t('minecraft:blackstone', 'global_metal_c')
+
 json.dump(T, open(os.path.join(SH, 'textures.json'), 'w'), indent=1)
 
 # fog and sky: colours as #RRGGBB, distances in blocks, stars 0..1, timeOfDay in ticks (18000 = midnight, -1 = leave the world's clock)
 A = [
     dict(id='*', fogColor='#2A2118', fogStart=8.0, fogEnd=64.0, skyColor='#15110D', cloudColor='#2A2018', stars=0.25, timeOfDay=15500,
          note='default: warm brown night haze'),
-    dict(id='bus_depot', fogColor='#3B2A1B', fogStart=6.0, fogEnd=56.0, skyColor='#17110C', cloudColor='#33261A', stars=0.2, timeOfDay=15500,
-         note='Tranzit: dusty orange-brown haze, dark sky, short sight lines'),
+    dict(id='bus_depot', fogColor='#6B4A2E', fogStart=4.0, fogEnd=48.0, skyColor='#4A3322', cloudColor='#5E4630', stars=0.2, timeOfDay=11800,
+         note='Tranzit: orange-brown dusk haze outside, interior stays dark from its own lighting'),
 ]
 json.dump(A, open(os.path.join(SH, 'atmosphere.json'), 'w'), indent=1)
 print(len(T), 'texture rows,', len(A), 'atmosphere rows')

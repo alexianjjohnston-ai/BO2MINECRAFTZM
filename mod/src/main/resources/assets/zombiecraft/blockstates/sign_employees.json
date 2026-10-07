@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "zombiecraft:block/sign_employees"
+  },
+  "facing=east": {
+   "model": "zombiecraft:block/sign_employees",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "zombiecraft:block/sign_employees",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "zombiecraft:block/sign_employees",
+   "y": 270
+  }
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "textures": {
+  "0": "zombiecraft:block/wall_clock",
+  "particle": "zombiecraft:block/wall_clock",
+  "1": "zombiecraft:block/wall_clock"
+ },
+ "elements": [
+  {
+   "from": [
+    3,
+    3,
+    15
+   ],
+   "to": [
+    13,
+    13,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#0"
+    }
+   }
+  }
+ ]
+}

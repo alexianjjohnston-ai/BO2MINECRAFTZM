@@ -33,10 +33,10 @@ public final class Doors {
 		for (DoorDef d : Sheets.DOORS) locked.addAll(rooms(d));
 		for (WindowDef w : Sheets.WINDOWS) if (!locked.contains(w.room())) openRooms.add(w.room());
 		game.cmd("kill @e[tag=zc_door]");
+		BlockState clip = com.zombiecraft.game.Barrier.parse(level, "zombiecraft:door_clip");
 		for (DoorDef d : Sheets.DOORS) {
-			BlockState s = com.zombiecraft.game.Barrier.parse(level, d.block());
-			forEach(d, p -> level.setBlock(p, s, FLAGS));
-			Vec3 c = center(d);
+			forEach(d, p -> level.setBlock(p, clip, FLAGS));
+			leaves(d, false);
 		}
 	}
 
@@ -82,22 +82,62 @@ public final class Doors {
 		open(d);
 	}
 
-	private void open(DoorDef d) {
-		opened.add(d.id());
+	/** dev (debugTour): swing every door open */
+	void openAll() { for (DoorDef d : Sheets.DOORS) open(d, true); }
+
+	private void open(DoorDef d) { open(d, true); }
+
+	private void open(DoorDef d, boolean paid) {
+		if (!opened.add(d.id())) return;
 		BlockState air = Blocks.AIR.defaultBlockState();
-		var block = com.zombiecraft.game.Barrier.parse(level, d.block());
-		forEach(d, pos -> {
-			level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, block), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 6, 0.3, 0.3, 0.3, 0.05);
-			level.setBlock(pos, air, FLAGS);
-		});
-		Cue.at(d.cue(), level, center(d));
+		forEach(d, pos -> level.setBlock(pos, air, FLAGS));
+		leaves(d, true);
+		if (paid) Cue.at(d.cue(), level, center(d));
 		openRooms.addAll(rooms(d));
 		// a door whose rooms are all open already guards nothing any more: let it swing open for free
-		for (DoorDef o : Sheets.DOORS) {
-			if (opened.contains(o.id()) || !openRooms.containsAll(rooms(o))) continue;
-			opened.add(o.id());
-			forEach(o, pos -> level.setBlock(pos, air, FLAGS));
+		for (DoorDef o : Sheets.DOORS) if (!opened.contains(o.id()) && openRooms.containsAll(rooms(o))) open(o, false);
+	}
+
+	/**
+	 * The visible door: two leaves (block displays) hinged at the two sides of the doorway. Closed they fill it; opened they swing 90 degrees
+	 * into the room the door leads to. Spawned closed, then animated with display interpolation.
+	 */
+	private void leaves(DoorDef d, boolean swing) {
+		BlockPos o = game.origin;
+		boolean alongX = d.x1() != d.x2();
+		int lo = alongX ? Math.min(d.x1(), d.x2()) : Math.min(d.z1(), d.z2()), hi = alongX ? Math.max(d.x1(), d.x2()) : Math.max(d.z1(), d.z2());
+		int fixed = alongX ? d.z1() : d.x1();
+		double h = Math.abs(d.y2() - d.y1()) + 1, th = 0.25, len = (hi - lo + 1) / 2.0;
+		// which side of the doorway the opened rooms lie on: the leaves swing that way
+		double sum = 0; int n = 0;
+		for (WindowDef w : Sheets.WINDOWS) {
+			if (!rooms(d).contains(w.room())) continue;
+			boolean horiz = w.wall().equals("N") || w.wall().equals("S");
+			sum += (alongX == horiz) ? w.fixed() : w.a() + w.width() / 2.0;
+			n++;
 		}
-		for (String id : opened) game.cmd("kill @e[tag=zcd_" + id + "]");
+		double side = n == 0 ? 1 : Math.signum(sum / n - (fixed + 0.5));
+		if (side == 0) side = 1;
+		double sx = alongX ? 0 : side, sz = alongX ? side : 0;
+		for (int i = 0; i < 2; i++) {
+			double u = i == 0 ? 1 : -1, hinge = i == 0 ? lo : hi + 1;
+			double dx = alongX ? u : 0, dz = alongX ? 0 : u;
+			double th0 = Math.atan2(-dz, dx);
+			double phi = (Math.abs(dz - sx) < 1e-6 && Math.abs(-dx - sz) < 1e-6) ? Math.PI / 2 : -Math.PI / 2;
+			double hx = alongX ? hinge : fixed + 0.5, hz = alongX ? fixed + 0.5 : hinge;
+			String tag = "zcl_" + d.id() + "_" + i;
+			if (!swing) {
+				game.cmd(String.format(Locale.ROOT, "summon block_display %.4f %.4f %.4f {block_state:{Name:\"%s\"},Tags:[\"zc\",\"zc_door\",\"zcd_%s\",\"%s\"],transformation:%s}",
+						o.getX() + hx - 0.5 * th * Math.sin(th0) + (alongX ? 0 : 0), (double) (o.getY() + Math.min(d.y1(), d.y2())), o.getZ() + hz - 0.5 * th * Math.cos(th0),
+						d.block(), d.id(), tag, transform(th0, len, h, th)));
+			} else {
+				game.cmd(String.format(Locale.ROOT, "data merge entity @e[tag=%s,limit=1] {start_interpolation:0,interpolation_duration:30,transformation:%s}", tag, transform(th0 + phi, len, h, th)));
+			}
+		}
+	}
+
+	private static String transform(double yaw, double len, double h, double th) {
+		return String.format(Locale.ROOT, "{left_rotation:[0f,%.5ff,0f,%.5ff],scale:[%.3ff,%.3ff,%.3ff],translation:[0f,0f,0f],right_rotation:[0f,0f,0f,1f]}",
+				Math.sin(yaw / 2), Math.cos(yaw / 2), len, h, th);
 	}
 }

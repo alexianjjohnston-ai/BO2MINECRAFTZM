@@ -1,0 +1,41 @@
+{
+ "textures": {
+  "0": "zombiecraft:block/poster_ride",
+  "particle": "zombiecraft:block/poster_ride",
+  "1": "zombiecraft:block/poster_ride"
+ },
+ "elements": [
+  {
+   "from": [
+    2,
+    1,
+    15.5
+   ],
+   "to": [
+    14,
+    15,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#0"
+    },
+    "south": {
+     "texture": "#1"
+    },
+    "east": {
+     "texture": "#1"
+    },
+    "west": {
+     "texture": "#1"
+    },
+    "up": {
+     "texture": "#1"
+    },
+    "down": {
+     "texture": "#1"
+    }
+   }
+  }
+ ]
+}

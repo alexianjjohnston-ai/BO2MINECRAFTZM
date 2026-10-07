@@ -246,5 +246,258 @@
   "texture": "zombiecraft:neon",
   "bo2": "p6_zm_neon_cyan_c",
   "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:light_panel",
+  "map": "*",
+  "texture": "zombiecraft:light_panel",
+  "bo2": "pent_art_light_fluorescent02_c",
+  "opaque": true,
+  "note": "flush fluorescent panel"
+ },
+ {
+  "id": "*:zombiecraft:plaster_wall",
+  "map": "*",
+  "texture": "zombiecraft:plaster_wall",
+  "bo2": "decal_grunge_painted04_c",
+  "opaque": true,
+  "tint": "#D8CDB0",
+  "note": "off-white painted plaster"
+ },
+ {
+  "id": "*:zombiecraft:concrete_floor",
+  "map": "*",
+  "texture": "zombiecraft:concrete_floor",
+  "bo2": "jun_ter_rubble_ash_01_c",
+  "opaque": true,
+  "note": "rough concrete"
+ },
+ {
+  "id": "*:zombiecraft:yellow_trim",
+  "map": "*",
+  "texture": "zombiecraft:yellow_trim",
+  "bo2": "decal_grunge_painted04_c",
+  "opaque": true,
+  "tint": "#D9A91C",
+  "note": "yellow painted band"
+ },
+ {
+  "id": "*:zombiecraft:green_panel",
+  "map": "*",
+  "texture": "zombiecraft:green_panel",
+  "bo2": "eb_art_wall_metal_panel_green_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:red_brick",
+  "map": "*",
+  "texture": "zombiecraft:red_brick",
+  "bo2": "metal_wall_red01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:door_metal",
+  "map": "*",
+  "texture": "zombiecraft:door_metal",
+  "bo2": "door_metal02b_c",
+  "opaque": true,
+  "note": "grey door with an inset panel (Tranzit bus station doors)"
+ },
+ {
+  "id": "*:zombiecraft:door_wood",
+  "map": "*",
+  "texture": "zombiecraft:door_wood",
+  "bo2": "rus_floor_wood_barn_c",
+  "opaque": true,
+  "note": "plank door"
+ },
+ {
+  "id": "*:zombiecraft:road_bus",
+  "map": "*",
+  "texture": "zombiecraft:road_bus",
+  "bo2": "decal_signage_road_bus_c",
+  "opaque": true,
+  "note": "BUS painted on the road"
+ },
+ {
+  "id": "*:zombiecraft:road_stop",
+  "map": "*",
+  "texture": "zombiecraft:road_stop",
+  "bo2": "decal_signage_road_stop_c",
+  "opaque": true,
+  "note": "STOP painted on the road"
+ },
+ {
+  "id": "*:zombiecraft:bench",
+  "map": "*",
+  "texture": "zombiecraft:bench",
+  "bo2": "p_jun_int_bench_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:crate",
+  "map": "*",
+  "texture": "zombiecraft:crate",
+  "bo2": "p6_wood_plank_rustic01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:barrel",
+  "map": "*",
+  "texture": "zombiecraft:barrel",
+  "bo2": "metal_wall_red01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:street_lamp",
+  "map": "*",
+  "texture": "zombiecraft:street_lamp",
+  "bo2": "rus_metal_grey_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:street_lamp_head",
+  "map": "*",
+  "texture": "zombiecraft:street_lamp_head",
+  "bo2": "rus_metal_grey_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:locker_b",
+  "map": "*",
+  "texture": "zombiecraft:locker_b",
+  "bo2": "p_rus_locker_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:pillar_round",
+  "map": "*",
+  "texture": "zombiecraft:pillar_round",
+  "bo2": "metal_aluminum01_painted_dirty_col",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:pillar_round_b",
+  "map": "*",
+  "texture": "zombiecraft:pillar_round_b",
+  "bo2": "decal_grunge_painted04_c",
+  "opaque": true,
+  "tint": "#D9A91C"
+ },
+ {
+  "id": "*:zombiecraft:ticket_counter",
+  "map": "*",
+  "texture": "zombiecraft:ticket_counter",
+  "bo2": "metal_aluminum01_painted_dirty_col",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:ticket_counter_b",
+  "map": "*",
+  "texture": "zombiecraft:ticket_counter_b",
+  "bo2": "rus_floor_wood_barn_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:jersey_barrier",
+  "map": "*",
+  "texture": "zombiecraft:jersey_barrier",
+  "bo2": "me_metal_grey01_col",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:gas_pump_b",
+  "map": "*",
+  "texture": "zombiecraft:gas_pump_b",
+  "bo2": "rus_metal_grey_c",
+  "opaque": true
+ },
+ {
+  "id": "*:zombiecraft:bus_stop_sign",
+  "map": "*",
+  "texture": "zombiecraft:bus_stop_sign",
+  "bo2": "rus_metal_grey_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:dark_oak_log",
+  "map": "*",
+  "texture": "minecraft:dark_oak_log",
+  "bo2": "t5_foliage_burnt_bark01_c",
+  "opaque": true,
+  "note": "burnt bare trunks"
+ },
+ {
+  "id": "*:minecraft:dark_oak_log_top",
+  "map": "*",
+  "texture": "minecraft:dark_oak_log_top",
+  "bo2": "wood_post_cap_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:gravel",
+  "map": "*",
+  "texture": "minecraft:gravel",
+  "bo2": "jun_ter_rubble_ash_01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:cobblestone",
+  "map": "*",
+  "texture": "minecraft:cobblestone",
+  "bo2": "glo_dec_dest_brick_grey_01_c",
+  "opaque": true,
+  "note": "rubble"
+ },
+ {
+  "id": "*:minecraft:gray_concrete",
+  "map": "*",
+  "texture": "minecraft:gray_concrete",
+  "bo2": "rus_metal_grey_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:brown_concrete",
+  "map": "*",
+  "texture": "minecraft:brown_concrete",
+  "bo2": "metal_maroon01_col",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:red_concrete",
+  "map": "*",
+  "texture": "minecraft:red_concrete",
+  "bo2": "metal_wall_red01_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:white_concrete",
+  "map": "*",
+  "texture": "minecraft:white_concrete",
+  "bo2": "decal_grunge_painted05_c",
+  "opaque": true
+ },
+ {
+  "id": "*:minecraft:yellow_concrete",
+  "map": "*",
+  "texture": "minecraft:yellow_concrete",
+  "bo2": "decal_grunge_painted04_c",
+  "opaque": true,
+  "tint": "#D9A91C"
+ },
+ {
+  "id": "*:minecraft:orange_concrete",
+  "map": "*",
+  "texture": "minecraft:orange_concrete",
+  "bo2": "decal_grunge_painted04_c",
+  "opaque": true,
+  "tint": "#D0702A"
+ },
+ {
+  "id": "*:minecraft:blackstone",
+  "map": "*",
+  "texture": "minecraft:blackstone",
+  "bo2": "global_metal_c",
+  "opaque": true
  }
 ]
