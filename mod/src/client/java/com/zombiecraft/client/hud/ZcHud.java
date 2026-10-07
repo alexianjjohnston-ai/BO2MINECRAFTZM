@@ -25,7 +25,7 @@ public final class ZcHud {
 	/** Shared scope for the replacement hotbar and its vanilla GUI hooks. */
 	public static boolean usesWeaponHud(Minecraft mc) {
 		return mc.player != null && mc.level != null && !mc.player.isSpectator()
-			&& ZombiecraftClient.state.phase() != Payloads.PHASE_IDLE;
+			&& ZombiecraftClient.state.phase() != Payloads.PHASE_IDLE && ZombiecraftClient.state.phase() != Payloads.PHASE_LOBBY;
 	}
 
 	/** Called once per client tick, even when the HUD is hidden. */

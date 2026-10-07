@@ -13,7 +13,9 @@ public final class Payloads {
 	public static ResourceLocation id(String path) { return ResourceLocation.fromNamespaceAndPath("zombiecraft", path); }
 
 	/** Game phases shown on the HUD. */
-	public static final int PHASE_IDLE = 0, PHASE_COUNTDOWN = 1, PHASE_ACTIVE = 2, PHASE_INTERMISSION = 3, PHASE_GAMEOVER = 4;
+	public static final int PHASE_IDLE = 0, PHASE_COUNTDOWN = 1, PHASE_ACTIVE = 2, PHASE_INTERMISSION = 3, PHASE_GAMEOVER = 4,
+			/** Online match lobby: the world is open, players gather at the spawn and the host starts the match. */
+			PHASE_LOBBY = 5;
 	public static final int FEEDBACK_SHOT = 0, FEEDBACK_RELOAD_START = 1, FEEDBACK_RELOAD_STOP = 2, FEEDBACK_HIT = 3;
 
 	/** Immediate, server-confirmed combat effects. Weapon is the base item ID, including for upgraded guns. */
@@ -91,6 +93,13 @@ public final class Payloads {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** The host pressed START MATCH in the lobby. */
+	public record StartMatch() implements CustomPacketPayload {
+		public static final Type<StartMatch> TYPE = new Type<>(id("start_match"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, StartMatch> CODEC = StreamCodec.ofMember((p, b) -> {}, b -> new StartMatch());
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	/** Test harness only: ask the client to save a screenshot of its own frame. */
 	public record Shot(String name) implements CustomPacketPayload {
 		public static final Type<Shot> TYPE = new Type<>(id("shot"));
@@ -106,5 +115,6 @@ public final class Payloads {
 		PayloadTypeRegistry.playS2C().register(CueStop.TYPE, CueStop.CODEC);
 		PayloadTypeRegistry.playS2C().register(Shot.TYPE, Shot.CODEC);
 		PayloadTypeRegistry.playC2S().register(Input.TYPE, Input.CODEC);
+		PayloadTypeRegistry.playC2S().register(StartMatch.TYPE, StartMatch.CODEC);
 	}
 }

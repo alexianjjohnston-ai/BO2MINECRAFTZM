@@ -119,7 +119,30 @@ public class ZombiecraftClient implements ClientModInitializer {
 		}
 	}
 
+	private static final java.util.Set<String> NEEDED_KEYS = new java.util.HashSet<>(java.util.List.of(
+		"key.forward", "key.left", "key.back", "key.right", "key.jump", "key.sneak", "key.sprint",
+		"key.attack", "key.use", "key.playerlist", "key.chat", "key.screenshot", "key.fullscreen",
+		"key.hotbar.1", "key.hotbar.2", "key.hotbar.3", "key.hotbar.4", "key.hotbar.5",
+		"key.hotbar.6", "key.hotbar.7", "key.hotbar.8", "key.hotbar.9"));
+
+	/** Only these bindings exist in the game; every other Minecraft binding is hidden and kept unbound. */
+	public static boolean keyNeeded(KeyMapping km) {
+		return NEEDED_KEYS.contains(km.getName()) || km.getName().startsWith("key.zombiecraft");
+	}
+
+	/** Unbinds the Minecraft keys the game does not use (a saved F for swap-hands would swallow the interact key). */
+	private static void stripUnusedKeys(Minecraft mc) {
+		boolean changed = false;
+		for (KeyMapping km : mc.options.keyMappings) {
+			if (keyNeeded(km) || km.isUnbound()) continue;
+			km.setKey(InputConstants.UNKNOWN);
+			changed = true;
+		}
+		if (changed) { KeyMapping.resetMapping(); mc.options.save(); }
+	}
+
 	private static void pollInput(Minecraft mc) {
+		stripUnusedKeys(mc);
 		if (mc.player == null || mc.level == null) { lastFire = lastInteract = lastAttack = false; return; }
 		if (PapBench.controlsInput()) { lastFire = lastInteract = lastAttack = false; return; }
 		keepWeaponSelected(mc);

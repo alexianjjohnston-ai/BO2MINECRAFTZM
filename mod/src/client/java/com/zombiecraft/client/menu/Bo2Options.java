@@ -309,6 +309,7 @@ final class Bo2Options {
 		@Override boolean capturing() { return listening != null; }
 
 		private static boolean in(KeyMapping km, int tab) {
+			if (!com.zombiecraft.client.ZombiecraftClient.keyNeeded(km)) return false;
 			String c = km.getCategory();
 			boolean move = c.equals("key.categories.movement");
 			boolean combat = c.equals("key.categories.gameplay") || c.equals("key.categories.zombiecraft") || km.getName().startsWith("key.zombiecraft");
@@ -370,7 +371,7 @@ final class Bo2Options {
 
 		private void resetAll() {
 			var o = Minecraft.getInstance().options;
-			for (KeyMapping km : o.keyMappings) km.setKey(km.getDefaultKey());
+			for (KeyMapping km : o.keyMappings) km.setKey(com.zombiecraft.client.ZombiecraftClient.keyNeeded(km) ? km.getDefaultKey() : InputConstants.UNKNOWN);
 			KeyMapping.resetMapping();
 			save();
 			MenuAudio.play("uin_main_nav");

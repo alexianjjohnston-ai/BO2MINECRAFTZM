@@ -30,6 +30,9 @@ import java.util.*;
 /** The Zombies game for one server: phases, rounds, spawning, players. Everything numeric comes from the sheets. */
 public final class Game {
 	public static Game INSTANCE;
+	/** Set by the client when the player hosts an online match: the next world waits in the lobby instead of starting at once. */
+	public static volatile boolean lobbyNext;
+	public static final int MAX_PLAYERS = 4;
 
 	public final MinecraftServer server;
 	public ServerLevel level;
@@ -46,6 +49,8 @@ public final class Game {
 	public PowerUps powerups;
 	/** Points the whole team has earned this game (drives power-up drops). */
 	public int teamEarned;
+	/** Ticks left of the lobby's "Game starting in N" (0 = waiting for the host). */
+	public int lobbyCountdown;
 	private final java.util.TreeMap<Long, List<Runnable>> scheduled = new java.util.TreeMap<>();
 	private final Random rng = new Random();
 
@@ -56,7 +61,18 @@ public final class Game {
 		ServerLifecycleEvents.SERVER_STARTED.register(s -> { INSTANCE = new Game(s); INSTANCE.prepareSpawn(); });
 		ServerLifecycleEvents.SERVER_STOPPING.register(s -> INSTANCE = null);
 		ServerTickEvents.END_SERVER_TICK.register(s -> { if (INSTANCE != null) INSTANCE.tick(); });
-		ServerPlayConnectionEvents.JOIN.register((handler, sender, s) -> { if (INSTANCE != null) INSTANCE.onJoin(handler.getPlayer()); });
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, s) -> {
+			if (INSTANCE == null) return;
+			if (s.getPlayerCount() > MAX_PLAYERS) { handler.disconnect(net.minecraft.network.chat.Component.literal("This match is full (" + MAX_PLAYERS + " players max).")); return; }
+			INSTANCE.onJoin(handler.getPlayer());
+		});
+		ServerPlayNetworking.registerGlobalReceiver(Payloads.StartMatch.TYPE, (payload, ctx) -> {
+			Game g = INSTANCE;
+			if (g != null && g.phase == Payloads.PHASE_LOBBY && g.lobbyCountdown == 0 && g.server.isSingleplayerOwner(ctx.player().getGameProfile())) {
+				g.lobbyCountdown = 60;
+				Cue.all("uin_lobby_join", g.level);
+			}
+		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, s) -> { if (INSTANCE != null) INSTANCE.players.remove(handler.getPlayer().getUUID()); });
 
 		ServerPlayNetworking.registerGlobalReceiver(Payloads.Input.TYPE, (payload, ctx) -> {
@@ -133,7 +149,7 @@ public final class Game {
 	}
 
 	public void onJoin(ServerPlayer p) {
-		if (phase == Payloads.PHASE_IDLE) start();
+		if (phase == Payloads.PHASE_IDLE) { boolean lobby = lobbyNext; lobbyNext = false; start(lobby); }
 		// the joining player may not be in level.players() yet when start() runs: always make sure they are set up
 		if (!players.containsKey(p.getUUID()) || players.get(p.getUUID()).guns[0] == null) resetPlayer(p);
 	}
@@ -191,7 +207,10 @@ public final class Game {
 		}
 	}
 
-	public void start() {
+	public void start() { start(false); }
+
+	/** With {@code lobby} the map is built and players gather at the spawn, but the match only begins when the host starts it. */
+	public void start(boolean lobby) {
 		level = server.overworld();
 		int surface = level.getHeight(Heightmap.Types.WORLD_SURFACE, 0, 0);
 		origin = new BlockPos(0, surface - 1, 0);
@@ -231,6 +250,21 @@ public final class Game {
 		startedAt = tick;
 		players.clear();
 		for (ServerPlayer p : level.players()) resetPlayer(p);
+		lobbyCountdown = 0;
+		if (lobby) { phase = Payloads.PHASE_LOBBY; return; }
+		beginCountdown();
+	}
+
+	/** Lobby -> match: everyone in the lobby starts fresh and the first-round countdown runs. */
+	private void beginMatch() {
+		lobbyCountdown = 0;
+		startedAt = tick;
+		players.clear();
+		for (ServerPlayer p : level.players()) resetPlayer(p);
+		beginCountdown();
+	}
+
+	private void beginCountdown() {
 		phase = Payloads.PHASE_COUNTDOWN;
 		Cue.all("mus_zombie_splash_screen", level);
 		countdown = Sheets.sysInt("first_round_delay_s") * 20;
@@ -490,6 +524,7 @@ public final class Game {
 		if (Boolean.getBoolean("zombiecraft.debugPower") && machines != null && !machines.power && tick - startedAt == 40)
 			for (var md : Sheets.MACHINES) if (md.kind().equals("power")) for (ServerPlayer p : level.players()) machines.use(md, p, pg(p));
 		switch (phase) {
+			case Payloads.PHASE_LOBBY -> { if (lobbyCountdown > 0 && --lobbyCountdown <= 0) beginMatch(); }
 			case Payloads.PHASE_COUNTDOWN -> { if (--countdown <= 0) beginRound(1); }
 			case Payloads.PHASE_ACTIVE -> {
 				alive.removeIf(z -> z.isRemoved() || !z.isAlive());
@@ -520,7 +555,7 @@ public final class Game {
 
 	private void tickPlayer(ServerPlayer p) {
 		PlayerGame pg = pg(p);
-		if (pg.downed || pg.dead) pg.prompt = "";
+		if (pg.downed || pg.dead || phase == Payloads.PHASE_LOBBY) pg.prompt = "";
 		else if (phase != Payloads.PHASE_GAMEOVER) {
 			WeaponSystem.tick(this, p, pg);
 			Interactions.update(this, p, pg);
@@ -534,7 +569,7 @@ public final class Game {
 
 	private void sync(ServerPlayer p, PlayerGame pg) {
 		Gun g = WeaponSystem.active(p, pg);
-		int sec = phase == Payloads.PHASE_COUNTDOWN ? (countdown + 19) / 20 : phase == Payloads.PHASE_INTERMISSION ? (intermission + 19) / 20 : 0;
+		int sec = phase == Payloads.PHASE_LOBBY ? (lobbyCountdown + 19) / 20 : phase == Payloads.PHASE_COUNTDOWN ? (countdown + 19) / 20 : phase == Payloads.PHASE_INTERMISSION ? (intermission + 19) / 20 : 0;
 		ServerPlayNetworking.send(p, new Payloads.StateSync(phase, round, pg.points, g == null ? -1 : g.mag, g == null ? 0 : g.reserve,
 				g == null ? "" : g.displayName(), pg.prompt, pg.messageTicks > 0 ? pg.message : "", pg.interactable,
 				zombiesToSpawn + alive.size(), sec, roundsSurvived,

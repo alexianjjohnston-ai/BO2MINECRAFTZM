@@ -74,7 +74,7 @@ public final class GunFeedback {
 	private static boolean refreshContext(Minecraft mc) {
 		int phase = ZombiecraftClient.state.phase();
 		if (mc.player == null || mc.level == null || !mc.player.isAlive() || mc.player.isSpectator()
-				|| phase == Payloads.PHASE_IDLE || phase == Payloads.PHASE_GAMEOVER) {
+				|| phase == Payloads.PHASE_IDLE || phase == Payloads.PHASE_LOBBY || phase == Payloads.PHASE_GAMEOVER) {
 			reset();
 			return false;
 		}
