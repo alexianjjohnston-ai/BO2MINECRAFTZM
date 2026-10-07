@@ -81,7 +81,7 @@ final class Bo2Locations {
 		Select s = new Select(planet, false);
 		s.loc = sel;
 		if (sel >= 0) s.mode = LOCS[sel].modes().size() - 1;
-		Screen out = which.equals("match") ? new Match(s, false, LOCS[Math.max(0, sel)], LOCS[Math.max(0, sel)].modes().get(LOCS[Math.max(0, sel)].modes().size() - 1)) : s;
+		Screen out = which.equals("match") ? new Match(s, Boolean.getBoolean("zombiecraft.debugOnline"), LOCS[Math.max(0, sel)], LOCS[Math.max(0, sel)].modes().get(LOCS[Math.max(0, sel)].modes().size() - 1)) : s;
 		Thread t = new Thread(() -> {
 			try { Thread.sleep(4000); } catch (InterruptedException ignored) {}
 			Minecraft mc = Minecraft.getInstance();
@@ -225,7 +225,7 @@ final class Bo2Locations {
 		private void activate(int i) {
 			if (startAt != 0) return;
 			if (i == 0) { startAt = System.currentTimeMillis() + 3000; MenuAudio.play("uin_lobby_join"); }
-			else if (i == 1) { host = !host; MenuAudio.play("uin_main_nav"); }
+			else if (i == 1) { host = !host; if (host) Relay.reserve(); else Relay.reserved = null; MenuAudio.play("uin_main_nav"); }
 			else { MenuAudio.play("uin_cmn_backout"); Minecraft.getInstance().setScreen(parent); }
 		}
 
@@ -289,6 +289,13 @@ final class Bo2Locations {
 			Bo2Menus.raw(g, "1 Player (" + (host ? 4 : 1) + " Max)", rx, ry, 0.85f, Bo2Menus.WHITE);
 			g.fill(rx - 4, ry + (int) Bo2Menus.H(0.85f) + 4, width - 40, ry + (int) Bo2Menus.H(0.85f) + 5, 0x40FFFFFF);
 			Bo2Menus.raw(g, Minecraft.getInstance().getUser().getName(), rx + 30, ry + (int) Bo2Menus.H(0.85f) + 8, 0.9f, Bo2Menus.YELLOW);
+			if (host && Relay.configured() == null) {
+				int cy0 = ry + (int) Bo2Menus.H(0.85f) + 8 + (int) Bo2Menus.H(0.9f) + 26;
+				Bo2Menus.raw(g, "JOIN CODE", rx, cy0, 0.85f, Bo2Menus.WHITE);
+				Bo2Menus.raw(g, Relay.reserve(), rx + 30, cy0 + (int) Bo2Menus.H(0.85f) + 6, 1.6f, Bo2Menus.YELLOW);
+				int yy = cy0 + (int) Bo2Menus.H(0.85f) + 12 + (int) Bo2Menus.H(1.6f);
+				for (String line : Bo2Menus.wrap("Friends can join with this code once the lobby opens (START MATCH).", width - 40 - rx, 0.75f)) { Bo2Menus.raw(g, line, rx, yy, 0.75f, 0xFFD2CEC6); yy += (int) (Bo2Menus.H(0.75f) * 1.2f); }
+			}
 
 			// the postcard of the match with BO2's countdown above it: bottom-anchored above the hint, shrunk so it never reaches the text above
 			String cap = "Ready for the match";

@@ -276,3 +276,5 @@ Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulati
 - Keep port 25565 free: the tunnel points at 127.0.0.1:25565 and the lobby warns when the game had to take another port. Everyone playing from the repo connects to the owner's tunnel by default; hosting from another PC needs `host=` set on every player's config.
 
 - Friend got "Failed to log in: Invalid session": the hosted world required Mojang's account check, which dev/offline accounts (play.bat runs the dev client) can never pass; only the debugHost test switch had it off. Hosting online now always sets setUsesAuthentication(false); the join code is the gate. Verified without debugHost: a second dev-account client joins through the tunnel. A friend on a real vanilla launcher account who still sees it needs to restart their launcher.
+
+- The join code is picked when ONLINE GAME is switched on in the match screen (Relay.reserve), shown there as JOIN CODE, and the lobby reuses the same code, so it can be read before starting. Dev: -PdevProps=debugOptions=match,debugSel=0,debugOnline opens that screen with online on. Confirmed working by the owner.

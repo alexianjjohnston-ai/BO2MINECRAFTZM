@@ -70,6 +70,11 @@ final class Relay {
 		return b.toString();
 	}
 
+	/** The code picked when the host switches ONLINE GAME on in the match screen, so it can be read before the world exists; the lobby then uses the same one. */
+	static String reserved;
+
+	static String reserve() { if (reserved == null) reserved = randomCode(); return reserved; }
+
 	/** The code this player typed, sent to the host once connected (the host's game refuses players without the current code). */
 	static volatile String joinCode;
 	/** When the code was sent: a disconnect soon after is almost always a wrong or outdated code. */
@@ -94,7 +99,7 @@ final class Relay {
 		joinCode = null;
 		com.zombiecraft.game.Game.joinCode = null;
 		if (configured() != null) { status = "Connecting to the relay..."; com.zombiecraft.game.Game.joinCode = null; host(localPort); return; }
-		code = randomCode();
+		code = reserve();
 		com.zombiecraft.game.Game.joinCode = code;
 		// a tunnel points at one local port, 25565 by default: if the game had to take another, friends will not reach it
 		if (localPort != 25565) status = "Warning: port 25565 was busy, so the game opened on " + localPort + " and your tunnel will not reach it. Close whatever uses 25565 (another game or server) and host again.";
@@ -188,6 +193,7 @@ final class Relay {
 		code = null;
 		status = "";
 		joinCode = null;
+		reserved = null;
 		com.zombiecraft.game.Game.joinCode = null;
 		Socket c = control;
 		if (c != null) try { c.close(); } catch (IOException ignored) {}
