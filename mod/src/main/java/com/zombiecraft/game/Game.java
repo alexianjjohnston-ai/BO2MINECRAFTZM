@@ -294,6 +294,7 @@ public final class Game {
 	private static final String[] AMBIENCE = {"amb_diner_l", "amb_diner_r", "amb_flourescent_light"};
 	private static final String[] ONE_SHOTS = {"amb_diner_metal_creak", "amb_metal_creak_lgt", "amb_paper_rustle"};
 	private int ambientTimer;
+	private final List<ZcZombie> dbgZ = new java.util.ArrayList<>();
 
 	public void tick() {
 		tick++;
@@ -317,6 +318,37 @@ public final class Game {
 			double px = cp.getX() + 0.5 + f.getStepX() * 2.6, pz = cp.getZ() + 0.5 + f.getStepZ() * 2.6;
 			float yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
 			for (ServerPlayer p : level.players()) p.teleportTo(level, px, cp.getY(), pz, Set.of(), yaw, 22f, true);
+		}
+		// dev: -Dzombiecraft.debugTour=true visits a few map viewpoints {x, z, yaw} (sheet frame) and screenshots each (map look checks)
+		if (Boolean.getBoolean("zombiecraft.debugTour") && tick - startedAt >= 60 && (tick - startedAt) % 40 % 30 == 0) {
+			boolean snap = (tick - startedAt) % 40 == 30;
+			int i = (int) ((tick - startedAt - (snap ? 30 : 0)) / 40) - 2;
+			double[][] views = {{2, -7, 180}, {-6, -7, -90}, {2, -7, 0}, {0, -16, 0}, {0, -16, 180}, {2, 3, 180}, {-18, -10, 90}};
+			if (i >= 0 && i < views.length) for (ServerPlayer p : level.players()) {
+				if (snap) ServerPlayNetworking.send(p, new Payloads.Shot("tour_" + i));
+				else p.teleportTo(level, origin.getX() + views[i][0] + 0.5, origin.getY() + 1, origin.getZ() + views[i][1] + 0.5, Set.of(), (float) views[i][2], 0f, true);
+			}
+		}
+		// dev: -Dzombiecraft.debugZombies=true puts three free zombies in front of the player, then hits and kills one (screenshots)
+		if (Boolean.getBoolean("zombiecraft.debugZombies")) {
+			long t = tick - startedAt;
+			for (ServerPlayer p : level.players()) {
+				PlayerGame pgd = pg(p);
+				if (t == 40) { dbgZ.clear(); double yr = Math.toRadians(p.getYRot());
+					for (int i = 0; i < 3; i++) {
+						double d = 2.6 + i * 1.4, side = (i - 1) * 1.1;
+						ZcZombie z = new ZcZombie(ZcEntities.ZOMBIE, level);
+						z.moveTo(p.getX() - Math.sin(yr) * d + Math.cos(yr) * side, p.getY(), p.getZ() + Math.cos(yr) * d + Math.sin(yr) * side, p.getYRot() + 180f, 0f);
+						z.setup(i == 0 ? "walk" : i == 1 ? "run" : "sprint", 100000, null);
+						z.setNoAi(true);
+						level.addFreshEntity(z); alive.add(z); dbgZ.add(z);
+					} }
+				if (t == 70 || t == 100) ServerPlayNetworking.send(p, new Payloads.Shot("zombies_" + t));
+				if (t == 110 && !dbgZ.isEmpty()) ZombieHealth.hit(this, p, pgd, dbgZ.get(0), 10, false, false);
+				if (t == 112) ServerPlayNetworking.send(p, new Payloads.Shot("zombies_hit"));
+				if (t == 120 && dbgZ.size() > 1) { dbgZ.get(1).hp = 1; ZombieHealth.hit(this, p, pgd, dbgZ.get(1), 10, true, false); }
+				if (t == 122 || t == 140 || t == 190) ServerPlayNetworking.send(p, new Payloads.Shot("zombies_kill_" + t));
+			}
 		}
 		// dev: -Dzombiecraft.debugPap=true shows Pack-a-Punch holding a gun (upgrading, then ready) and saves screenshots
 		if (Boolean.getBoolean("zombiecraft.debugPap") && pap != null && machines != null) {

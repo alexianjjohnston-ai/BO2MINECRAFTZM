@@ -188,3 +188,5 @@ Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulati
 - Viewmodel raised (`zombiecraft.vmY`, default 0.06) so both hands show; before, the right hand sat below the screen on long guns (looked like a "missing hand").
 - Sleeves are now dark cloth and all characters use BO2's black arm map. The skin still reads brownish in debugGun shots (the `_skin` surface may not be the gloves); needs a closer look.
 - Not done: black patches check, per-gun clip audit (debugGun shots in run/shot/screenshots), sprint/walk bob, ADS, grenade/knife clips.
+- C, tested in game (dev switch `-PdevProps=debugZombies`, three free zombies, one hit then killed; screenshots `zc-zombies_*`): zombies read well (real BO2 body/head, torn dirty clothes); blood spray works; body stays on the floor after the kill. Dust particles are square, so blood uses small sizes (0.55-1.1) to avoid big pixel clumps.
+- Test tip: another chat holding `run/shot` locks the world; copy it (`cp -r run/shot run/ctest`, delete `session.lock`) and pass `-PdevDir=run/ctest`.
