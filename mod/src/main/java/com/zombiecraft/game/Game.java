@@ -33,6 +33,9 @@ public final class Game {
 	/** Set by the client when the player hosts an online match: the next world waits in the lobby instead of starting at once. */
 	public static volatile boolean lobbyNext;
 	public static final int MAX_PLAYERS = 4;
+	/** The lobby's random join code while hosting online (null = nobody is checked). Players other than the host must send it within 5 seconds of joining. */
+	public static volatile String joinCode;
+	private final Set<UUID> verified = new HashSet<>();
 
 	public final MinecraftServer server;
 	public ServerLevel level;
@@ -64,7 +67,19 @@ public final class Game {
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, s) -> {
 			if (INSTANCE == null) return;
 			if (s.getPlayerCount() > MAX_PLAYERS) { handler.disconnect(net.minecraft.network.chat.Component.literal("This match is full (" + MAX_PLAYERS + " players max).")); return; }
-			INSTANCE.onJoin(handler.getPlayer());
+			ServerPlayer joined = handler.getPlayer();
+			if (joinCode != null && !s.isSingleplayerOwner(joined.getGameProfile())) {
+				UUID id = joined.getUUID();
+				INSTANCE.later(100, () -> { if (!INSTANCE.verified.contains(id)) handler.disconnect(net.minecraft.network.chat.Component.literal("Join code missing or wrong.")); });
+			}
+			INSTANCE.onJoin(joined);
+		});
+		ServerPlayNetworking.registerGlobalReceiver(Payloads.JoinCode.TYPE, (payload, ctx) -> {
+			Game g = INSTANCE;
+			if (g == null) return;
+			String expected = joinCode;
+			if (expected == null || expected.equalsIgnoreCase(payload.code())) g.verified.add(ctx.player().getUUID());
+			else ctx.player().connection.disconnect(net.minecraft.network.chat.Component.literal("Wrong join code."));
 		});
 		ServerPlayNetworking.registerGlobalReceiver(Payloads.StartMatch.TYPE, (payload, ctx) -> {
 			Game g = INSTANCE;
@@ -74,7 +89,7 @@ public final class Game {
 				Cue.all("uin_lobby_join", g.level);
 			}
 		});
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, s) -> { if (INSTANCE != null) INSTANCE.players.remove(handler.getPlayer().getUUID()); });
+		ServerPlayConnectionEvents.DISCONNECT.register((handler, s) -> { if (INSTANCE != null) { INSTANCE.players.remove(handler.getPlayer().getUUID()); INSTANCE.verified.remove(handler.getPlayer().getUUID()); } });
 
 		ServerPlayNetworking.registerGlobalReceiver(Payloads.Input.TYPE, (payload, ctx) -> {
 			Game g = INSTANCE;
@@ -193,7 +208,8 @@ public final class Game {
 	}
 
 	private void tourBuild() {
-		tourAdd("spawn", 2, -7, "south", 0, 0); tourViews.set(0, new double[] {2.5, -6.5, 180, 0});
+		tourAdd("spawn", 0, 0, "south", 0, 0);
+		if (!Sheets.PLAYER_SPAWNS.isEmpty()) { var ps = Sheets.PLAYER_SPAWNS.get(0); tourViews.set(0, new double[] {ps.x() + 0.5, ps.z() + 0.5, ps.yaw(), 0}); }  // looks the way the player starts, from where they start
 		for (var m : Sheets.MACHINES) tourAdd("machine " + m.id(), m.x(), m.z(), m.facing(), 3.2, 8);
 		for (var b : Sheets.BOXES) tourAdd("box " + b.id(), b.x(), b.z(), b.facing(), 3.5, 12);
 		for (var p : Sheets.PAPS) tourAdd("pap " + p.id(), (p.x1() + p.x2()) / 2.0, (p.z1() + p.z2()) / 2.0, p.facing(), 4, 8);

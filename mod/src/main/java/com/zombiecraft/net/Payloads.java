@@ -93,6 +93,13 @@ public final class Payloads {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** A joining player's lobby code; the host's game refuses players whose code is missing or wrong. */
+	public record JoinCode(String code) implements CustomPacketPayload {
+		public static final Type<JoinCode> TYPE = new Type<>(id("join_code"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, JoinCode> CODEC = StreamCodec.ofMember((p, b) -> b.writeUtf(p.code, 16), b -> new JoinCode(b.readUtf(16)));
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	/** The host pressed START MATCH in the lobby. */
 	public record StartMatch() implements CustomPacketPayload {
 		public static final Type<StartMatch> TYPE = new Type<>(id("start_match"));
@@ -116,5 +123,6 @@ public final class Payloads {
 		PayloadTypeRegistry.playS2C().register(Shot.TYPE, Shot.CODEC);
 		PayloadTypeRegistry.playC2S().register(Input.TYPE, Input.CODEC);
 		PayloadTypeRegistry.playC2S().register(StartMatch.TYPE, StartMatch.CODEC);
+		PayloadTypeRegistry.playC2S().register(JoinCode.TYPE, JoinCode.CODEC);
 	}
 }

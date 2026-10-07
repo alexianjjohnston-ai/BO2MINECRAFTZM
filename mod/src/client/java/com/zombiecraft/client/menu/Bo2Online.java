@@ -47,7 +47,7 @@ public final class Bo2Online {
 		if (Boolean.getBoolean("zombiecraft.debugLobby")) {
 			hostNext();
 			Thread t = new Thread(() -> {
-				try { Thread.sleep(60000); } catch (InterruptedException ignored) {}
+				try { Thread.sleep(300000); } catch (InterruptedException ignored) {}
 				Minecraft mc = Minecraft.getInstance();
 				mc.execute(() -> net.minecraft.client.Screenshot.grab(mc.gameDirectory, "zc-lobby.png", mc.getMainRenderTarget(), c -> {}));
 			}, "zc-dev-shot");
@@ -77,6 +77,7 @@ public final class Bo2Online {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> {
 			MenuAudio.stopMusic();
 			joinError = null;
+			if (!mc.hasSingleplayerServer() && Relay.joinCode != null) net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.zombiecraft.net.Payloads.JoinCode(Relay.joinCode));
 			if (!hostPending || !mc.hasSingleplayerServer()) {
 				com.zombiecraft.ZombiecraftMod.LOG.info("Block Ops 2 online: not opening to LAN (hostPending={}, singleplayerServer={})", hostPending, mc.hasSingleplayerServer());
 				return;
@@ -92,7 +93,7 @@ public final class Bo2Online {
 				if (ok) { showInvite = true; Relay.expose(port); }
 			});
 		});
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> { hostPending = false; showInvite = false; lobbyHosting = false; com.zombiecraft.game.Game.lobbyNext = false; Relay.stop(); });
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> { hostPending = false; showInvite = false; lobbyHosting = false; com.zombiecraft.game.Game.lobbyNext = false; Relay.stop(); Relay.joinCode = null; });
 		// the invite box waits for the loading screen to finish; a hosted lobby has its own screen (with INVITE FRIENDS), so no box first
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			if (showInvite && mc.player != null && mc.screen == null) { showInvite = false; if (!lobbyHosting) mc.setScreen(new Invite()); }

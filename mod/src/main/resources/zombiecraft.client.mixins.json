@@ -11,6 +11,7 @@
     "ZcItemInHandRendererMixin",
     "ZcLoadingScreenMixin",
     "ZcConnectScreenMixin",
+    "ZcServerConnectionMixin",
     "ZcItemStackRenderStateMixin",
     "ZcItemModelResolverMixin"
   ],
