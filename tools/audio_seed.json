@@ -472,6 +472,18 @@
    "volume": 0.4,
    "fallback": "minecraft:block.beacon.ambient",
    "loop": true
+  },
+  "zmb_power_door": {
+   "category": "world",
+   "soundSource": "MASTER",
+   "volume": 1.0,
+   "fallback": "minecraft:block.iron_door.open"
+  },
+  "zmb_small_wood_door": {
+   "category": "world",
+   "soundSource": "MASTER",
+   "volume": 1.0,
+   "fallback": "minecraft:block.wooden_door.open"
   }
  },
  "roles": {

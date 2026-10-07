@@ -23,5 +23,6 @@ public class ZombiecraftMod implements ModInitializer {
 		DevCommands.register();
 		com.zombiecraft.game.Bench.register();
 		com.zombiecraft.game.FeedbackBench.register();
+		com.zombiecraft.game.PapBench.register();
 	}
 }

@@ -20,7 +20,7 @@ for w in ld('map_windows.json'):
         for j in range(w['height']):
             c = (w['a'] + i, w['y0'] + j, w['fixed']) if w['wall'] in 'NS' else (w['fixed'], w['y0'] + j, w['a'] + i)
             vox[c] = 'minecraft:oak_planks'
-COL = {'grass_block': (80, 140, 60), 'black_concrete': (30, 30, 30), 'yellow_concrete': (230, 200, 40), 'light_gray_concrete': (170, 170, 170),
+COL = {'stone_bricks':(125,125,125),'polished_andesite':(140,142,140),'andesite':(130,130,128),'stone':(120,120,120),'deepslate_bricks':(60,60,65),'dark_oak_slab':(70,45,20),'dark_oak_fence':(70,45,20),'shroomlight':(250,160,60),'iron_block':(215,215,215),'dark_oak_planks':(70,45,20),'grass_block': (80, 140, 60), 'black_concrete': (30, 30, 30), 'yellow_concrete': (230, 200, 40), 'light_gray_concrete': (170, 170, 170),
        'smooth_stone': (150, 150, 150), 'gray_concrete': (90, 90, 90), 'red_concrete': (180, 40, 40), 'sea_lantern': (230, 240, 220), 'quartz_block': (240, 235, 225),
        'lava': (255, 100, 0), 'iron_bars': (200, 200, 210), 'air': None, 'oak_planks': (190, 150, 90), 'dirt': (110, 80, 50), 'green_concrete': (60, 130, 60),
        'black_stained_glass': (40, 40, 60), 'light_blue_concrete': (60, 150, 200), 'blue_terracotta': (70, 80, 140), 'dark_oak_slab': (70, 45, 20)}

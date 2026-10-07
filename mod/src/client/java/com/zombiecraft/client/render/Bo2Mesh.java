@@ -146,7 +146,10 @@ public final class Bo2Mesh {
 			VertexConsumer vc = buf.getBuffer(glow ? RenderType.entityTranslucentEmissive(tex) : RenderType.entityCutoutNoCull(tex));
 			float pulse = pulse();
 			int cr = glow ? (int) (8 + 247 * pulse) : 255, cg = glow ? (int) (8 + 207 * pulse) : 255, cb = glow ? (int) (8 + 0 * pulse) : 255;
-			int lv = glow ? 0xF000F0 : light;
+			// lit parts of the powered machines ("..._on", "..._moving") are self-lit by the game and stay bright in the dark
+			String mn = m.materials.get(surf.material).name();
+			boolean selfLit = mn != null && (mn.endsWith("_on") || mn.endsWith("_moving"));
+			int lv = glow || selfLit ? 0xF000F0 : light;
 			for (int c = 0; c + 2 < surf.cornerCount(); c += 3) {
 				for (int k = 0; k < 4; k++) {
 					int ci = c + Math.min(k, 2), v = surf.vert[ci];

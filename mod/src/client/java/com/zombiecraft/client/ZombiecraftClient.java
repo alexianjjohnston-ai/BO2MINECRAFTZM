@@ -6,6 +6,7 @@ import com.zombiecraft.client.audio.CuePlayer;
 import com.zombiecraft.client.hud.ZcHud;
 import com.zombiecraft.entity.ZcEntities;
 import com.zombiecraft.game.FeedbackBench;
+import com.zombiecraft.game.PapBench;
 import com.zombiecraft.item.ModItems;
 import com.zombiecraft.net.Payloads;
 import net.fabricmc.api.ClientModInitializer;
@@ -34,6 +35,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		EntityRendererRegistry.register(ZcEntities.BOX, com.zombiecraft.client.render.ZcBoxRenderer::new);
+		EntityRendererRegistry.register(ZcEntities.PROP, com.zombiecraft.client.render.ZcPropRenderer::new);
 		EntityRendererRegistry.register(ZcEntities.ZOMBIE, com.zombiecraft.client.render.ZcZombieRenderer::new);
 		AutoWorld.register();
 		com.zombiecraft.client.menu.Bo2Menus.register();
@@ -66,7 +68,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 			GunFeedback.tick(mc);
 			ZcHud.tick(mc);
 			com.zombiecraft.client.audio.Footsteps.tick(mc);
-			if (FeedbackBench.finished()) mc.stop();
+			if (FeedbackBench.finished() || PapBench.finished()) mc.stop();
 		});
 		HudRenderCallback.EVENT.register(ZcHud::render);
 		ClientLifecycleEvents.CLIENT_STARTED.register(c -> { AudioCache.prepareAsync(); com.zombiecraft.client.render.ModelCache.ensureAsync(); });
@@ -102,6 +104,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 
 	private static void pollInput(Minecraft mc) {
 		if (mc.player == null || mc.level == null) { lastFire = lastInteract = lastAttack = false; return; }
+		if (PapBench.controlsInput()) { lastFire = lastInteract = lastAttack = false; return; }
 		keepWeaponSelected(mc);
 		// F used to swap hands: swallow it so the gun never ends up in the off hand
 		while (mc.options.keySwapOffhand.consumeClick()) { }

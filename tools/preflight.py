@@ -229,9 +229,24 @@ for r in data.get('map_wallbuys', []):
 for r in data.get('map_boxes', []):
     p = (r['x'], r['y'], r['z']); d = DIR[r['facing']]; back = (p[0] - d[0], p[1], p[2] - d[2])
     if not air(p): err(f"[map_boxes.{r['id']}] chest cell {p} is not free air")
-    if vox.get(back, AIR) == AIR: err(f"[map_boxes.{r['id']}] chest has nothing behind it at {back}")
+    back2 = (p[0] - 2 * d[0], p[1], p[2] - 2 * d[2])   # the 3-wide box model reaches back ~1 block: keep a free cell between chest and wall
+    if vox.get(back, AIR) == AIR and vox.get(back2, AIR) == AIR: err(f"[map_boxes.{r['id']}] chest has no wall within 2 blocks behind it at {back}")
+    if vox.get(back, AIR) != AIR: err(f"[map_boxes.{r['id']}] chest at {p} is flush against the wall: the box model would clip into {back}")
+    for sd in ((d[2], 0, d[0]), (-d[2], 0, -d[0])):
+        if not air((p[0] + sd[0], p[1], p[2] + sd[2])): warn(f"[map_boxes.{r['id']}] side cell next to the chest is blocked, the box will be drawn narrower")
     front = (p[0] + d[0], p[1], p[2] + d[2])
     if not air(front): err(f"[map_boxes.{r['id']}] nothing free in front of the chest at {front}")
+wrooms = {w['room'] for w in data.get('map_windows', [])}
+for r in data.get('map_doors', []):
+    for rm in r['opens'].split(','):
+        if rm not in wrooms: err(f"[map_doors.{r['id']}] opens room {rm!r} which has no window")
+    for x in range(min(r['x1'], r['x2']), max(r['x1'], r['x2']) + 1):
+        for z in range(min(r['z1'], r['z2']), max(r['z1'], r['z2']) + 1):
+            if vox.get((x, r['y1'], z), AIR) != AIR: err(f"[map_doors.{r['id']}] doorway cell {(x, r['y1'], z)} is not open in map_ops (the game seals it)")
+start_rooms = wrooms - {rm for r in data.get('map_doors', []) for rm in r['opens'].split(',')}
+if not start_rooms: err("[map_doors] every window room is behind a door: nowhere to start")
+for r in data.get('map_spawns', []):
+    pass
 for r in data.get('map_machines', []):
     p = (r['x'], r['y'], r['z']); d = DIR[r['facing']]; back = (p[0] - d[0], p[1], p[2] - d[2])
     if not (air(p) and air((p[0], p[1] + 1, p[2]))): err(f"[map_machines.{r['id']}] machine cell {p} is not free air")
@@ -243,6 +258,15 @@ for r in data.get('map_pap', []):
     cx = (r['x1'] + r['x2']) // 2; cz = (r['z1'] + r['z2']) // 2
     stand = (cx + d[0] * (abs(r['x2'] - r['x1']) // 2 + 2), 1, cz + d[2] * (abs(r['z2'] - r['z1']) // 2 + 2))
     if not air(stand): err(f"[map_pap.{r['id']}] nowhere to stand in front of the machine at {stand}")
+# Model replacement and F targeting both use map_pap's inclusive block bounds.
+# Leaving any authored machine piece outside them exposes placeholder blocks and
+# makes the look ray hit an unrecognized surface (especially the front glass).
+for o in data.get('map_ops', []):
+    if o.get('group') != 'pap' or o['block'] == AIR: continue
+    covered = any(all(min(r[f'{axis}1'], r[f'{axis}2']) <= min(o[f'{axis}1'], o[f'{axis}2'])
+                      and max(o[f'{axis}1'], o[f'{axis}2']) <= max(r[f'{axis}1'], r[f'{axis}2'])
+                      for axis in ('x', 'y', 'z')) for r in data.get('map_pap', []))
+    if not covered: err(f"[map_ops.{o['id']}] Pack-a-Punch blocks extend outside every map_pap interaction region")
 for r in data.get('map_player', []):
     p = (r['x'], r['y'], r['z'])
     if not (air(p) and air((p[0], p[1] + 1, p[2]))): err(f"[map_player.{r['id']}] spawn {p} is blocked")

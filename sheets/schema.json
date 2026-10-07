@@ -515,6 +515,52 @@
    }
   }
  },
+ "map_doors": {
+  "file": "map_doors.json",
+  "key": "id",
+  "columns": {
+   "id": {
+    "t": "string"
+   },
+   "cost": {
+    "t": "number"
+   },
+   "x1": {
+    "t": "number"
+   },
+   "y1": {
+    "t": "number"
+   },
+   "z1": {
+    "t": "number"
+   },
+   "x2": {
+    "t": "number"
+   },
+   "y2": {
+    "t": "number"
+   },
+   "z2": {
+    "t": "number"
+   },
+   "block": {
+    "t": "string"
+   },
+   "opens": {
+    "t": "string"
+   },
+   "cue": {
+    "t": "string",
+    "ref": "audio.cue"
+   },
+   "label": {
+    "t": "string"
+   },
+   "room": {
+    "t": "string"
+   }
+  }
+ },
  "map_machines": {
   "file": "map_machines.json",
   "key": "id",

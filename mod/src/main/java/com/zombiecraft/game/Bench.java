@@ -124,7 +124,8 @@ public final class Bench {
 			}
 			case 2 -> { // wall-buy: gun, then ammo
 				WallBuyDef wb = Sheets.WALLBUYS.get(0); // Olympia
-				Vec3 stand = abs(g, wb.x() + 0.5, 1, wb.z() - 2.6);
+				double fx = wb.facing().equals("east") ? 1 : wb.facing().equals("west") ? -1 : 0, fz = wb.facing().equals("south") ? 1 : wb.facing().equals("north") ? -1 : 0;
+				Vec3 stand = abs(g, wb.x() + 0.5 + fx * 2.6, 1, wb.z() + 0.5 + fz * 2.6);
 				Vec3 frame = abs(g, wb.x() + 0.5, wb.y() + 0.5, wb.z() + 0.5);
 				if (sub == 0) { pg.points = 1000; weaponBefore = pg.guns[0].weapon; face(p, stand, frame); sub = 1; until = g.tick + 5; }
 				else if (sub == 1) { face(p, stand, frame); pg.interactHeld = true; sub = 2; until = g.tick + 3; }
@@ -184,7 +185,7 @@ public final class Bench {
 					case 5 -> { // wait for the box to move
 						if (box.state == BoxSystem.State.CLOSED) {
 							boolean moved = g.box.loc().x() != locBefore;
-							boolean chestThere = g.level.getBlockState(g.box.chestPos()).is(Blocks.CHEST);
+							boolean chestThere = g.level.getBlockState(g.box.chestPos()).is(Blocks.CHEST) || g.level.getBlockState(g.box.chestPos()).is(Blocks.BARRIER);
 							log(moved && chestThere && pg.points >= 0, "box-moves", "location changed=" + moved + " chest at new spot=" + chestThere + " after " + boxUses + " uses");
 							shot(p, "07_box_moved");
 							next(4, 20);
@@ -200,6 +201,7 @@ public final class Bench {
 				switch (sub) {
 					case 0 -> {
 						WeaponSystem.give(p, pg, 0, "m14", false);
+						if (g.machines != null) g.machines.power = true; // the machine refuses to work without power
 						pg.points = 6000; face(p, stand, machine); sub = 1; until = g.tick + 5;
 					}
 					case 1 -> { face(p, stand, machine); pg.interactHeld = true; sub = 2; until = g.tick + 3; }
@@ -222,10 +224,10 @@ public final class Bench {
 				}
 			}
 			case 5 -> { // window repair
-				Barrier b = g.barriers.get(0);
+				Barrier b = g.barriers.stream().filter(x -> g.doors != null && !g.doors.windowOpen(x.def.id())).findFirst().orElse(g.barriers.get(0)); // a locked room's window: no zombie is tearing it meanwhile
 				Vec3 stand = new Vec3(b.insideSpot.x, b.insideSpot.y, b.insideSpot.z);
 				switch (sub) {
-					case 0 -> { b.tear(); b.tear(); b.tear(); pg.points = 0; pg.boardPointsThisRound = 0; face(p, stand, b.center); sub = 1; until = g.tick + 5; }
+					case 0 -> { while (b.repair()) { } b.tear(); b.tear(); b.tear(); pg.points = 0; pg.boardPointsThisRound = 0; face(p, stand, b.center); sub = 1; until = g.tick + 5; }
 					case 1 -> { shot(p, "10_window_torn"); face(p, stand, b.center); pg.interactHeld = true; sub = 2; ticksInStep = 0; }
 					default -> {
 						if (b.boardsLeft() >= b.boardsTotal() || ticksInStep > 200) {
@@ -249,7 +251,9 @@ public final class Bench {
 						target.discard(); g.alive.remove(target);
 						next(7, 20);
 					} else if (ticksInStep > 1800) {
-						log(false, "window-entry", "zombie stuck at stage " + target.stage + " after 90 s at " + target.position());
+						var sp = target.barrier.outsideSpot; StringBuilder around = new StringBuilder();
+						for (int dz = -2; dz <= 1; dz++) for (int dy = 0; dy <= 2; dy++) around.append(g.level.getBlockState(BlockPos.containing(sp.x, sp.y - 1 + dy, sp.z + dz)).getBlock().getDescriptionId().replace("block.minecraft.", "")).append(dy == 2 ? " | " : ",");
+						log(false, "window-entry", "zombie stuck at stage " + target.stage + " after 90 s at " + target.position() + " spot=" + sp + " boards=" + target.barrier.boardsLeft() + "/" + target.barrier.boardsTotal() + " alive=" + target.isAlive() + " noAi=" + target.isNoAi() + " others=" + g.alive.size() + " path=" + (target.getNavigation().getPath() == null ? "none" : target.getNavigation().getPath().getNodeCount() + " nodes") + " around(z-2..z+1, y-1..y+1)=" + around);
 						target.discard(); g.alive.remove(target);
 						next(7, 20);
 					}

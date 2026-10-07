@@ -15,6 +15,7 @@ public final class ZcEntities {
 
 	public static EntityType<Zombie> ZOMBIE;
 	public static EntityType<ZcBox> BOX;
+	public static EntityType<ZcProp> PROP;
 
 	public static void register() {
 		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Payloads.id("zombie"));
@@ -25,5 +26,8 @@ public final class ZcEntities {
 		ResourceKey<EntityType<?>> boxKey = ResourceKey.create(Registries.ENTITY_TYPE, Payloads.id("mystery_box"));
 		BOX = Registry.register(BuiltInRegistries.ENTITY_TYPE, boxKey,
 				EntityType.Builder.<ZcBox>of(ZcBox::new, MobCategory.MISC).sized(2.2f, 0.9f).clientTrackingRange(10).updateInterval(20).noSave().build(boxKey));
+		ResourceKey<EntityType<?>> propKey = ResourceKey.create(Registries.ENTITY_TYPE, Payloads.id("prop"));
+		PROP = Registry.register(BuiltInRegistries.ENTITY_TYPE, propKey,
+				EntityType.Builder.<ZcProp>of(ZcProp::new, MobCategory.MISC).sized(1.0f, 1.0f).clientTrackingRange(10).updateInterval(20).noSave().build(propKey));
 	}
 }

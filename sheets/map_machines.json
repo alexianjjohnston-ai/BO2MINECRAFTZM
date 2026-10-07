@@ -3,50 +3,50 @@
   "id": "m_power",
   "kind": "power",
   "perk": "",
-  "x": 11,
+  "x": -19,
   "y": 1,
-  "z": 23,
-  "facing": "south",
-  "room": "depot"
+  "z": -1,
+  "facing": "east",
+  "room": "wing"
  },
  {
   "id": "m_jug",
   "kind": "perk",
   "perk": "jug",
-  "x": -6,
+  "x": 15,
   "y": 1,
-  "z": 22,
+  "z": -4,
   "facing": "west",
-  "room": "depot"
+  "room": "lobby"
  },
  {
   "id": "m_speed",
   "kind": "perk",
   "perk": "speed",
-  "x": -25,
+  "x": 15,
   "y": 1,
-  "z": -27,
-  "facing": "north",
-  "room": "depot"
+  "z": 4,
+  "facing": "west",
+  "room": "back"
  },
  {
   "id": "m_doubletap",
   "kind": "perk",
   "perk": "doubletap",
-  "x": 11,
+  "x": 10,
   "y": 1,
-  "z": 11,
+  "z": 5,
   "facing": "north",
-  "room": "depot"
+  "room": "back"
  },
  {
   "id": "m_revive",
   "kind": "perk",
   "perk": "revive",
-  "x": -15,
+  "x": 2,
   "y": 1,
-  "z": -23,
-  "facing": "east",
-  "room": "depot"
+  "z": 0,
+  "facing": "south",
+  "room": "back"
  }
 ]

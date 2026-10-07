@@ -40,6 +40,7 @@ public final class Sheets {
 	public static final List<SpawnDef> SPAWNS = load("map_spawns.json", SpawnDef.class);
 	public static final List<WallBuyDef> WALLBUYS = load("map_wallbuys.json", WallBuyDef.class);
 	public static final List<BoxDef> BOXES = load("map_boxes.json", BoxDef.class);
+	public static final List<DoorDef> DOORS = load("map_doors.json", DoorDef.class);
 	public static final List<MachineDef> MACHINES = load("map_machines.json", MachineDef.class);
 	public static final List<PapDef> PAPS = load("map_pap.json", PapDef.class);
 	public static final List<PlayerSpawn> PLAYER_SPAWNS = load("map_player.json", PlayerSpawn.class);
