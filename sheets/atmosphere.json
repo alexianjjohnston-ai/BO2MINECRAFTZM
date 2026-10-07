@@ -12,13 +12,13 @@
  },
  {
   "id": "bus_depot",
-  "fogColor": "#3B2A1B",
-  "fogStart": 6.0,
-  "fogEnd": 56.0,
-  "skyColor": "#17110C",
-  "cloudColor": "#33261A",
+  "fogColor": "#6B4A2E",
+  "fogStart": 4.0,
+  "fogEnd": 48.0,
+  "skyColor": "#4A3322",
+  "cloudColor": "#5E4630",
   "stars": 0.2,
-  "timeOfDay": 15500,
-  "note": "Tranzit: dusty orange-brown haze, dark sky, short sight lines"
+  "timeOfDay": 11800,
+  "note": "Tranzit: orange-brown dusk haze outside, interior stays dark from its own lighting"
  }
 ]

@@ -178,3 +178,8 @@ Built so new maps are data, not code:
 - Checked against scripts and already right: kill 50 / head +50 / neck +20 / torso +10 / melee +80, hit 10, box 950, PaP 5000, board points cap.
 - Bench: the zombie-through-window step used old diner coordinates (player now parked at the map spawn); full bench green on the Bus Depot (41 pass, 0 fail).
 - Not yet done in A: rounds 1-10 hand playthrough, stuck-zombie teleport/respawn, bounds/exploit checks, Max Ammo/nuke/carpenter numbers vs scripts, drop rates, down/revive numbers, `-PpapBench`.
+
+## Map look, stream B (2026-10-07)
+`tools/gen_depot.py` (re-run, don't hand-edit sheets): indoor floors are concrete (no asphalt road lines inside); floating lamp cubes replaced by flush neon strips with dim `light[level=9]` blocks under them; set dressing (ticket board, chairs as stairs, yellow-band pillars, bins, rubble, poster); a town outside the windows (street-front buildings with dark windows closing all four sides, gas-station canopy, wrecked cars, bare trees, bus-stop line). Player spawn now faces north (windows, ticket board, a wall gun). `atmosphere.json` bus_depot: dusk haze (timeOfDay 11800, orange-brown fog 4..48) so the outside is lit and the inside stays dark from its own lights. Preflight 0 errors.
+Dev: `-PdevProps=debugTour` visits 7 viewpoints and writes `zc-tour_N.png`; `-PdevDir=run/shot-x` gives a private run folder (several chats can run at once).
+Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulations: signs need NBT text), no wall clock/ticket-counter detail/lockers upgrade, no glass-block wall with a cracked hole, tour shows only blocky approximations, neon strips are cyan placeholder texture, no flicker.
