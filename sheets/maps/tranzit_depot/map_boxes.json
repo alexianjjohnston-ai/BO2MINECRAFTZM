@@ -1,0 +1,20 @@
+[
+ {
+  "id": "bx1",
+  "x": 27,
+  "y": 1,
+  "z": 5,
+  "facing": "west",
+  "initial": true,
+  "room": "hall"
+ },
+ {
+  "id": "bx2",
+  "x": 20,
+  "y": 1,
+  "z": -12,
+  "facing": "north",
+  "initial": false,
+  "room": "north"
+ }
+]

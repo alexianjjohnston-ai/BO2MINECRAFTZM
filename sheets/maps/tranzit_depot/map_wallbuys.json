@@ -1,0 +1,38 @@
+[
+ {
+  "id": "wb1",
+  "weaponId": "rottweil72",
+  "x": 21,
+  "y": 2,
+  "z": -9,
+  "facing": "south",
+  "room": "hall"
+ },
+ {
+  "id": "wb2",
+  "weaponId": "m14",
+  "x": 26,
+  "y": 2,
+  "z": -9,
+  "facing": "south",
+  "room": "hall"
+ },
+ {
+  "id": "wb3",
+  "weaponId": "ak74u",
+  "x": 28,
+  "y": 2,
+  "z": -8,
+  "facing": "west",
+  "room": "hall"
+ },
+ {
+  "id": "wb4",
+  "weaponId": "mp5k",
+  "x": 27,
+  "y": 2,
+  "z": -16,
+  "facing": "south",
+  "room": "north"
+ }
+]

@@ -16,8 +16,29 @@ public final class Sheets {
 
 	private static final Gson GSON = new Gson();
 
+	/** Which map's sheets to use: {@code -Dzombiecraft.map=tranzit_depot} or {@code map=tranzit_depot} in config/zombiecraft.properties. Empty = the built-in Bus Depot. */
+	public static final String MAP = mapId();
+
+	private static String mapId() {
+		String v = System.getProperty("zombiecraft.map", "");
+		if (v.isBlank()) {
+			try {
+				java.nio.file.Path cfg = net.fabricmc.loader.api.FabricLoader.getInstance().getGameDir().resolve("config").resolve("zombiecraft.properties");
+				if (java.nio.file.Files.isRegularFile(cfg)) {
+					Properties p = new Properties();
+					try (var in = java.nio.file.Files.newInputStream(cfg)) { p.load(in); }
+					v = p.getProperty("map", "");
+				}
+			} catch (java.io.IOException | RuntimeException ignored) {}
+		}
+		return v.trim();
+	}
+
 	private static <T> List<T> load(String file, Class<T> row) {
 		String path = "/data/zombiecraft/sheets/" + file;
+		// map_*.json can be overridden per map: sheets/maps/<id>/map_*.json (anything missing there falls back to the built-in sheet)
+		if (!MAP.isEmpty() && file.startsWith("map_") && Sheets.class.getResource("/data/zombiecraft/sheets/maps/" + MAP + "/" + file) != null)
+			path = "/data/zombiecraft/sheets/maps/" + MAP + "/" + file;
 		try (var in = Sheets.class.getResourceAsStream(path)) {
 			if (in == null) throw new IllegalStateException("missing sheet " + path);
 			Reader r = new InputStreamReader(in, StandardCharsets.UTF_8);

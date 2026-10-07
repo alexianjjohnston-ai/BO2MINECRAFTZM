@@ -24,7 +24,8 @@ public final class MapBuilder {
 		List<MapOp> ops = Sheets.MAP_OPS.stream().sorted(Comparator.comparingInt(MapOp::order)).toList();
 		int placed = 0;
 		for (MapOp o : ops) {
-			BlockState a = cache.computeIfAbsent(o.block(), s -> Barrier.parse(level, s));
+			boolean imp = o.op().equals("import"); // its "block" is a map file name, not a block
+			BlockState a = imp ? null : cache.computeIfAbsent(o.block(), s -> Barrier.parse(level, s));
 			BlockState b = o.block2() == null ? a : cache.computeIfAbsent(o.block2(), s -> Barrier.parse(level, s));
 			int x1 = Math.min(o.x1(), o.x2()), x2 = Math.max(o.x1(), o.x2());
 			int y1 = Math.min(o.y1(), o.y2()), y2 = Math.max(o.y1(), o.y2());
@@ -44,6 +45,7 @@ public final class MapBuilder {
 					int sx = Math.max(1, o.stepX()), sz = Math.max(1, o.stepZ());
 					for (int x = x1; x <= x2; x += sx) for (int z = z1; z <= z2; z += sz) for (int y = y1; y <= y2; y++) { set(level, origin, x, y, z, a); placed++; }
 				}
+				case "import" -> placed += ImportedMap.place(level, origin, o.block(), o.x1(), o.y1(), o.z1());
 				default -> throw new IllegalStateException("unknown map op " + o.op() + " in " + o.id());
 			}
 		}
