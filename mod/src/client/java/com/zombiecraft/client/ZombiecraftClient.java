@@ -64,6 +64,15 @@ public class ZombiecraftClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.CueStop.TYPE, (payload, ctx) -> CuePlayer.stop(payload.cue()));
 
 		ClientTickEvents.START_CLIENT_TICK.register(ZombiecraftClient::pollInput);
+		// dev: -Dzombiecraft.debugEndGame=true leaves the match from inside after a while, to check the screen that follows
+		if (Boolean.getBoolean("zombiecraft.debugEndGame")) {
+			int[] ticks = {0};
+			ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+				ticks[0]++;
+				if (mc.level != null && ticks[0] == 400) com.zombiecraft.client.menu.Bo2Menus.endGame();
+				if (ticks[0] == 560) net.minecraft.client.Screenshot.grab(mc.gameDirectory, mc.getMainRenderTarget(), c -> {});
+			});
+		}
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			keepWeaponSelected(mc);
 			GunFeedback.tick(mc);
