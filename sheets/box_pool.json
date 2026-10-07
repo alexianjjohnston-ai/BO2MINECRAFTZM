@@ -42,6 +42,30 @@
   "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
  },
  {
+  "id": "pool_fnfal",
+  "weaponId": "fnfal",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_saiga12",
+  "weaponId": "saiga12",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_rpd",
+  "weaponId": "rpd",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
+  "id": "pool_judge",
+  "weaponId": "judge",
+  "weight": 1.0,
+  "source": "uniform draw as in _zm_magicbox.gsc; the Ray Gun is rarer (tuned)"
+ },
+ {
   "id": "pool_ray_gun",
   "weaponId": "ray_gun",
   "weight": 0.35,

@@ -22,6 +22,9 @@ import java.util.Random;
 public final class Bo2Menus {
 	private Bo2Menus() {}
 
+	/** Set when the player ends a game: autoplay skips the title only once, so the title shown after leaving must be the BO2 one. */
+	static boolean afterGame;
+
 	static final int ORANGE = 0xFFF08A1C, WHITE = 0xFFF2EEE6, GREY = 0xFF9A958C, YELLOW = 0xFFF5D547, GOLD = 0xFFE0A82E;
 	private static final long T0 = System.nanoTime();
 	private static long loadStart, loadSeen;
@@ -39,12 +42,23 @@ public final class Bo2Menus {
 						Screen t = new Title(), root = new Bo2Options.Root(t);
 						mc.setScreen(switch (dbg) { case "settings" -> new Bo2Options.Settings(root); case "controls" -> new Bo2Options.Controls(root); case "title" -> t; case "quit" -> new QuitDialog(t); default -> root; });
 					});
-				} else if (screen instanceof TitleScreen && !autoplay) {
+				} else if (screen instanceof TitleScreen && (!autoplay || afterGame)) {
 				mc.execute(() -> mc.setScreen(new Title()));
 			} else if (screen instanceof PauseScreen ps && ps.showsPauseMenu()) {
 				mc.execute(() -> mc.setScreen(new Pause()));
 			}
 		});
+	}
+
+	/** Leaves the running game and returns to the BO2 title (the vanilla one would show with autoplay on). */
+	public static void endGame() {
+		Minecraft mc = Minecraft.getInstance();
+		boolean local = mc.isLocalServer();
+		if (mc.level != null) mc.level.disconnect();
+		if (local) mc.disconnect(new GenericMessageScreen(Component.translatable("menu.savingLevel")));
+		else mc.disconnect();
+		afterGame = true;
+		mc.setScreen(new TitleScreen());
 	}
 
 	private static float seconds() { return (System.nanoTime() - T0) / 1e9f; }
@@ -380,7 +394,7 @@ public final class Bo2Menus {
 			// the controls, shown here instead of as a banner over the game
 			int cx = (int) (width * 0.58), cy = y0, line = (int) (H(1.0f) * 1.5f);
 			text(g, "CONTROLS", cx, cy - line - 6, 1.3f, WHITE);
-			String[][] keys = {{"RIGHT CLICK", "Shoot"}, {"R", "Reload"}, {"LEFT CLICK", "Knife"}, {"F", "Buy / Open / Hold to repair"}};
+			String[][] keys = {{"RIGHT CLICK", "Shoot"}, {"R", "Reload"}, {"LEFT CLICK", "Knife"}, {"F", "Buy / Open / Hold to repair or revive"}, {"SHIFT", "Crouch"}, {"Z", "Prone"}};
 			for (String[] k : keys) { hint(g, k[0], k[1], cx, cy); cy += line; }
 		}
 	}
@@ -394,11 +408,7 @@ public final class Bo2Menus {
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
 			if (i == 1) { MenuAudio.play("uin_cmn_backout"); mc.setScreen(parent); return; }
-			boolean local = mc.isLocalServer();
-			mc.level.disconnect();
-			if (local) mc.disconnect(new GenericMessageScreen(Component.translatable("menu.savingLevel")));
-			else mc.disconnect();
-			mc.setScreen(new TitleScreen());
+			endGame();
 		}
 
 		@Override public boolean keyPressed(int key, int scan, int mods) {

@@ -4,70 +4,112 @@
   "group": "gun",
   "xmodel": "t6_wpn_pistol_m1911_view",
   "world": "t6_wpn_pistol_m1911_world",
-  "note": ""
+  "note": "",
+  "anim": "m1911"
  },
  {
   "id": "rottweil72",
   "group": "gun",
   "xmodel": "t6_wpn_shotty_olympia_view",
   "world": "t6_wpn_shotty_olympia_world",
-  "note": ""
+  "note": "",
+  "anim": "olympia"
  },
  {
   "id": "mp5k",
   "group": "gun",
   "xmodel": "t6_wpn_smg_mp5_view",
   "world": "t6_wpn_smg_mp5_world",
-  "note": ""
+  "note": "",
+  "anim": "mp5_t6"
  },
  {
   "id": "ak74u",
   "group": "gun",
   "xmodel": "t6_wpn_smg_ak74u_view",
   "world": "t6_wpn_smg_ak74u_world",
-  "note": ""
+  "note": "",
+  "anim": "ak74u_t6"
  },
  {
   "id": "m14",
   "group": "gun",
   "xmodel": "t6_wpn_ar_m14_view",
   "world": "t6_wpn_ar_m14_world",
-  "note": ""
+  "note": "",
+  "anim": "m14"
  },
  {
   "id": "m16",
   "group": "gun",
   "xmodel": "t6_wpn_ar_m16a2_view",
   "world": "t6_wpn_ar_m16a2_world",
-  "note": ""
+  "note": "",
+  "anim": "m16a2"
  },
  {
   "id": "galil",
   "group": "gun",
   "xmodel": "t6_wpn_ar_galil_view",
   "world": "t6_wpn_ar_galil_world",
-  "note": ""
+  "note": "",
+  "anim": "galil_t6"
  },
  {
   "id": "python",
   "group": "gun",
   "xmodel": "t6_wpn_pistol_python_view",
   "world": "t6_wpn_pistol_python_world",
-  "note": ""
+  "note": "",
+  "anim": "python_sw"
+ },
+ {
+  "id": "fnfal",
+  "group": "gun",
+  "xmodel": "t6_wpn_ar_fal_view",
+  "world": "t6_wpn_ar_fal_world",
+  "note": "",
+  "anim": "fal_t6"
+ },
+ {
+  "id": "saiga12",
+  "group": "gun",
+  "xmodel": "t6_wpn_shotty_saiga_view",
+  "world": "t6_wpn_shotty_saiga_world",
+  "note": "",
+  "anim": "saiga12"
+ },
+ {
+  "id": "rpd",
+  "group": "gun",
+  "xmodel": "t6_wpn_lmg_rpd_view",
+  "world": "t6_wpn_lmg_rpd_world",
+  "note": "",
+  "anim": "rpd"
+ },
+ {
+  "id": "judge",
+  "group": "gun",
+  "xmodel": "t6_wpn_pistol_judge_view",
+  "world": "t6_wpn_pistol_judge_world",
+  "note": "",
+  "anim": "judge"
  },
  {
   "id": "ray_gun",
   "group": "gun",
   "xmodel": "t6_wpn_zmb_raygun2_view",
   "world": "t6_wpn_zmb_raygun2_world",
-  "note": ""
+  "note": "",
+  "anim": "raygun_mk2"
  },
  {
   "id": "ray_gun_pap",
   "group": "gun",
   "xmodel": "t6_wpn_zmb_raygun2_upg_view",
   "world": "t6_wpn_zmb_raygun2_upg_world",
-  "note": ""
+  "note": "",
+  "anim": "raygun_mk2"
  },
  {
   "id": "zombie_a",
@@ -304,6 +346,34 @@
   "id": "powerup_carpenter",
   "group": "prop",
   "xmodel": "zombie_carpenter",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "viewhands_engineer",
+  "group": "viewhands",
+  "xmodel": "c_zom_engineer_viewhands",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "viewhands_farmgirl",
+  "group": "viewhands",
+  "xmodel": "c_zom_farmgirl_viewhands",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "viewhands_oldman",
+  "group": "viewhands",
+  "xmodel": "c_zom_oldman_viewhands",
+  "world": "",
+  "note": ""
+ },
+ {
+  "id": "viewhands_reporter",
+  "group": "viewhands",
+  "xmodel": "c_zom_reporter_viewhands",
   "world": "",
   "note": ""
  },

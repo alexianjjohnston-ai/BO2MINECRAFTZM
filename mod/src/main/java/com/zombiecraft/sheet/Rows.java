@@ -52,7 +52,7 @@ public final class Rows {
 	/** Fog, sky and clock for a map; "*" is the default. */
 	public record AtmosphereDef(String id, String fogColor, double fogStart, double fogEnd, String skyColor, String cloudColor, double stars, int timeOfDay, String note) {}
 
-	public record Bo2Model(String id, String group, String xmodel, String world, String note) {}
+	public record Bo2Model(String id, String group, String xmodel, String world, String note, String anim) {}
 
 	public record HookRow(String id, String system, String kind, String target, String handler, String status, String note) {}
 }

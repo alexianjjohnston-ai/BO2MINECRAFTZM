@@ -36,6 +36,8 @@ public final class Bo2Mesh {
 		/** Bounding box centre in BO2 inches. */
 		public final float cx, cy, cz;
 		public final float minX, maxX, minY, maxY, minZ, maxZ;
+		/** The per-surface textures (the view model rig patches the ones the install lacks). */
+		ResourceLocation[] surfaceTextures() { return tex; }
 		Loaded(XModel m, ResourceLocation[] tex) {
 			this.model = m; this.tex = tex;
 			float a = 1e9f, b = -1e9f, c = 1e9f, d = -1e9f, e = 1e9f, f = -1e9f;
@@ -92,6 +94,9 @@ public final class Bo2Mesh {
 
 	private static ResourceLocation white;
 
+	/** A plain white texture for flat-coloured, full-bright drawing (flashes, glows). */
+	public static ResourceLocation whiteTexture() { return white(); }
+
 	private static ResourceLocation white() {
 		if (white == null) {
 			NativeImage img = new NativeImage(2, 2, false);
@@ -107,7 +112,7 @@ public final class Bo2Mesh {
 		draw(l, pose, ps, buf, light, scale, axes);
 	}
 
-	private static ResourceLocation texture(String dds) {
+	static ResourceLocation texture(String dds) {
 		if (dds == null || dds.isEmpty()) return null;
 		if (TEXTURES.containsKey(dds)) return TEXTURES.get(dds);
 		ResourceLocation loc = null;
@@ -128,6 +133,14 @@ public final class Bo2Mesh {
 	 * for displays (forward is +x, left side away from the viewer).
 	 */
 	public static void draw(Loaded l, Pose pose, PoseStack ps, MultiBufferSource buf, int light, float scale, int axes) {
+		draw(l, pose, ps, buf, light, scale, axes, 0);
+	}
+
+	/**
+	 * As {@link #draw(Loaded, Pose, PoseStack, MultiBufferSource, int, float, int)}; {@code halo} (ARGB, 0 = off) draws the whole model as a
+	 * flat, full-bright, translucent colour instead of its textures: layered over a slightly larger copy it makes BO2's blue weapon glow.
+	 */
+	public static void draw(Loaded l, Pose pose, PoseStack ps, MultiBufferSource buf, int light, float scale, int axes, int halo) {
 		XModel m = l.model;
 		float[] sx = null, sy = null, sz = null;
 		if (pose != null) {
@@ -141,15 +154,18 @@ public final class Bo2Mesh {
 			XModel.Surface surf = m.surfaces.get(s);
 			// "objective" materials (the box's question marks) have a black texture and are lit by colour constants: full-bright additive gold, pulsing
 			boolean glow = m.materials.get(surf.material).name() != null && m.materials.get(surf.material).name().endsWith("_obj");
-			ResourceLocation tex = glow ? white() : l.tex[s];
+			boolean flat = halo != 0;
+			ResourceLocation tex = glow || flat ? white() : l.tex[s];
 			if (tex == null) continue;
-			VertexConsumer vc = buf.getBuffer(glow ? RenderType.entityTranslucentEmissive(tex) : RenderType.entityCutoutNoCull(tex));
+			VertexConsumer vc = buf.getBuffer(glow || flat ? RenderType.entityTranslucentEmissive(tex) : RenderType.entityCutoutNoCull(tex));
 			float pulse = pulse();
 			int cr = glow ? (int) (8 + 247 * pulse) : 255, cg = glow ? (int) (8 + 207 * pulse) : 255, cb = glow ? (int) (8 + 0 * pulse) : 255;
 			// lit parts of the powered machines ("..._on", "..._moving") are self-lit by the game and stay bright in the dark
 			String mn = m.materials.get(surf.material).name();
 			boolean selfLit = mn != null && (mn.endsWith("_on") || mn.endsWith("_moving"));
-			int lv = glow || selfLit ? 0xF000F0 : light;
+			int lv = glow || selfLit || flat ? 0xF000F0 : light;
+			int ca = 255;
+			if (flat) { cr = halo >> 16 & 255; cg = halo >> 8 & 255; cb = halo & 255; ca = halo >>> 24; }
 			for (int c = 0; c + 2 < surf.cornerCount(); c += 3) {
 				for (int k = 0; k < 4; k++) {
 					int ci = c + Math.min(k, 2), v = surf.vert[ci];
@@ -161,7 +177,7 @@ public final class Bo2Mesh {
 					else if (axes == 2) { px = -y; py = z; pz = -x; qx = -ny; qy = nz; qz = -nx; }
 					else if (axes == 3) { px = -x; py = z; pz = y; qx = -nx; qy = nz; qz = ny; }
 					else { px = y; py = z; pz = x; qx = ny; qy = nz; qz = nx; }
-					vc.addVertex(p, px * scale, py * scale, pz * scale).setColor(cr, cg, cb, 255)
+					vc.addVertex(p, px * scale, py * scale, pz * scale).setColor(cr, cg, cb, ca)
 							.setUv(surf.uv[ci * 2], surf.uv[ci * 2 + 1]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(lv).setNormal(p, qx, qy, qz);
 				}
 			}

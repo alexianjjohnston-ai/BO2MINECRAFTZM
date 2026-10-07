@@ -64,9 +64,11 @@ public final class Game {
 			ServerPlayer p = ctx.player();
 			PlayerGame pg = g.players.get(p.getUUID());
 			if (pg == null) return;
+			pg.interactHeld = payload.interactHeld();
+			if (pg.downed || pg.dead) { pg.fireHeld = false; return; }
 			pg.fireHeld = payload.fireHeld();
 			if (payload.fireClick()) pg.fireClick = true;
-			pg.interactHeld = payload.interactHeld();
+			if (payload.prone()) Revive.toggleProne(g, p, pg);
 			if (payload.reload() && g.phase != Payloads.PHASE_GAMEOVER) WeaponSystem.startReload(g, p, pg);
 			if (payload.melee() && g.phase != Payloads.PHASE_GAMEOVER) WeaponSystem.melee(g, p, pg);
 		});
@@ -76,6 +78,7 @@ public final class Game {
 			if (entity instanceof ServerPlayer p && INSTANCE != null && INSTANCE.phase != Payloads.PHASE_IDLE) {
 				if (INSTANCE.phase == Payloads.PHASE_GAMEOVER) return false;
 				PlayerGame pg = INSTANCE.players.get(p.getUUID());
+				if (pg != null && (pg.downed || pg.dead)) return false;
 				if (pg != null && INSTANCE.tick < pg.shieldUntil) return false;
 				if (pg != null) pg.lastHurtTick = INSTANCE.tick;
 				if (source.getEntity() instanceof ZcZombie) Cue.ui("evt_player_swiped", p);
@@ -85,7 +88,12 @@ public final class Game {
 		ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, amount) -> {
 			if (entity instanceof ServerPlayer p && INSTANCE != null && INSTANCE.phase != Payloads.PHASE_IDLE) {
 				PlayerGame pg = INSTANCE.players.get(p.getUUID());
-				if (pg != null && INSTANCE.phase != Payloads.PHASE_GAMEOVER && INSTANCE.machines.revive(p, pg)) return false;
+				if (pg != null && (pg.downed || pg.dead)) return false;
+				if (pg != null && INSTANCE.phase != Payloads.PHASE_GAMEOVER) {
+					// with teammates still standing the player goes down and can be revived; alone, Quick Revive is the only save
+					if (Revive.othersStanding(INSTANCE, p)) { Revive.down(INSTANCE, p, pg); return false; }
+					if (INSTANCE.machines.revive(p, pg)) return false;
+				}
 				INSTANCE.gameOver(p);
 				return false;
 			}
@@ -174,6 +182,7 @@ public final class Game {
 	public void resetPlayer(ServerPlayer p) {
 		PlayerGame pg = new PlayerGame(p.getUUID());
 		players.put(p.getUUID(), pg);
+		Revive.clear(p);
 		pg.points = Sheets.sysInt("start_points");
 		p.getInventory().clearContent();
 		p.setGameMode(GameType.ADVENTURE);
@@ -191,8 +200,20 @@ public final class Game {
 			int facing = switch (w.facing()) { case "north" -> 2; case "south" -> 3; case "west" -> 4; default -> 5; };
 			double x = origin.getX() + w.x() + 0.5, y = origin.getY() + w.y() + 0.5, z = origin.getZ() + w.z() + 0.5;
 			var weapon = Sheets.weapon(w.weaponId());
-			cmd(String.format(Locale.ROOT, "summon item_frame %.2f %.2f %.2f {Facing:%db,Fixed:1b,Invisible:1b,Invulnerable:1b,Silent:1b,ItemDropChance:0f,Item:{id:\"zombiecraft:%s\",count:1},Tags:[\"zc\",\"zc_wb:%s\"]}",
-					x, y, z, facing, w.weaponId(), w.id()));
+			if (LocalAssets.models) {
+				// BO2 look: the real gun model hung flat on the wall with its blue glow
+				var f = net.minecraft.core.Direction.valueOf(w.facing().toUpperCase());
+				var gun = new com.zombiecraft.entity.ZcProp(com.zombiecraft.entity.ZcEntities.PROP, level);
+				gun.moveTo(x - f.getStepX() * 0.44, y, z - f.getStepZ() * 0.44, Machines.yawOf(w.facing()), 0f);
+				gun.setYRot(Machines.yawOf(w.facing()));
+				gun.addTag("zc"); gun.addTag("zc_wb:" + w.id());
+				gun.getEntityData().set(com.zombiecraft.entity.ZcProp.KIND, com.zombiecraft.entity.ZcProp.WALLGUN);
+				gun.getEntityData().set(com.zombiecraft.entity.ZcProp.PAP_WEAPON, w.weaponId());
+				level.addFreshEntity(gun);
+			}
+			// the invisible frame is what the player aims at; it holds the item only when there is no glowing model
+			cmd(String.format(Locale.ROOT, "summon item_frame %.2f %.2f %.2f {Facing:%db,Fixed:1b,Invisible:1b,Invulnerable:1b,Silent:1b,ItemDropChance:0f,%sTags:[\"zc\",\"zc_wb:%s\"]}",
+					x, y, z, facing, LocalAssets.models ? "" : "Item:{id:\"zombiecraft:" + w.weaponId() + "\",count:1},", w.id()));
 		}
 	}
 
@@ -203,6 +224,7 @@ public final class Game {
 		zombiesToSpawn = row.zombies();
 		spawnCooldown = 40;
 		phase = Payloads.PHASE_ACTIVE;
+		Revive.respawnDead(this);
 		for (PlayerGame pg : players.values()) pg.boardPointsThisRound = 0;
 		if (powerups != null) powerups.newRound();
 		Cue.all("mus_zombie_round_start", level);
@@ -293,6 +315,42 @@ public final class Game {
 			float yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
 			for (ServerPlayer p : level.players()) p.teleportTo(level, px, cp.getY(), pz, Set.of(), yaw, 22f, true);
 		}
+		// dev: -Dzombiecraft.debugPap=true shows Pack-a-Punch holding a gun (upgrading, then ready) and saves screenshots
+		if (Boolean.getBoolean("zombiecraft.debugPap") && pap != null && machines != null) {
+			long t = tick - startedAt;
+			if (t == 50) {
+				var d = pap.def();
+				var f = net.minecraft.core.Direction.valueOf(d.facing().toUpperCase());
+				double px = origin.getX() + (d.x1() + d.x2()) / 2.0 + 0.5 + f.getStepX() * 3.2, pz = origin.getZ() + (d.z1() + d.z2()) / 2.0 + 0.5 + f.getStepZ() * 3.2;
+				float yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
+				for (ServerPlayer p : level.players()) p.teleportTo(level, px, origin.getY() + d.y1(), pz, Set.of(), yaw, 12f, true);
+			}
+			if (t == 60) pap.debugShow(PapSystem.State.UPGRADING, "m14");
+			if (t == 75 || t == 95) for (ServerPlayer p : level.players()) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("pap_work_" + t));
+			if (t == 100) pap.debugShow(PapSystem.State.READY, "m14");
+			if (t == 112 || t == 140) for (ServerPlayer p : level.players()) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("pap_ready_" + t));
+		}
+		// dev: -Dzombiecraft.debugDrink=true (with debugPower) buys Juggernog and screenshots the bottle animation
+		if (Boolean.getBoolean("zombiecraft.debugDrink") && machines != null) {
+			long t = tick - startedAt;
+			for (ServerPlayer p : level.players()) {
+				if (t == 70) { pg(p).points = 9000; for (var md : Sheets.MACHINES) if (md.perk() != null && md.perk().equals("jug")) machines.use(md, p, pg(p)); }
+				if (t == 85 || t == 95 || t == 105 || t == 115 || t == 125) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("drink_" + t));
+			}
+		}
+		// dev: -Dzombiecraft.debugGun=true puts every gun in the hand in turn (60 ticks each) and saves an idle and a reload screenshot
+		if (Boolean.getBoolean("zombiecraft.debugGun")) {
+			long t = tick - startedAt - 60;
+			var ids = Sheets.WEAPONS.stream().filter(w -> !w.upgrade()).map(com.zombiecraft.sheet.Rows.WeaponDef::id).toList();
+			int idx = (int) (t / 70), ph = (int) (t % 70);
+			if (t >= 0 && idx < ids.size()) for (ServerPlayer p : level.players()) {
+				var gun = WeaponSystem.active(p, pg(p));
+				if (ph == 0) { WeaponSystem.give(p, pg(p), 0, ids.get(idx), false); p.getInventory().selected = 0; }
+				if (ph == 25) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("gun_" + ids.get(idx) + "_idle"));
+				if (ph == 30 && gun != null) { gun.mag = Math.min(gun.mag, 1); WeaponSystem.startReload(this, p, pg(p)); }
+				if (ph == 48) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("gun_" + ids.get(idx) + "_reload"));
+			}
+		}
 		// dev: -Dzombiecraft.debugPowerups=true lays out every power-up in an arc in front of the player and saves a screenshot
 		if (Boolean.getBoolean("zombiecraft.debugPowerups") && powerups != null && (tick - startedAt == 60 || tick - startedAt == 120)) {
 			for (ServerPlayer p : level.players()) {
@@ -358,12 +416,14 @@ public final class Game {
 		var due = scheduled.headMap(tick, true);
 		for (var list : new ArrayList<>(due.values())) for (Runnable r : list) r.run();
 		due.clear();
+		Revive.tickAll(this);
 		for (ServerPlayer p : level.players()) tickPlayer(p);
 	}
 
 	private void tickPlayer(ServerPlayer p) {
 		PlayerGame pg = pg(p);
-		if (phase != Payloads.PHASE_GAMEOVER) {
+		if (pg.downed || pg.dead) pg.prompt = "";
+		else if (phase != Payloads.PHASE_GAMEOVER) {
 			WeaponSystem.tick(this, p, pg);
 			Interactions.update(this, p, pg);
 			p.getFoodData().setFoodLevel(20);
@@ -381,6 +441,7 @@ public final class Game {
 				g == null ? "" : g.displayName(), pg.prompt, pg.messageTicks > 0 ? pg.message : "", pg.interactable,
 				zombiesToSpawn + alive.size(), sec, roundsSurvived,
 				pg.perks | (machines.power ? 256 : 0) | (pg.drinking ? 512 | (pg.drinkPerk << 10) : 0), powerups.instaTicks / 20, powerups.doubleTicks / 20,
-				pg.kills, pg.headshots, pg.downs, pg.revives));
+				pg.kills, pg.headshots, pg.downs, pg.revives,
+				pg.downed ? (int) Math.max(1, (pg.bleedEnd - tick + 19) / 20) : 0, pg.reviveShow));
 	}
 }

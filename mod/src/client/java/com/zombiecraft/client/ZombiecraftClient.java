@@ -27,8 +27,8 @@ import net.minecraft.world.InteractionResult;
 import org.lwjgl.glfw.GLFW;
 
 public class ZombiecraftClient implements ClientModInitializer {
-	public static volatile Payloads.StateSync state = new Payloads.StateSync(0, 0, 0, -1, 0, "", "", "", false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	private static KeyMapping interactKey, reloadKey;
+	public static volatile Payloads.StateSync state = new Payloads.StateSync(0, 0, 0, -1, 0, "", "", "", false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	private static KeyMapping interactKey, reloadKey, proneKey;
 	private static boolean lastFire, lastInteract, lastAttack;
 	private static int lastWeaponSlot;
 
@@ -41,6 +41,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 		com.zombiecraft.client.menu.Bo2Menus.register();
 
 		interactKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.zombiecraft.interact", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F, "key.categories.zombiecraft"));
+		proneKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.zombiecraft.prone", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, "key.categories.zombiecraft"));
 		reloadKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.zombiecraft.reload", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.categories.zombiecraft"));
 
 		// blocks and items are never "used" the vanilla way: right click is the trigger, F is use, left click is the knife
@@ -63,6 +64,15 @@ public class ZombiecraftClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.CueStop.TYPE, (payload, ctx) -> CuePlayer.stop(payload.cue()));
 
 		ClientTickEvents.START_CLIENT_TICK.register(ZombiecraftClient::pollInput);
+		// dev: -Dzombiecraft.debugEndGame=true leaves the match from inside after a while, to check the screen that follows
+		if (Boolean.getBoolean("zombiecraft.debugEndGame")) {
+			int[] ticks = {0};
+			ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+				ticks[0]++;
+				if (mc.level != null && ticks[0] == 400) com.zombiecraft.client.menu.Bo2Menus.endGame();
+				if (ticks[0] == 560) net.minecraft.client.Screenshot.grab(mc.gameDirectory, mc.getMainRenderTarget(), c -> {});
+			});
+		}
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			keepWeaponSelected(mc);
 			GunFeedback.tick(mc);
@@ -75,7 +85,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 	}
 
 	private static void resetSession() {
-		state = new Payloads.StateSync(Payloads.PHASE_IDLE, 0, 0, -1, 0, "", "", "", false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		state = new Payloads.StateSync(Payloads.PHASE_IDLE, 0, 0, -1, 0, "", "", "", false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		lastFire = lastInteract = lastAttack = false;
 		lastWeaponSlot = 0;
 		GunFeedback.reset();
@@ -117,8 +127,10 @@ public class ZombiecraftClient implements ClientModInitializer {
 		boolean reload = false;
 		while (reloadKey.consumeClick()) reload = playing;
 		boolean melee = attack && !lastAttack;
-		if (fire != lastFire || interact != lastInteract || reload || melee || fire || fireClick) {
-			net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new Payloads.Input(fire, fireClick, interact, reload, melee));
+		boolean prone = false;
+		while (proneKey.consumeClick()) prone = playing;
+		if (fire != lastFire || interact != lastInteract || reload || melee || fire || fireClick || prone) {
+			net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new Payloads.Input(fire, fireClick, interact, reload, melee, prone));
 		}
 		lastFire = fire; lastInteract = interact; lastAttack = attack;
 	}

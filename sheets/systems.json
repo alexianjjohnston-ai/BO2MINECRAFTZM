@@ -382,5 +382,77 @@
   "source": "",
   "status": "tuned",
   "note": "how far away the F key works on the box, machine and wall guns"
+ },
+ {
+  "id": "bleedout_s",
+  "value": 30,
+  "unit": "s",
+  "source": "",
+  "status": "tuned",
+  "note": "how long a downed player bleeds out before dying (BO2 default 30)"
+ },
+ {
+  "id": "revive_time_s",
+  "value": 3.0,
+  "unit": "s",
+  "source": "",
+  "status": "tuned",
+  "note": "how long a teammate must hold F to revive a downed player"
+ },
+ {
+  "id": "revive_time_quick_s",
+  "value": 1.5,
+  "unit": "s",
+  "source": "",
+  "status": "tuned",
+  "note": "revive time when the reviver owns Quick Revive"
+ },
+ {
+  "id": "revive_reach",
+  "value": 1.9,
+  "unit": "blocks",
+  "source": "",
+  "status": "tuned",
+  "note": "how close a teammate must stand to revive"
+ },
+ {
+  "id": "revive_points",
+  "value": 100,
+  "unit": "points",
+  "source": "",
+  "status": "tuned",
+  "note": "points the reviver earns"
+ },
+ {
+  "id": "prone_speed_mult",
+  "value": 0.4,
+  "unit": "mult",
+  "source": "",
+  "status": "tuned",
+  "note": "walking speed while prone (crawling)"
+ },
+ {
+  "id": "downed_speed_mult",
+  "value": 0.25,
+  "unit": "mult",
+  "source": "",
+  "status": "tuned",
+  "note": "crawl speed of a downed player"
+ },
+ {
+  "id": "prone_spread_mult",
+  "value": 0.5,
+  "unit": "mult",
+  "source": "",
+  "status": "tuned",
+  "note": "gun spread multiplier while prone"
+ },
+ {
+  "id": "crouch_spread_mult",
+  "value": 0.7,
+  "unit": "mult",
+  "source": "",
+  "status": "tuned",
+  "note": "gun spread multiplier while crouching"
  }
 ]

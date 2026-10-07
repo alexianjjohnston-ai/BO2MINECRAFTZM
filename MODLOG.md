@@ -155,3 +155,11 @@ Built so new maps are data, not code:
 - `sheets/atmosphere.json`: fog colour/start/end, sky, cloud, stars, time of day per map ("*" default). Client mixins `ZcFogMixin` (FogRenderer) and `ZcSkyMixin` (ClientLevel) apply it only while a match runs (`client/Atmosphere`); `Game.start` sets the clock from it.
 - The pack makes the grass/foliage colour maps neutral and drops lava animation (static texture).
 - Bench 41/41 with all of this. Dev: -PdevProps=name[=value],... opens `run/shot` with -Dzombiecraft.<name>; debugOptions=title|root|settings|controls|quit opens a menu directly.
+
+## Guns: BO2 first-person rig, glowing displays, more guns (2026-10-07)
+- `client/render/ViewModel`: the real BO2 view rig. Hands model `c_zom_<character>_viewhands` (-Dzombiecraft.character, default oldman) and the gun's `t6_wpn_*_view` are both posed by the gun's own clips `viewmodel_<anim>_{idle,fire,reload,reload_empty,pullout,first_raise}` (prefix in `bo2_models.anim`; extracted by Bo2Assets). The gun skeleton (root j_gun) rides the hands' `tag_weapon` (`Pose.buildOn`). Missing clips fall back (M14 holds first_raise; RPD/Judge use whatever reload exists). Per-character sleeve images are not in the install's data, so sleeves are a plain cloth texture and the skin uses BO2's `c_gen_arm_*` map. Muzzle flash is drawn at `tag_flash`. Old procedural recoil is skipped when the rig is available.
+- Displays: `ZcProp` kinds WALLGUN / BOXGUN, plus the gun inside Pack-a-Punch (`ZcPropRenderer`), drawn as the world model with two translucent blue halo layers (`Bo2Mesh.draw(..., halo)`). Wall guns keep an invisible item frame for aiming; with BO2 models the frame is empty.
+- New guns from BO2's own weapon files: FAL, Saiga 12, RPD, Executioner (+ PaP rows). Upgraded-gun NAMES for these are placeholders ("<gun> PaP"): the real names are localised strings that are not in the extracted data. Not added: B23R and Five-seven (no HUD icon / viewmodel clips in the install), DSR 50 (no icon).
+- Cache/pack rebuild now also keys on the bo2_models sheet (`Bo2Assets.sheetsHash`).
+- Dev switches (use `-PdevProps=a,b`): debugGun (every gun idle + reload screenshots), debugPap, debugDrink, debugPowerups, debugOptions=..., debugVm.
+- Known: `bench` box-pay can flake on a late teddy; `viewmodel_m14_idle` does not exist in BO2.

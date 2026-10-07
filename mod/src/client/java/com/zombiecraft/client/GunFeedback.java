@@ -27,7 +27,8 @@ public final class GunFeedback {
 	private static double shotAt = NO_EVENT, hitAt = NO_EVENT, reloadAt = NO_EVENT;
 	private static float shotStrength;
 	private static int reloadTicks, shotSequence;
-	private static boolean headshot, killed;
+	private static boolean headshot, killed, reloadEmpty;
+	/** Ticks since this gun was equipped (the client re-counts from zero whenever the held gun changes). */
 
 	private GunFeedback() {}
 
@@ -55,7 +56,8 @@ public final class GunFeedback {
 				reloadTicks = 0;
 			}
 			case Payloads.FEEDBACK_RELOAD_START -> {
-				reloadAt = now;
+				reloadEmpty = ZombiecraftClient.state.mag() <= 0;
+					reloadAt = now;
 				reloadTicks = Math.max(1, event.durationTicks());
 				shotAt = NO_EVENT;
 			}
@@ -110,6 +112,11 @@ public final class GunFeedback {
 	public static boolean hitMarkerHeadshot() { return headshot; }
 	public static boolean hitMarkerKilled() { return killed; }
 
+	/** Ticks since the last shot (large when none), since the gun was equipped, and whether the current reload started on an empty magazine. */
+	public static float shotAgeTicks(float partialTick) { return shotAt <= NO_EVENT ? 1e6f : (float) (time(partialTick) - shotAt); }
+	public static float equipAgeTicks(float partialTick) { return (float) time(partialTick); }
+	public static boolean reloadWasEmpty() { return reloadEmpty; }
+
 	public static boolean isReloading() {
 		return reloadTicks > 0 && time(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false)) - reloadAt < reloadTicks;
 	}
@@ -125,6 +132,8 @@ public final class GunFeedback {
 		if (hand == InteractionHand.MAIN_HAND && mc.options.getCameraType().isFirstPerson() && mc.player != null) drink(mc, pose, buffers);
 		if (hand != InteractionHand.MAIN_HAND || !refreshContext(mc) || weapon == null
 				|| !weapon.equals(ModItems.weaponOf(stack)) || !mc.options.getCameraType().isFirstPerson()) return;
+		// the real BO2 rig animates recoil and reloads itself
+		if (com.zombiecraft.client.render.ViewModel.has(weapon)) return;
 		int side = mc.player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
 		double now = time(partialTick);
 		float kick = recoil(now);
@@ -165,8 +174,8 @@ public final class GunFeedback {
 		float up = smooth(0.05f, 0.3f, p) * (1f - smooth(0.82f, 1f, p));
 		float tip = smooth(0.32f, 0.5f, p) * (1f - smooth(0.62f, 0.78f, p));
 		pose.pushPose();
-		pose.translate(-side * 0.05f * tip, -0.75f * (1f - up) + 0.12f * tip, 0.1f * tip);
-		pose.mulPose(Axis.XP.rotationDegrees(-70f * tip));
+		pose.translate(-side * 0.30f * tip, -0.75f * (1f - up) + 0.26f * tip, -0.10f * tip);
+		pose.mulPose(Axis.XP.rotationDegrees(48f * tip));
 		pose.mulPose(Axis.ZP.rotationDegrees(side * 12f * tip));
 		String[] bottles = {"bottle_jugg", "bottle_speed", "bottle_doubletap", "bottle_revive"};
 		int bit = (perks >> 10) & 3;

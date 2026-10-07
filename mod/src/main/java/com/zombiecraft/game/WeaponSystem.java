@@ -160,14 +160,14 @@ public final class WeaponSystem {
 		Vec3 look = p.getViewVector(1f);
 
 		if (w.projectile()) {
-			Projectiles.launch(p, w, eye.add(look.scale(0.6)), spread(look, w.spreadDeg()));
+			Projectiles.launch(p, w, eye.add(look.scale(0.6)), spread(look, w.spreadDeg() * Revive.spreadFactor(p, pg)));
 			return;
 		}
 
 		Map<ZcZombie, double[]> hits = new LinkedHashMap<>();
 		double band = Sheets.sys("headshot_band");
 		for (int i = 0; i < Math.max(1, w.pellets()); i++) {
-			Vec3 dir = spread(look, w.spreadDeg());
+			Vec3 dir = spread(look, w.spreadDeg() * Revive.spreadFactor(p, pg));
 			Vec3 end = eye.add(dir.scale(w.range()));
 			BlockHitResult bh = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
 			double maxDist = bh.getType() == HitResult.Type.MISS ? w.range() : bh.getLocation().distanceTo(eye);

@@ -32,6 +32,10 @@ GUNS = [
     ('m16',        'M16',     'm16_zm',        'm16_gl_upgraded_zm', 'rifle',    'rifle',    '#3d4a3a', 1200, 1.0, False, 'Skullcrusher',        1.0, ('fly_m16_mag_out', 'fly_m16_mag_in', 'fly_m16_charge'), 'wpn_m16_dryfire_plr'),
     ('galil',      'Galil',   'galil_zm',      'galil_upgraded_zm',  'rifle',    'rifle',    '#556b2f', None, 1.0, False, 'Lamentation',         1.0, ('fly_galil_mag_out', 'fly_galil_mag_in', 'fly_galil_charge'), 'wpn_galil_dryfire_plr'),
     ('python',     'Python',  'python_zm',     'python_upgraded_zm', 'pistol',   'revolver', '#9a9a9a', None, 1.0, False, 'Cobra',               0.5, ('fly_python_open', 'fly_python_load', 'fly_python_close'), 'wpn_python_dryfire_plr'),
+    ('fnfal',      'FAL',     'fnfal_zm',      'fnfal_upgraded_zm',  'rifle',    'rifle',    '#4a4a52', None, 1.0, False, 'FAL PaP',             1.0, ('fly_fnfal_mag_out', 'fly_fnfal_mag_in', 'fly_fnfal_charge'), 'wpn_fnfal_dryfire_plr'),
+    ('saiga12',    'Saiga 12', 'saiga12_zm',   'saiga12_upgraded_zm', 'shotgun', 'shotgun',  '#5a4a3a', None, 1.0, False, 'Saiga 12 PaP',        4.5, ('fly_saiga12_mag_out', 'fly_saiga12_mag_in', 'fly_saiga12_release'), 'wpn_saiga12_dryfire_plr'),
+    ('rpd',        'RPD',     'rpd_zm',        'rpd_upgraded_zm',    'rifle',    'rifle',    '#3d4538', None, 1.0, False, 'RPD PaP',             2.5, ('fly_rpd_mag_out', 'fly_rpd_mag_in', 'fly_rpd_close'), 'wpn_rpd_dryfire_plr'),
+    ('judge',      'Executioner', 'judge_zm',  'judge_upgraded_zm',  'pistol',   'revolver', '#8a8a8a', None, 1.0, False, 'Executioner PaP',     4.0, ('fly_judge_open', 'fly_judge_load', 'fly_judge_close'), 'wpn_judge_dryfire_plr'),
     ('ray_gun',    'Ray Gun', 'ray_gun_zm',    'ray_gun_upgraded_zm', 'raygun',  'raygun',   '#3fb86b', None, 0.35, False, "Porter's X2 Ray Gun", 0.0, ('wpn_ray_reload_battery_out', 'wpn_ray_reload_battery_in', 'wpn_ray_reload_close'), 'wpn_1911_dryfire_plr'),
 ]
 

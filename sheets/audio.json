@@ -240,6 +240,36 @@
   "fallback": "minecraft:block.dispenser.fail"
  },
  {
+  "cue": "fly_fnfal_charge",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_end"
+ },
+ {
+  "cue": "fly_fnfal_mag_in",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_middle"
+ },
+ {
+  "cue": "fly_fnfal_mag_out",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_start"
+ },
+ {
   "cue": "fly_galil_charge",
   "category": "weapon",
   "soundSource": "PLAYERS",
@@ -261,6 +291,36 @@
  },
  {
   "cue": "fly_galil_mag_out",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_start"
+ },
+ {
+  "cue": "fly_judge_close",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_end"
+ },
+ {
+  "cue": "fly_judge_load",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 2,
+  "fallback": "minecraft:item.crossbow.loading_middle"
+ },
+ {
+  "cue": "fly_judge_open",
   "category": "weapon",
   "soundSource": "PLAYERS",
   "volume": 0.8,
@@ -388,6 +448,66 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:item.crossbow.loading_start"
+ },
+ {
+  "cue": "fly_rpd_close",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_end"
+ },
+ {
+  "cue": "fly_rpd_mag_in",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_middle"
+ },
+ {
+  "cue": "fly_rpd_mag_out",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_start"
+ },
+ {
+  "cue": "fly_saiga12_mag_in",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_middle"
+ },
+ {
+  "cue": "fly_saiga12_mag_out",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_start"
+ },
+ {
+  "cue": "fly_saiga12_release",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:item.crossbow.loading_end"
  },
  {
   "cue": "fly_step_run_npc_ceramic",
@@ -670,6 +790,36 @@
   "fallback": "minecraft:entity.arrow.shoot"
  },
  {
+  "cue": "wpn_fnfal_dryfire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.dispenser.fail"
+ },
+ {
+  "cue": "wpn_fnfal_fire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
+ },
+ {
+  "cue": "wpn_fnfal_fire_plr_pap",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
+ },
+ {
   "cue": "wpn_galil_dryfire_plr",
   "category": "weapon",
   "soundSource": "PLAYERS",
@@ -691,6 +841,36 @@
  },
  {
   "cue": "wpn_galil_fire_plr_pap",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
+ },
+ {
+  "cue": "wpn_judge_dryfire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.dispenser.fail"
+ },
+ {
+  "cue": "wpn_judge_fire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
+ },
+ {
+  "cue": "wpn_judge_fire_plr_pap",
   "category": "weapon",
   "soundSource": "PLAYERS",
   "volume": 0.8,
@@ -940,6 +1120,66 @@
   "fallback": "minecraft:item.crossbow.loading_middle"
  },
  {
+  "cue": "wpn_rpd_dryfire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.dispenser.fail"
+ },
+ {
+  "cue": "wpn_rpd_fire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
+ },
+ {
+  "cue": "wpn_rpd_fire_plr_pap",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
+ },
+ {
+  "cue": "wpn_saiga12_dryfire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.dispenser.fail"
+ },
+ {
+  "cue": "wpn_saiga12_fire_plr",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
+ },
+ {
+  "cue": "wpn_saiga12_fire_plr_pap",
+  "category": "weapon",
+  "soundSource": "PLAYERS",
+  "volume": 0.8,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.arrow.shoot"
+ },
+ {
   "cue": "zmb_board_slam",
   "category": "world",
   "soundSource": "BLOCKS",
@@ -1170,6 +1410,16 @@
   "fallback": "minecraft:block.note_block.bass"
  },
  {
+  "cue": "zmb_power_door",
+  "category": "world",
+  "soundSource": "MASTER",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.iron_door.open"
+ },
+ {
   "cue": "zmb_power_on_quad",
   "category": "ui",
   "soundSource": "MASTER",
@@ -1198,6 +1448,16 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:block.wood.place"
+ },
+ {
+  "cue": "zmb_small_wood_door",
+  "category": "world",
+  "soundSource": "MASTER",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.wooden_door.open"
  },
  {
   "cue": "zmb_spawn_powerup",
@@ -1328,25 +1588,5 @@
   "loop": false,
   "variants": 2,
   "fallback": "minecraft:entity.zombie.ambient"
- },
- {
-  "cue": "zmb_power_door",
-  "category": "world",
-  "soundSource": "MASTER",
-  "volume": 1.0,
-  "positional": false,
-  "loop": false,
-  "variants": 1,
-  "fallback": "minecraft:block.iron_door.open"
- },
- {
-  "cue": "zmb_small_wood_door",
-  "category": "world",
-  "soundSource": "MASTER",
-  "volume": 1.0,
-  "positional": false,
-  "loop": false,
-  "variants": 1,
-  "fallback": "minecraft:block.wooden_door.open"
  }
 ]
