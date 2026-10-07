@@ -2,46 +2,37 @@
  {
   "id": "wb1",
   "weaponId": "rottweil72",
-  "x": -21,
+  "x": -3,
   "y": 2,
-  "z": -5,
-  "facing": "north",
-  "room": "diner"
+  "z": -13,
+  "facing": "south",
+  "room": "lobby"
  },
  {
   "id": "wb2",
-  "weaponId": "mp5k",
-  "x": -11,
+  "weaponId": "m14",
+  "x": 15,
   "y": 2,
-  "z": -5,
-  "facing": "north",
-  "room": "diner"
+  "z": -12,
+  "facing": "west",
+  "room": "lobby"
  },
  {
   "id": "wb3",
-  "weaponId": "m14",
-  "x": -27,
+  "weaponId": "ak74u",
+  "x": -19,
   "y": 2,
-  "z": -19,
-  "facing": "south",
-  "room": "diner"
+  "z": 1,
+  "facing": "east",
+  "room": "wing"
  },
  {
   "id": "wb4",
-  "weaponId": "ak74u",
-  "x": 7,
+  "weaponId": "mp5k",
+  "x": -2,
   "y": 2,
-  "z": -7,
-  "facing": "east",
-  "room": "shop"
- },
- {
-  "id": "wb5",
-  "weaponId": "m16",
-  "x": 19,
-  "y": 2,
-  "z": -19,
-  "facing": "south",
-  "room": "shop"
+  "z": 5,
+  "facing": "north",
+  "room": "back"
  }
 ]
