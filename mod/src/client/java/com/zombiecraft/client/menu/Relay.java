@@ -30,16 +30,21 @@ final class Relay {
 	private static volatile Socket control;
 	private static ServerSocket forwarder;
 
-	/** "host:port" from the config, or null. */
-	static String configured() {
-		String v = System.getProperty("zombiecraft.relay", "");
+	/** What the lobby shows while there is no code yet, or why there will be none. */
+	static volatile String status = "";
+
+	/** "host:port" of a relay from the config, or null. */
+	static String configured() { return prop("relay"); }
+
+	private static String prop(String key) {
+		String v = System.getProperty("zombiecraft." + key, "");
 		if (v.isBlank()) {
 			try {
 				Path cfg = Minecraft.getInstance().gameDirectory.toPath().resolve("config").resolve("zombiecraft.properties");
 				if (Files.isRegularFile(cfg)) {
 					Properties p = new Properties();
 					try (var in = Files.newInputStream(cfg)) { p.load(in); }
-					v = p.getProperty("relay", "");
+					v = p.getProperty(key, "");
 				}
 			} catch (IOException | RuntimeException ignored) {}
 		}
@@ -47,8 +52,75 @@ final class Relay {
 		return v.isEmpty() ? null : v;
 	}
 
-	/** A join code looks like six letters/digits; anything with a dot or colon is an address. */
-	static boolean looksLikeCode(String s) { return s.matches("[A-Za-z0-9]{6}"); }
+	/** A join code is 6 letters/digits (relay) or 10 base-32 characters, optionally with a dash (the address itself); anything with a dot or colon is an address. */
+	static boolean looksLikeCode(String s) { return s.matches("[A-Za-z0-9]{6}|[A-Za-z2-7]{5}-?[A-Za-z2-7]{5}"); }
+
+	private static final String B32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+
+	/** "1.2.3.4" + port -> "XXXXX-XXXXX" (6 bytes in 10 base-32 characters). */
+	static String encode(String ip, int port) {
+		long v = 0;
+		for (String part : ip.split("\\.")) v = v << 8 | Integer.parseInt(part);
+		v = v << 16 | port;
+		v <<= 2; // 48 bits -> 50 bits
+		StringBuilder b = new StringBuilder();
+		for (int i = 9; i >= 0; i--) b.append(B32.charAt((int) (v >> (5 * i) & 31)));
+		return b.insert(5, '-').toString();
+	}
+
+	/** The inverse of {@link #encode}: "ip:port". */
+	static String decode(String code) {
+		String s = code.replace("-", "").toUpperCase();
+		long v = 0;
+		for (int i = 0; i < 10; i++) v = v << 5 | B32.indexOf(s.charAt(i));
+		v >>= 2;
+		int port = (int) (v & 0xFFFF);
+		long ip = v >> 16;
+		return (ip >> 24 & 255) + "." + (ip >> 16 & 255) + "." + (ip >> 8 & 255) + "." + (ip & 255) + ":" + port;
+	}
+
+	/** What to connect to for a typed join code: the address inside a 10-character code, or a loopback forwarder through the relay for a 6-character one. Null when it is not a code. */
+	static String resolveJoin(String input) throws IOException {
+		String a = input.trim();
+		if (!looksLikeCode(a)) return null;
+		if (a.replace("-", "").length() == 10) return decode(a);
+		if (configured() == null) throw new IOException("That code needs a relay (relay=host:port in config/zombiecraft.properties). Codes from the lobby have 10 characters.");
+		return "127.0.0.1:" + forward(a);
+	}
+
+	/**
+	 * Makes the world on {@code localPort} reachable and fills in {@link #code}: through the relay when one is configured, else the router is asked to
+	 * open the port (UPnP) and the code is the public address itself. {@code publicAddress=host:port} in the config (a playit.gg tunnel, a forwarded port)
+	 * replaces the router step. {@link #status} says what is happening or what went wrong.
+	 */
+	static void expose(int localPort) {
+		code = null;
+		if (configured() != null) { status = "Connecting to the relay..."; host(localPort); return; }
+		status = "Opening a port on your router...";
+		Thread t = new Thread(() -> {
+			try {
+				String pub = prop("publicAddress"), ip;
+				int port = localPort;
+				if (pub != null) {
+					int i = pub.lastIndexOf(':');
+					ip = InetAddress.getByName(i < 0 ? pub : pub.substring(0, i)).getHostAddress();
+					port = i < 0 ? localPort : Integer.parseInt(pub.substring(i + 1));
+				} else {
+					ip = Upnp.open(localPort);
+					if (Upnp.isPrivate(ip)) throw new IOException("Your internet provider shares one public address between customers, so friends cannot reach you directly. Use a tunnel such as playit.gg and put its address in config/zombiecraft.properties as publicAddress=host:port.");
+				}
+				if (!ip.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) throw new IOException("The public address must be IPv4 (got " + ip + ").");
+				code = encode(ip, port);
+				status = "";
+				ZombiecraftMod.LOG.info("Block Ops 2 online: join code {} = {}:{}", code, ip, port);
+			} catch (IOException | RuntimeException e) {
+				status = e.getMessage() == null ? e.toString() : e.getMessage();
+				ZombiecraftMod.LOG.warn("Block Ops 2 online: no join code: {}", status);
+			}
+		}, "zc-expose");
+		t.setDaemon(true);
+		t.start();
+	}
 
 	private static Socket open(String relay) throws IOException {
 		int i = relay.lastIndexOf(':');
@@ -102,7 +174,7 @@ final class Relay {
 					InputStream in = c.getInputStream();
 					String l;
 					while (hosting && (l = line(in)) != null) {
-						if (l.startsWith("CODE ")) { code = l.substring(5); ZombiecraftMod.LOG.info("Block Ops 2 relay: join code {}", code); }
+						if (l.startsWith("CODE ")) { code = l.substring(5); status = ""; ZombiecraftMod.LOG.info("Block Ops 2 relay: join code {}", code); }
 						else if (l.startsWith("CONN ")) accept(relay, l.substring(5), localPort);
 					}
 				} catch (IOException | RuntimeException e) {
@@ -135,6 +207,8 @@ final class Relay {
 	static void stop() {
 		hosting = false;
 		code = null;
+		status = "";
+		Upnp.close();
 		Socket c = control;
 		if (c != null) try { c.close(); } catch (IOException ignored) {}
 	}

@@ -35,13 +35,13 @@ final class Bo2Locations {
 					new Mode("TRANZIT", "Continue the fight against the undead and search for clues to the truth of what lies ahead...", false),
 					new Mode("SURVIVAL", "Survive at the Bus Depot with limited wall weapons, perks, and the Mystery Box.", true))),
 			new Loc("town", "TOWN", 0.51, 0.40, "loadscreen_transit_standard_town", List.of(
-					new Mode("SURVIVAL", "Survive in Town with various perks, wall weapons, and the Pack-a-Punch.", false))),
+					new Mode("SURVIVAL", "Survive in Town with various perks, wall weapons, and the Pack-a-Punch.", ImportedMap.available("town")))),
 			new Loc("power", "POWER STATION", 0.72, 0.53, "loadscreen_transit_classic", List.of(
-					new Mode("SURVIVAL", "Survive at the Power Station with limited wall weapons, perks, and the Mystery Box.", false))),
+					new Mode("SURVIVAL", "Survive at the Power Station with limited wall weapons, perks, and the Mystery Box.", ImportedMap.available("power")))),
 			new Loc("diner", "DINER", 0.29, 0.68, "loadscreen_transit_classic", List.of(
 					new Mode("SURVIVAL", "Survive at the Diner with limited wall weapons, perks, and the Mystery Box.", false))),
 			new Loc("farm", "FARM", 0.68, 0.72, "loadscreen_transit_standard_farm", List.of(
-					new Mode("SURVIVAL", "Survive in the Farm with limited wall weapons, perks, and the Mystery Box.", false))),
+					new Mode("SURVIVAL", "Survive in the Farm with limited wall weapons, perks, and the Mystery Box.", ImportedMap.available("farm")))),
 	};
 
 	/**
@@ -49,6 +49,10 @@ final class Bo2Locations {
 	 * tools/obj_to_blocks.py), then the converted Tranzit Reimagined depot, then the built-in one.
 	 */
 	static String sheetMap(Loc l) {
+		switch (l.id()) {
+			case "town", "farm", "power": return ImportedMap.available(l.id()) ? "tranzit_" + l.id() : ""; // the Tranzit Reimagined build with BO2's Survival layout (tools/gen_loc.py)
+			default: break;
+		}
 		if (ImportedMap.available("bo2_depot")) return "bo2_depot";
 		return ImportedMap.available("depot") ? "tranzit_depot" : "";
 	}
@@ -404,6 +408,11 @@ final class Bo2Locations {
 				int cy0 = ry + lh + 12 + Math.max(names.size(), 1) * (lh + 6) + 12;
 				Bo2Menus.raw(g, "JOIN CODE", rx, cy0, 0.85f, Bo2Menus.WHITE);
 				Bo2Menus.raw(g, Relay.code, rx + 30, cy0 + lh + 6, 1.6f, Bo2Menus.YELLOW);
+			} else if (host && !Relay.status.isEmpty()) {
+				int cy0 = ry + lh + 12 + Math.max(names.size(), 1) * (lh + 6) + 12;
+				Bo2Menus.raw(g, "ONLINE", rx, cy0, 0.85f, Bo2Menus.WHITE);
+				int yy = cy0 + lh + 6;
+				for (String line : Bo2Menus.wrap(Relay.status, width - 40 - rx, 0.75f)) { Bo2Menus.raw(g, line, rx, yy, 0.75f, 0xFFD2CEC6); yy += (int) (Bo2Menus.H(0.75f) * 1.2f); }
 			}
 			String cap = secs > 0 ? "Game starting in " + secs : host ? "Waiting for players. Start when everyone is in" : "Waiting for the host to start the match";
 			if (secs > 0 && secs != lastSecs) { lastSecs = secs; MenuAudio.play("uin_timer"); }
