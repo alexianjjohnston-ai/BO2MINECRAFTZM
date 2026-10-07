@@ -29,7 +29,7 @@ public final class Bo2Online {
 	private static String lastAddress = "";
 	/** Shown on the Join screen after a connection failed or timed out. */
 	private static String joinError;
-	private static final long TIMEOUT_MS = 30_000;
+	private static final long TIMEOUT_MS = 20_000;
 	private static Screen connectingScreen;
 	private static long connectStart;
 
@@ -47,10 +47,20 @@ public final class Bo2Online {
 			boolean[] done = {false};
 			ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 				if (done[0] || mc.level != null || mc.getOverlay() != null || mc.screen == null) return;
-				done[0] = true;
+				done[0] = true; lastAddress = debugJoin;
 				ConnectScreen.startConnecting(mc.screen, mc, ServerAddress.parseString(debugJoin), new ServerData("Block Ops 2", debugJoin, ServerData.Type.OTHER), false, null);
 			});
 		}
+		net.fabricmc.fabric.api.client.screen.v1.ScreenEvents.AFTER_INIT.register((mc, screen, w, h) -> {
+			if (screen instanceof net.minecraft.client.gui.screens.DisconnectedScreen)
+				net.fabricmc.fabric.api.client.screen.v1.ScreenEvents.beforeRender(screen).register((scr, g, mx, my, dt) -> disconnected(g, scr));
+			if (screen instanceof ConnectScreen)
+				net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents.allowKeyPress(screen).register((scr, key, scan, mods) -> {
+					if (key != GLFW.GLFW_KEY_ESCAPE) return true;
+					cancel(scr);
+					return false;
+				});
+		});
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> {
 			MenuAudio.stopMusic();
 			joinError = null;

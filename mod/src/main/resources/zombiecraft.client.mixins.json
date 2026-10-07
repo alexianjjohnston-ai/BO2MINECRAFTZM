@@ -10,6 +10,7 @@
     "ZcMouseHandlerMixin",
     "ZcItemInHandRendererMixin",
     "ZcLoadingScreenMixin",
+    "ZcConnectScreenMixin",
     "ZcItemStackRenderStateMixin",
     "ZcItemModelResolverMixin"
   ],
