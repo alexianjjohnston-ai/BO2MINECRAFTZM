@@ -183,3 +183,8 @@ Built so new maps are data, not code:
 `tools/gen_depot.py` (re-run, don't hand-edit sheets): indoor floors are concrete (no asphalt road lines inside); floating lamp cubes replaced by flush neon strips with dim `light[level=9]` blocks under them; set dressing (ticket board, chairs as stairs, yellow-band pillars, bins, rubble, poster); a town outside the windows (street-front buildings with dark windows closing all four sides, gas-station canopy, wrecked cars, bare trees, bus-stop line). Player spawn now faces north (windows, ticket board, a wall gun). `atmosphere.json` bus_depot: dusk haze (timeOfDay 11800, orange-brown fog 4..48) so the outside is lit and the inside stays dark from its own lights. Preflight 0 errors.
 Dev: `-PdevProps=debugTour` visits 7 viewpoints and writes `zc-tour_N.png`; `-PdevDir=run/shot-x` gives a private run folder (several chats can run at once).
 Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulations: signs need NBT text), no wall clock/ticket-counter detail/lockers upgrade, no glass-block wall with a cracked hole, tour shows only blocky approximations, neon strips are cyan placeholder texture, no flicker.
+
+## Stream D (first-person rig), first pass
+- Viewmodel raised (`zombiecraft.vmY`, default 0.06) so both hands show; before, the right hand sat below the screen on long guns (looked like a "missing hand").
+- Sleeves are now dark cloth and all characters use BO2's black arm map. The skin still reads brownish in debugGun shots (the `_skin` surface may not be the gloves); needs a closer look.
+- Not done: black patches check, per-gun clip audit (debugGun shots in run/shot/screenshots), sprint/walk bob, ADS, grenade/knife clips.
