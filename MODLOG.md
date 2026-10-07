@@ -135,3 +135,6 @@ Added: player footsteps (fly_step_walk/run_plr_ceramic), zombie footsteps (fly_s
 Alias map note: dev alias_map_transit.json now also reads spl_frontend (out5) and uses the full install (D:/New folder (2)), since D:/SteamLibrary lacks the spl_* banks.
 
 Loading screen music: `mus_load_zm_transit` (BO2's Tranzit loading track, lovesong_for_the_damned, from zmb_code_post_gfx.all.sabs) plays while the BO2 loading screen is shown and stops when it ends.
+
+Polish (2026-10-06): the loading picture is held at least 16 s (game paused meanwhile) so the Tranzit track is heard; loading/menu music now fades out instead of cutting (the abrupt stop sounded like a glitch). More ambience: wind howl, crickets, neon hum loops; creaks, groans, crows, wolves, church bell, distant screams as random one-shots.
+Dev note: the scripted self-test (-Pbench) is flaky when its window loses focus or is clicked; one run passed 20 checks with 0 failures, others were interrupted.

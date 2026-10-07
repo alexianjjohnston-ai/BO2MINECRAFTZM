@@ -1,5 +1,35 @@
 [
  {
+  "cue": "amb_church_bell",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.3,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
+  "cue": "amb_crickets",
+  "category": "ui",
+  "soundSource": "AMBIENT",
+  "volume": 0.15,
+  "positional": false,
+  "loop": true,
+  "variants": 6,
+  "fallback": "minecraft:ambient.cave"
+ },
+ {
+  "cue": "amb_crows",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.5,
+  "positional": true,
+  "loop": false,
+  "variants": 5,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
   "cue": "amb_diner_l",
   "category": "ui",
   "soundSource": "AMBIENT",
@@ -50,6 +80,26 @@
   "fallback": "minecraft:block.chain.step"
  },
  {
+  "cue": "amb_metal_groan",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.5,
+  "positional": true,
+  "loop": false,
+  "variants": 6,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
+  "cue": "amb_neon_stdy",
+  "category": "ui",
+  "soundSource": "AMBIENT",
+  "volume": 0.1,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.ambient"
+ },
+ {
   "cue": "amb_paper_rustle",
   "category": "world",
   "soundSource": "AMBIENT",
@@ -57,6 +107,56 @@
   "positional": true,
   "loop": false,
   "variants": 4,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
+  "cue": "amb_screams",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.25,
+  "positional": true,
+  "loop": false,
+  "variants": 5,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
+  "cue": "amb_sign_creak",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.5,
+  "positional": true,
+  "loop": false,
+  "variants": 4,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
+  "cue": "amb_wind_howl",
+  "category": "ui",
+  "soundSource": "AMBIENT",
+  "volume": 0.2,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:ambient.cave"
+ },
+ {
+  "cue": "amb_wolves",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.35,
+  "positional": true,
+  "loop": false,
+  "variants": 4,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
+  "cue": "amb_wood_creak",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.5,
+  "positional": true,
+  "loop": false,
+  "variants": 6,
   "fallback": "minecraft:block.chain.step"
  },
  {

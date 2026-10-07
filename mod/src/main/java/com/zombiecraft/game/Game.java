@@ -238,17 +238,21 @@ public final class Game {
 
 	// ------------------------------------------------------------------ the tick
 	/** The diner's looping bed (wind left/right, light hum) and the odd creak or rustle near a player. */
-	private static final String[] AMBIENCE = {"amb_diner_l", "amb_diner_r", "amb_flourescent_light"};
-	private static final String[] ONE_SHOTS = {"amb_diner_metal_creak", "amb_metal_creak_lgt", "amb_paper_rustle"};
+	private static final String[] AMBIENCE = {"amb_diner_l", "amb_diner_r", "amb_flourescent_light", "amb_wind_howl", "amb_crickets", "amb_neon_stdy"};
+	private static final String[] ONE_SHOTS = {"amb_diner_metal_creak", "amb_metal_creak_lgt", "amb_paper_rustle", "amb_wood_creak", "amb_sign_creak", "amb_metal_groan",
+			"amb_crows", "amb_wolves", "amb_church_bell", "amb_screams"}; // the last four are far away
+	private static final int NEAR_ONE_SHOTS = 6;
 	private int ambientTimer;
 
 	public void tick() {
 		tick++;
 		if (level == null || phase == Payloads.PHASE_IDLE) return;
 		if ((phase == Payloads.PHASE_ACTIVE || phase == Payloads.PHASE_INTERMISSION) && --ambientTimer <= 0) {
-			ambientTimer = 300 + level.random.nextInt(500);
-			for (ServerPlayer p : level.players())
-				Cue.at(ONE_SHOTS[level.random.nextInt(ONE_SHOTS.length)], level, p.position().add(level.random.nextInt(13) - 6, 1, level.random.nextInt(13) - 6));
+			ambientTimer = 160 + level.random.nextInt(320);
+			for (ServerPlayer p : level.players()) {
+				int i = level.random.nextInt(ONE_SHOTS.length), r = i < NEAR_ONE_SHOTS ? 6 : 24;
+				Cue.at(ONE_SHOTS[i], level, p.position().add(level.random.nextInt(2 * r + 1) - r, 1, level.random.nextInt(2 * r + 1) - r));
+			}
 		}
 
 		if (tick - startedAt == 15 && phase == Payloads.PHASE_COUNTDOWN) {

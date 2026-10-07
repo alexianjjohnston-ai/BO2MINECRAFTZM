@@ -123,8 +123,30 @@ public final class Bo2Menus {
 	}
 
 	/** Called in place of the vanilla world-loading screens' own drawing. */
-	/** True while the BO2 loading screen was drawn within the last half second. */
-	public static boolean loadingShown() { return System.nanoTime() - loadSeen < 500_000_000L; }
+	/** The loading picture stays up at least this long, so the music is heard (the world often loads in a few seconds). */
+	private static final long MIN_LOADING_NS = 16_000_000_000L;
+
+	/** True while the BO2 loading screen was drawn within the last moment. */
+	public static boolean loadingShown() { return System.nanoTime() - loadSeen < 1_500_000_000L; }
+
+	/** Called every client tick: when the world is ready but the minimum time has not passed, keep the loading picture up (the game is paused meanwhile). */
+	public static void holdLoading(Minecraft mc) {
+		if (Boolean.getBoolean("zombiecraft.autoplay")) return; // scripted test runs must not wait
+		if (mc.screen == null && mc.level != null && mc.player != null && loadSeen > 0
+				&& System.nanoTime() - loadSeen < 1_500_000_000L && System.nanoTime() - loadStart < MIN_LOADING_NS)
+			mc.setScreen(new Hold());
+	}
+
+	static final class Hold extends Screen {
+		Hold() { super(Component.literal("Loading")); }
+		@Override public boolean shouldCloseOnEsc() { return false; }
+		@Override public boolean isPauseScreen() { return true; }
+		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
+		@Override public void render(GuiGraphics g, int mx, int my, float dt) { loading(g, width, height); }
+		@Override public void tick() {
+			if (System.nanoTime() - loadStart >= MIN_LOADING_NS) { loadSeen = 0; Minecraft.getInstance().setScreen(null); }
+		}
+	}
 
 	public static void loading(GuiGraphics g, int w, int h) {
 		MenuAudio.loadingMusic();

@@ -39,10 +39,10 @@ public final class MenuAudio {
 
 	/** Called every client tick: stops the loading track once the loading screen is gone. */
 	public static void tick(boolean loadingShown) {
-		if (!loadingShown && CueMixer.INSTANCE != null && CueMixer.INSTANCE.playing(LOADING)) CueMixer.INSTANCE.stop(LOADING);
+		if (!loadingShown && CueMixer.INSTANCE != null && CueMixer.INSTANCE.playing(LOADING)) CueMixer.INSTANCE.fadeOut(LOADING, 1.2f);
 	}
 
 	public static void stopMusic() {
-		if (CueMixer.INSTANCE != null) CueMixer.INSTANCE.stop(MUSIC);
+		if (CueMixer.INSTANCE != null) CueMixer.INSTANCE.fadeOut(MUSIC, 0.8f);
 	}
 }
