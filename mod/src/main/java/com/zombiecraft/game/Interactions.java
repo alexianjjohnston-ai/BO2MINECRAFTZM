@@ -106,8 +106,8 @@ public final class Interactions {
 				WeaponDef w = Sheets.weapon(t.wallbuy.weaponId());
 				int slot = WeaponSystem.slotHolding(pg, w.id());
 				pg.prompt = slot >= 0
-						? "Press F for ammo: " + w.name() + " [" + (int) (w.wallCost() * Sheets.sys("wallbuy_ammo_ratio")) + "]"
-						: "Press F to buy " + w.name() + " [" + w.wallCost() + "]";
+						? "Hold F for " + w.name() + " ammo [Cost: " + (int) (w.wallCost() * Sheets.sys("wallbuy_ammo_ratio")) + "]"
+						: "Hold F for " + w.name() + " [Cost: " + w.wallCost() + "]";
 				if (edge) buyWall(g, p, pg, w);
 			}
 			case BOX -> {

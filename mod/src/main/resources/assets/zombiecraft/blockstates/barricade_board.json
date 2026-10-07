@@ -1,0 +1,11 @@
+{
+ "variants": {
+  "axis=x": {
+   "model": "zombiecraft:block/barricade_board"
+  },
+  "axis=z": {
+   "model": "zombiecraft:block/barricade_board",
+   "y": 90
+  }
+ }
+}

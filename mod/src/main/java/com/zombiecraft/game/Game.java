@@ -156,7 +156,9 @@ public final class Game {
 			cmd("gamerule " + rule);
 		cmd("difficulty normal");
 		cmd("weather clear");
-		cmd("time set " + Sheets.sysInt("world_time"));
+		var atmo = Sheets.ATMOSPHERE.stream().filter(x -> x.id().equals("bus_depot")).findFirst()
+				.or(() -> Sheets.ATMOSPHERE.stream().filter(x -> x.id().equals("*")).findFirst());
+		cmd("time set " + (atmo.isPresent() && atmo.get().timeOfDay() >= 0 ? atmo.get().timeOfDay() : Sheets.sysInt("world_time")));
 		cmd(String.format("setworldspawn %d %d %d", origin.getX() + Sheets.PLAYER_SPAWNS.get(0).x(), origin.getY() + 1, origin.getZ() + Sheets.PLAYER_SPAWNS.get(0).z()));
 
 		round = 0; zombiesToSpawn = 0; roundsSurvived = 0;
@@ -191,8 +193,6 @@ public final class Game {
 			var weapon = Sheets.weapon(w.weaponId());
 			cmd(String.format(Locale.ROOT, "summon item_frame %.2f %.2f %.2f {Facing:%db,Fixed:1b,Invisible:1b,Invulnerable:1b,Silent:1b,ItemDropChance:0f,Item:{id:\"zombiecraft:%s\",count:1},Tags:[\"zc\",\"zc_wb:%s\"]}",
 					x, y, z, facing, w.weaponId(), w.id()));
-			cmd(String.format(Locale.ROOT, "summon text_display %.2f %.2f %.2f {text:'{\"text\":\"%s  [%d]\",\"color\":\"gold\"}',billboard:\"center\",alignment:\"center\",Tags:[\"zc\"]}",
-					x, y + 0.9, z, weapon.name(), weapon.wallCost()));
 		}
 	}
 

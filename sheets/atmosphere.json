@@ -1,0 +1,24 @@
+[
+ {
+  "id": "*",
+  "fogColor": "#2A2118",
+  "fogStart": 8.0,
+  "fogEnd": 64.0,
+  "skyColor": "#15110D",
+  "cloudColor": "#2A2018",
+  "stars": 0.25,
+  "timeOfDay": 15500,
+  "note": "default: warm brown night haze"
+ },
+ {
+  "id": "bus_depot",
+  "fogColor": "#3B2A1B",
+  "fogStart": 6.0,
+  "fogEnd": 56.0,
+  "skyColor": "#17110C",
+  "cloudColor": "#33261A",
+  "stars": 0.2,
+  "timeOfDay": 15500,
+  "note": "Tranzit: dusty orange-brown haze, dark sky, short sight lines"
+ }
+]

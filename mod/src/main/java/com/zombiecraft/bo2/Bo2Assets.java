@@ -24,7 +24,7 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 5;
+	public static final int VERSION = 6;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
 	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit", "common_zm"};
@@ -39,7 +39,8 @@ public final class Bo2Assets {
 
 	public static boolean ready(Path gameDir, Path bo2Dir) {
 		Properties p = manifest(cacheDir(gameDir));
-		return p != null && p.getProperty("version", "").equals(String.valueOf(VERSION)) && p.getProperty("fingerprint", "").equals(fingerprint(bo2Dir));
+		return p != null && p.getProperty("version", "").equals(String.valueOf(VERSION)) && p.getProperty("fingerprint", "").equals(fingerprint(bo2Dir))
+				&& p.getProperty("textures-sheet", "").equals(String.valueOf(com.zombiecraft.sheet.Sheets.TEXTURES.toString().hashCode()));
 	}
 
 	private static Properties manifest(Path cache) {
@@ -189,12 +190,15 @@ public final class Bo2Assets {
 				Path f = z.resolve("xanim").resolve(a);
 				if (Files.isRegularFile(f)) { Files.copy(f, anims.resolve(a), StandardCopyOption.REPLACE_EXISTING); break; }
 			}
+		try { TexturePack.build(cache.getParent().getParent(), zoneDirs, TexturePack.configuredSize(), log); }
+		catch (IOException | RuntimeException e) { log.accept("texture pack skipped: " + e); }
 		if (!missing.isEmpty()) log.accept("models not found in this install: " + missing);
 		Properties p = new Properties();
 		p.setProperty("version", String.valueOf(VERSION));
 		p.setProperty("fingerprint", fingerprint(bo2Dir));
 		p.setProperty("models", String.valueOf(written));
 		p.setProperty("textures", String.valueOf(textures));
+		p.setProperty("textures-sheet", String.valueOf(com.zombiecraft.sheet.Sheets.TEXTURES.toString().hashCode()));
 		try (var out = Files.newOutputStream(cache.resolve("manifest.properties"))) { p.store(out, "Zombiecraft Black Ops II asset cache (generated on this PC)"); }
 		log.accept("Black Ops II models ready: " + written + " models, " + textures + " textures");
 		return written;

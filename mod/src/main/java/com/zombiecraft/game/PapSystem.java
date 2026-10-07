@@ -151,8 +151,8 @@ public final class PapSystem {
 		Gun g = WeaponSystem.active(p, pg);
 		if (state == State.IDLE && game.machines != null && !game.machines.power) return "The power must be turned on first";
 		return switch (state) {
-			case IDLE -> g == null ? "" : g.pap ? "This gun is already Pack-a-Punched" : "Press F to Pack-a-Punch the " + g.def().name() + " [" + Sheets.sysInt("pap_cost") + "]";
-			case READY -> p.getUUID().equals(user) ? "Press F to take your " + Sheets.weapon(weapon).papName() : "";
+			case IDLE -> g == null ? "" : g.pap ? "This gun is already Pack-a-Punched" : "Hold F to Pack-a-Punch " + g.def().name() + " [Cost: " + Sheets.sysInt("pap_cost") + "]";
+			case READY -> p.getUUID().equals(user) ? "Hold F to take " + Sheets.weapon(weapon).papName() : "";
 			default -> "";
 		};
 	}

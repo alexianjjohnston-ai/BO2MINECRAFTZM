@@ -17,6 +17,7 @@ public class ZombiecraftMod implements ModInitializer {
 	public void onInitialize() {
 		LOG.info("Block Ops 2: {} weapons, {} rounds, {} windows, {} cues loaded from the sheets", Sheets.WEAPONS.size(), Sheets.ROUNDS.size(), Sheets.WINDOWS.size(), Sheets.CUES.size());
 		Payloads.register();
+		com.zombiecraft.block.ModBlocks.register();
 		ModItems.register();
 		ZcEntities.register();
 		Game.register();
