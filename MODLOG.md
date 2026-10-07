@@ -163,8 +163,6 @@ Built so new maps are data, not code:
 - Cache/pack rebuild now also keys on the bo2_models sheet (`Bo2Assets.sheetsHash`).
 - Dev switches (use `-PdevProps=a,b`): debugGun (every gun idle + reload screenshots), debugPap, debugDrink, debugPowerups, debugOptions=..., debugVm.
 - Known: `bench` box-pay can flake on a late teddy; `viewmodel_m14_idle` does not exist in BO2.
-<<<<<<< HEAD
-=======
 
 ## Zombies, combat feel (workstream C, first pass, 2026-10-07)
 - `game/Blood`: dark red dust spray/mist on every zombie hit, bigger burst (more on headshots) on kills; replaces the vanilla crit stars.
@@ -180,4 +178,3 @@ Built so new maps are data, not code:
 - Checked against scripts and already right: kill 50 / head +50 / neck +20 / torso +10 / melee +80, hit 10, box 950, PaP 5000, board points cap.
 - Bench: the zombie-through-window step used old diner coordinates (player now parked at the map spawn); full bench green on the Bus Depot (41 pass, 0 fail).
 - Not yet done in A: rounds 1-10 hand playthrough, stuck-zombie teleport/respawn, bounds/exploit checks, Max Ammo/nuke/carpenter numbers vs scripts, drop rates, down/revive numbers, `-PpapBench`.
->>>>>>> a02efa9 (Fix gun locked after drinking a perk (cooldown unit), BO2 start ammo 8/32, PaP wall ammo 4500, bench fixes)
