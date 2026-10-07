@@ -53,7 +53,7 @@ final class Relay {
 	private static Socket open(String relay) throws IOException {
 		int i = relay.lastIndexOf(':');
 		String host = i < 0 ? relay : relay.substring(0, i);
-		int port = i < 0 ? 25570 : Integer.parseInt(relay.substring(i + 1));
+		int port = i < 0 ? 25565 : Integer.parseInt(relay.substring(i + 1));
 		Socket s = new Socket();
 		s.connect(new java.net.InetSocketAddress(host, port), 8000);
 		s.setTcpNoDelay(true);

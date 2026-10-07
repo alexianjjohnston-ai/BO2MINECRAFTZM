@@ -250,6 +250,6 @@ Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulati
 - Still open for the depot: the real BO2 wall geometry (needs the map export), diagonal barricade 4, door models. Town is not started (depot first).
 
 ## Join codes through a relay (2026-10-07)
-- `tools/relay/relay.py` (stdlib Python, you host it): the host's game registers (`HOST`) and gets a 6-char code; a joiner sends `JOIN <code>`, the relay asks the host for a data connection (`CONN id` -> `DATA id`) and pipes the two. `test_relay.py` passes.
+- `tools/relay/relay.py` (stdlib Python, you host it; default port 25565): the host's game registers (`HOST`) and gets a 6-char code; a joiner sends `JOIN <code>`, the relay asks the host for a data connection (`CONN id` -> `DATA id`) and pipes the two. `test_relay.py` passes.
 - Mod: `menu/Relay` (host registration when the world opens to LAN; loopback forwarder for joiners, so vanilla's connect screen just goes to 127.0.0.1). Address from `relay=host:port` in config/zombiecraft.properties (or -Dzombiecraft.relay). The lobby shows JOIN CODE; Join Game accepts a 6-character code or an address; INVITE FRIENDS has COPY CODE.
 - Verified with two real clients through a local relay: the second one joined the host's lobby by code and showed in its player list. Not done: a relay run on a public machine, a default relay address, starting the match with a joiner and playing it.

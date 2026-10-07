@@ -4,7 +4,7 @@ Block Ops 2 join-code relay. Run it on any machine with a public IP (a cheap VPS
 Players never need to forward ports: the host's game dials OUT to this relay and gets a 6-character code; friends type the code and the
 relay pipes their connection to the host.
 
-    python relay.py [--port 25570]
+    python relay.py [--port 25565]
 
 Protocol (one text line, then raw bytes), all on the one TCP port:
   HOST\\n          host control connection. Relay answers "CODE ABC123\\n", then sends "CONN <id>\\n" per joiner and "PING\\n" now and then.
@@ -149,5 +149,5 @@ async def main(port):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--port", type=int, default=25570)
+    ap.add_argument("--port", type=int, default=25565)
     asyncio.run(main(ap.parse_args().port))
