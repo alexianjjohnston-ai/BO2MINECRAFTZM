@@ -34,12 +34,11 @@ echo Using !JAVA_HOME!
 
 rem --- Look for Black Ops II every start (read-only). The game does its own full search too; this reports and passes a hint. ---
 if defined ZOMBIECRAFT_BO2_DIR goto :bo2done
-set "STEAMPATH="
-for /f "tokens=2,*" %%A in ('reg query "HKCU\Software\Valve\Steam" /v SteamPath 2^>nul ^| find "SteamPath"') do set "STEAMPATH=%%B"
-if defined STEAMPATH set "STEAMPATH=!STEAMPATH:/=\!"
-for %%R in ("!STEAMPATH!" "C:\SteamLibrary" "D:\SteamLibrary" "E:\SteamLibrary" "F:\SteamLibrary" "C:\Program Files (x86)\Steam" "D:\Steam" "E:\Steam" "D:\Games\Steam") do if not defined ZOMBIECRAFT_BO2_DIR if exist "%%~R\steamapps\common\Call of Duty Black Ops II\sound\zmb_common.all.sabl" set "ZOMBIECRAFT_BO2_DIR=%%~R\steamapps\common\Call of Duty Black Ops II"
+rem tools\find_bo2.ps1 checks the saved choice, every Steam library, installer entries, common folders and a scan of all drives,
+rem and opens a folder picker if nothing is found (the pick is saved in .bo2dir).
+if exist "tools\find_bo2.ps1" for /f "usebackq delims=" %%P in (`powershell -NoProfile -ExecutionPolicy Bypass -File "tools\find_bo2.ps1"`) do set "ZOMBIECRAFT_BO2_DIR=%%P"
 :bo2done
-if defined ZOMBIECRAFT_BO2_DIR (echo [bo2] Found Black Ops II: !ZOMBIECRAFT_BO2_DIR!) else echo [bo2] Not found by the launcher; the game will search all drives itself. Set ZOMBIECRAFT_BO2_DIR to force a path.
+if defined ZOMBIECRAFT_BO2_DIR (echo [bo2] Found Black Ops II: !ZOMBIECRAFT_BO2_DIR!) else echo [bo2] Not set; the game will search all drives itself and use Minecraft sounds if it finds nothing. Set ZOMBIECRAFT_BO2_DIR to force a path.
 
 cd /d "mod"
 call ".\gradlew.bat" runClient --console=plain

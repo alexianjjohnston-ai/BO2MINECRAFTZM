@@ -13,3 +13,4 @@ assets_src/
 play.bat.new
 maps_local/*
 !maps_local/depot.json.gz
+.bo2dir
