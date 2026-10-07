@@ -129,7 +129,7 @@
   "zmb_laugh_child": {
    "category": "world",
    "soundSource": "BLOCKS",
-   "volume": 1.0,
+   "volume": 0.45,
    "fallback": "minecraft:entity.witch.celebrate"
   },
   "zmb_box_move": {
@@ -204,12 +204,6 @@
    "volume": 0.8,
    "fallback": "minecraft:block.beacon.ambient"
   },
-  "mus_zombie_splash_screen": {
-   "category": "music",
-   "soundSource": "MUSIC",
-   "volume": 0.8,
-   "fallback": "minecraft:music_disc.chirp"
-  },
   "mus_zombie_game_over": {
    "category": "music",
    "soundSource": "MASTER",
@@ -221,13 +215,82 @@
    "soundSource": "PLAYERS",
    "volume": 0.7,
    "fallback": "minecraft:block.note_block.basedrum"
+  },
+  "mus_fe_main": {
+   "category": "music",
+   "soundSource": "MUSIC",
+   "volume": 0.7,
+   "fallback": "minecraft:music_disc.chirp"
+  },
+  "fly_step_walk_plr_ceramic": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.5,
+   "fallback": "minecraft:block.stone.step"
+  },
+  "fly_step_run_plr_ceramic": {
+   "category": "ui",
+   "soundSource": "PLAYERS",
+   "volume": 0.55,
+   "fallback": "minecraft:block.stone.step"
+  },
+  "fly_step_walk_npc_ceramic": {
+   "category": "world",
+   "soundSource": "HOSTILE",
+   "volume": 0.4,
+   "fallback": "minecraft:block.stone.step"
+  },
+  "fly_step_run_npc_ceramic": {
+   "category": "world",
+   "soundSource": "HOSTILE",
+   "volume": 0.45,
+   "fallback": "minecraft:block.stone.step"
+  },
+  "amb_diner_l": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.3,
+   "fallback": "minecraft:ambient.cave"
+  },
+  "amb_diner_r": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.3,
+   "fallback": "minecraft:ambient.cave"
+  },
+  "amb_flourescent_light": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.15,
+   "fallback": "minecraft:block.beacon.ambient"
+  },
+  "amb_diner_metal_creak": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.6,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_metal_creak_lgt": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.6,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_paper_rustle": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.6,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
   }
  },
  "roles": {
   "cueAmbient": {
    "category": "vox",
    "soundSource": "HOSTILE",
-   "volume": 0.9,
+   "volume": 0.5,
    "fallback": "minecraft:entity.zombie.ambient"
   },
   "cueAttack": {
@@ -245,7 +308,7 @@
   "cueSpawn": {
    "category": "vox",
    "soundSource": "HOSTILE",
-   "volume": 0.9,
+   "volume": 0.6,
    "fallback": "minecraft:entity.zombie.ambient"
   },
   "cueTear": {
@@ -257,7 +320,7 @@
   "cueRun": {
    "category": "vox",
    "soundSource": "HOSTILE",
-   "volume": 1.0,
+   "volume": 0.55,
    "fallback": "minecraft:entity.zombie.ambient"
   },
   "cueFire": {

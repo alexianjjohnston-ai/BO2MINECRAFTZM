@@ -128,3 +128,8 @@ Real BO2 images worth reusing later: chalkmarks_0-5, hud_dpad_blood, overlay_low
 ## Menu audio + HUD banner (2026-10-06)
 Menu music = BO2 `mus_zombie_splash_screen` (restarted when it ends, stopped when a game starts). UI sounds: uin_main_nav (hover), uin_lobby_join, uin_cmn_backout, uin_main_pause, zmb_ui_globe_spin_start / map_level_switch / map_level_select, cac_cmn_deny (locked map). In game: mus_zombie_game_over, chr_heart_beat_ingame at low health. 11 new cues added via tools/audio_seed.json + derive_audio.py. CueMixer now plays menu sounds with no world and while paused.
 "Get ready" and "Next round" banners removed; the controls are listed on the pause menu instead.
+
+## Sound pass 2 (2026-10-06)
+Menu music is now the real BO2 front-end theme (`mus_fe_main` = mus_bo2_theme_ambient, from spl_frontend.all.sabs; loops). Vanilla Minecraft music is stopped every tick; the local player and all zombies are silent (vanilla step/hurt/ambient sounds), so only BO2 cues play.
+Added: player footsteps (fly_step_walk/run_plr_ceramic), zombie footsteps (fly_step_*_npc_ceramic), diner ambience (amb_diner_l/r + light hum loops, random creaks/rustles near players). Quieter: child laugh, zombie groans (also less frequent).
+Alias map note: dev alias_map_transit.json now also reads spl_frontend (out5) and uses the full install (D:/New folder (2)), since D:/SteamLibrary lacks the spl_* banks.

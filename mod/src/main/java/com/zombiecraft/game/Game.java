@@ -145,6 +145,8 @@ public final class Game {
 		for (ServerPlayer p : level.players()) resetPlayer(p);
 		phase = Payloads.PHASE_COUNTDOWN;
 		countdown = Sheets.sysInt("first_round_delay_s") * 20;
+		for (String c : AMBIENCE) { Cue.stopAll(c, level); Cue.all(c, level); }
+		ambientTimer = 200;
 	}
 
 	public void resetPlayer(ServerPlayer p) {
@@ -229,14 +231,25 @@ public final class Game {
 		p.setInvulnerable(true);
 		Cue.ui("evt_player_death", p);
 		Cue.ui("mus_zombie_game_over", p);
+		for (String c : AMBIENCE) Cue.stopAll(c, level);
 		cmd("kill @e[type=zombiecraft:zombie]");
 		alive.clear();
 	}
 
 	// ------------------------------------------------------------------ the tick
+	/** The diner's looping bed (wind left/right, light hum) and the odd creak or rustle near a player. */
+	private static final String[] AMBIENCE = {"amb_diner_l", "amb_diner_r", "amb_flourescent_light"};
+	private static final String[] ONE_SHOTS = {"amb_diner_metal_creak", "amb_metal_creak_lgt", "amb_paper_rustle"};
+	private int ambientTimer;
+
 	public void tick() {
 		tick++;
 		if (level == null || phase == Payloads.PHASE_IDLE) return;
+		if ((phase == Payloads.PHASE_ACTIVE || phase == Payloads.PHASE_INTERMISSION) && --ambientTimer <= 0) {
+			ambientTimer = 300 + level.random.nextInt(500);
+			for (ServerPlayer p : level.players())
+				Cue.at(ONE_SHOTS[level.random.nextInt(ONE_SHOTS.length)], level, p.position().add(level.random.nextInt(13) - 6, 1, level.random.nextInt(13) - 6));
+		}
 
 		if (tick - startedAt == 15 && phase == Payloads.PHASE_COUNTDOWN) {
 			PlayerSpawn sp = Sheets.PLAYER_SPAWNS.get(0);

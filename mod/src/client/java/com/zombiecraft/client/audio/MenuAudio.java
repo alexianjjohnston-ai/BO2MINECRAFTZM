@@ -11,8 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 public final class MenuAudio {
 	private MenuAudio() {}
 
-	/** The Zombies splash-screen track: restarted whenever it ends while a menu is showing. */
-	private static final String MUSIC = "mus_zombie_splash_screen";
+	/** BO2's front-end theme (ambient mix); it loops, and is restarted if it ever stops while a menu is showing. */
+	private static final String MUSIC = "mus_fe_main";
 
 	public static void play(String cue) {
 		CueDef def = Sheets.cue(cue);

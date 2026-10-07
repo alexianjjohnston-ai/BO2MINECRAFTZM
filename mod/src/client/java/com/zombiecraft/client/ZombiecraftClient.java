@@ -64,6 +64,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 			keepWeaponSelected(mc);
 			GunFeedback.tick(mc);
 			ZcHud.tick(mc);
+			com.zombiecraft.client.audio.Footsteps.tick(mc);
 			if (FeedbackBench.finished()) mc.stop();
 		});
 		HudRenderCallback.EVENT.register(ZcHud::render);

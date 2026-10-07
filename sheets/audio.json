@@ -1,5 +1,65 @@
 [
  {
+  "cue": "amb_diner_l",
+  "category": "ui",
+  "soundSource": "AMBIENT",
+  "volume": 0.3,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:ambient.cave"
+ },
+ {
+  "cue": "amb_diner_metal_creak",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.6,
+  "positional": true,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
+  "cue": "amb_diner_r",
+  "category": "ui",
+  "soundSource": "AMBIENT",
+  "volume": 0.3,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:ambient.cave"
+ },
+ {
+  "cue": "amb_flourescent_light",
+  "category": "ui",
+  "soundSource": "AMBIENT",
+  "volume": 0.15,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:block.beacon.ambient"
+ },
+ {
+  "cue": "amb_metal_creak_lgt",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.6,
+  "positional": true,
+  "loop": false,
+  "variants": 6,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
+  "cue": "amb_paper_rustle",
+  "category": "world",
+  "soundSource": "AMBIENT",
+  "volume": 0.6,
+  "positional": true,
+  "loop": false,
+  "variants": 4,
+  "fallback": "minecraft:block.chain.step"
+ },
+ {
   "cue": "cac_cmn_deny",
   "category": "ui",
   "soundSource": "MASTER",
@@ -260,6 +320,56 @@
   "fallback": "minecraft:item.crossbow.loading_start"
  },
  {
+  "cue": "fly_step_run_npc_ceramic",
+  "category": "world",
+  "soundSource": "HOSTILE",
+  "volume": 0.45,
+  "positional": true,
+  "loop": false,
+  "variants": 6,
+  "fallback": "minecraft:block.stone.step"
+ },
+ {
+  "cue": "fly_step_run_plr_ceramic",
+  "category": "ui",
+  "soundSource": "PLAYERS",
+  "volume": 0.55,
+  "positional": false,
+  "loop": false,
+  "variants": 6,
+  "fallback": "minecraft:block.stone.step"
+ },
+ {
+  "cue": "fly_step_walk_npc_ceramic",
+  "category": "world",
+  "soundSource": "HOSTILE",
+  "volume": 0.4,
+  "positional": true,
+  "loop": false,
+  "variants": 6,
+  "fallback": "minecraft:block.stone.step"
+ },
+ {
+  "cue": "fly_step_walk_plr_ceramic",
+  "category": "ui",
+  "soundSource": "PLAYERS",
+  "volume": 0.5,
+  "positional": false,
+  "loop": false,
+  "variants": 6,
+  "fallback": "minecraft:block.stone.step"
+ },
+ {
+  "cue": "mus_fe_main",
+  "category": "music",
+  "soundSource": "MUSIC",
+  "volume": 0.7,
+  "positional": false,
+  "loop": true,
+  "variants": 1,
+  "fallback": "minecraft:music_disc.chirp"
+ },
+ {
   "cue": "mus_perks_packa_sting",
   "category": "music",
   "soundSource": "MASTER",
@@ -298,16 +408,6 @@
   "loop": false,
   "variants": 1,
   "fallback": "minecraft:block.bell.use"
- },
- {
-  "cue": "mus_zombie_splash_screen",
-  "category": "music",
-  "soundSource": "MUSIC",
-  "volume": 0.8,
-  "positional": false,
-  "loop": false,
-  "variants": 1,
-  "fallback": "minecraft:music_disc.chirp"
  },
  {
   "cue": "uin_cmn_backout",
@@ -733,7 +833,7 @@
   "cue": "zmb_laugh_child",
   "category": "world",
   "soundSource": "BLOCKS",
-  "volume": 1.0,
+  "volume": 0.45,
   "positional": false,
   "loop": false,
   "variants": 1,
@@ -883,7 +983,7 @@
   "cue": "zmb_vocals_zombie_ambience",
   "category": "vox",
   "soundSource": "HOSTILE",
-  "volume": 0.9,
+  "volume": 0.5,
   "positional": true,
   "loop": false,
   "variants": 6,
@@ -953,7 +1053,7 @@
   "cue": "zmb_zombie_spawn",
   "category": "vox",
   "soundSource": "HOSTILE",
-  "volume": 0.9,
+  "volume": 0.6,
   "positional": true,
   "loop": false,
   "variants": 2,

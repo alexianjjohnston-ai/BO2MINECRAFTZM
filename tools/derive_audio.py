@@ -31,6 +31,7 @@ for alias in sorted(cues):
         files.append(dict(id=f"{alias}#{n}",cue=alias,bank=bank,entryId=v['id'],size=e['size'],format="flac" if e['fmt']==8 else "pcm16",
                           channels=e['ch'],rateHz=RATES[e['rate_idx']],frames=e['frames']))
         chans.add(e['ch']); loop=max(loop,e['loop']); n+=1
+    if 'loop' in s: loop = s['loop']
     positional = (s['category'] in ('world','vox','weapon')) and chans=={1}
     audio.append(dict(cue=alias,category=s['category'],soundSource=s['soundSource'],volume=s['volume'],positional=positional,
                       loop=bool(loop),variants=n,fallback=s['fallback']))

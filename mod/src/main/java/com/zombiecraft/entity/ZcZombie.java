@@ -32,6 +32,7 @@ public class ZcZombie extends Zombie {
 	public String tier = "walk";
 	public boolean headGibbed;
 	private int tearTicks, stuckTicks, vocalTimer;
+	private double stepDist;
 	/** Synced to clients for animation: stage (0-3) in the low bits, speed tier (0 walk, 1 run, 2 sprint) times 4 above. */
 	public static final net.minecraft.network.syncher.EntityDataAccessor<Byte> DATA_ANIM =
 			net.minecraft.network.syncher.SynchedEntityData.defineId(ZcZombie.class, net.minecraft.network.syncher.EntityDataSerializers.BYTE);
@@ -47,6 +48,7 @@ public class ZcZombie extends Zombie {
 	public ZcZombie(EntityType<? extends Zombie> type, Level level) {
 		super(type, level);
 		setPersistenceRequired();
+		setSilent(true); // every zombie sound is a BO2 cue played by the server
 		vocalTimer = 40 + random.nextInt(120);
 	}
 
@@ -85,7 +87,12 @@ public class ZcZombie extends Zombie {
 		if (isAlive() && --vocalTimer <= 0 && level() instanceof ServerLevel sl) {
 			ZombieTier t = Sheets.tier(tier);
 			Cue.at(tier.equals("walk") ? t.cueAmbient() : t.cueRun(), sl, position());
-			vocalTimer = 90 + random.nextInt(160);
+			vocalTimer = 200 + random.nextInt(300);
+		}
+		// BO2 footsteps (vanilla zombie sounds are silenced): one step per stride
+		if (onGround() && level() instanceof ServerLevel sl) {
+			stepDist += Math.hypot(getX() - xo, getZ() - zo);
+			if (stepDist >= (tier.equals("walk") ? 1.5 : 1.1)) { stepDist = 0; Cue.at(tier.equals("walk") ? "fly_step_walk_npc_ceramic" : "fly_step_run_npc_ceramic", sl, position()); }
 		}
 		if (getY() < -200) discard();
 	}
@@ -99,7 +106,7 @@ public class ZcZombie extends Zombie {
 	@Override public boolean shouldDropExperience() { return false; }
 	@Override protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {}
 
-	// all voices come from our cues, vanilla zombie sounds stay quiet (footsteps stay)
+	// all voices and footsteps come from our cues, vanilla zombie sounds stay quiet
 	@Override protected SoundEvent getAmbientSound() { return null; }
 	@Override protected SoundEvent getHurtSound(DamageSource source) { return null; }
 	@Override protected SoundEvent getDeathSound() { return null; }
