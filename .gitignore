@@ -6,3 +6,5 @@ mod/.idea/
 shots/
 dist/
 .claude/
+
+assets_src/
