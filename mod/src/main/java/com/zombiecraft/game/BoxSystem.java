@@ -223,8 +223,8 @@ public final class BoxSystem {
 
 	public String promptFor(PlayerGame pg) {
 		return switch (state) {
-			case CLOSED -> "Press F to open the Mystery Box [" + Sheets.sysInt("box_cost") + "]";
-			case OFFER -> "Press F to take the " + Sheets.weapon(offered).name();
+			case CLOSED -> "Hold F for Random Weapon [Cost: " + Sheets.sysInt("box_cost") + "]";
+			case OFFER -> "Hold F to take " + Sheets.weapon(offered).name();
 			default -> "";
 		};
 	}

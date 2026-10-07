@@ -76,9 +76,6 @@ public final class Machines {
 			if (LocalAssets.models) spawnProp(d);
 			paint(d, false);
 			Vec3 c = center(d);
-			String name = d.kind().equals("power") ? "Power Switch" : Perk.of(d.perk()).title + "  [" + Perk.of(d.perk()).cost + "]";
-			game.cmd(String.format(Locale.ROOT, "summon text_display %.2f %.2f %.2f {text:'{\"text\":\"%s\",\"color\":\"%s\"}',billboard:\"center\",alignment:\"center\",Tags:[\"zc\",\"zc_machine\"]}",
-					c.x, c.y + (LocalAssets.models ? 1.9 : 1.4), c.z, name, d.kind().equals("power") ? "yellow" : "aqua"));
 		}
 	}
 
@@ -119,12 +116,12 @@ public final class Machines {
 	}
 
 	public String promptFor(MachineDef d, PlayerGame pg) {
-		if (d.kind().equals("power")) return power ? "The power is on" : "Press F to turn on the power";
+		if (d.kind().equals("power")) return power ? "The power is on" : "Hold F to turn on the power";
 		Perk perk = Perk.of(d.perk());
 		if (!power) return "The power must be turned on first";
 		if (has(pg, perk)) return "You already have " + perk.title;
 		if (perk == Perk.REVIVE && pg.revivesBought >= REVIVES_PER_GAME) return "Quick Revive is out of order";
-		return "Press F to buy " + perk.title + " [" + perk.cost + "]";
+		return "Hold F to buy " + perk.title + " [Cost: " + perk.cost + "]";
 	}
 
 	public void use(MachineDef d, ServerPlayer p, PlayerGame pg) {

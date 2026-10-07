@@ -37,8 +37,6 @@ public final class Doors {
 			BlockState s = com.zombiecraft.game.Barrier.parse(level, d.block());
 			forEach(d, p -> level.setBlock(p, s, FLAGS));
 			Vec3 c = center(d);
-			game.cmd(String.format(Locale.ROOT, "summon text_display %.2f %.2f %.2f {text:'{\"text\":\"%s  [%d]\",\"color\":\"gold\"}',billboard:\"center\",alignment:\"center\",Tags:[\"zc\",\"zc_door\",\"zcd_%s\"]}",
-					c.x, c.y + 1.2, c.z, d.label(), d.cost(), d.id()));
 		}
 	}
 
@@ -74,7 +72,7 @@ public final class Doors {
 	}
 
 	public String promptFor(DoorDef d, PlayerGame pg) {
-		return "Press F to open the door [" + d.cost() + "]";
+		return "Hold F to open Door [Cost: " + d.cost() + "]";
 	}
 
 	public void use(DoorDef d, ServerPlayer p, PlayerGame pg) {

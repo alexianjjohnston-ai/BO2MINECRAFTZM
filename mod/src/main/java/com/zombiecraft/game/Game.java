@@ -193,8 +193,6 @@ public final class Game {
 			var weapon = Sheets.weapon(w.weaponId());
 			cmd(String.format(Locale.ROOT, "summon item_frame %.2f %.2f %.2f {Facing:%db,Fixed:1b,Invisible:1b,Invulnerable:1b,Silent:1b,ItemDropChance:0f,Item:{id:\"zombiecraft:%s\",count:1},Tags:[\"zc\",\"zc_wb:%s\"]}",
 					x, y, z, facing, w.weaponId(), w.id()));
-			cmd(String.format(Locale.ROOT, "summon text_display %.2f %.2f %.2f {text:'{\"text\":\"%s  [%d]\",\"color\":\"gold\"}',billboard:\"center\",alignment:\"center\",Tags:[\"zc\"]}",
-					x, y + 0.9, z, weapon.name(), weapon.wallCost()));
 		}
 	}
 
