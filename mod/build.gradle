@@ -46,6 +46,12 @@ loom {
 				vmArg "-Dzombiecraft.autoplay=true"
 				runDir "run/feel-bench"
 			}
+			// dev screenshots: -PdevProps=debugPowerups,debugPower sets -Dzombiecraft.<name>=true for each
+			if (project.hasProperty("devProps")) {
+				project.property("devProps").split(",").each { vmArg(it.contains("=") ? "-Dzombiecraft.${it}" : "-Dzombiecraft.${it}=true") }
+				if (!project.property("devProps").contains("debugOptions")) vmArg "-Dzombiecraft.autoplay=true"
+				runDir "run/shot"
+			}
 			if (project.hasProperty("papBench")) {
 				vmArg "-Dzombiecraft.papBench=true"
 				vmArg "-Dzombiecraft.autoplay=true"

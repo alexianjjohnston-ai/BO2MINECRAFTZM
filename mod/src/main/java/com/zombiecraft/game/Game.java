@@ -206,7 +206,6 @@ public final class Game {
 		for (PlayerGame pg : players.values()) pg.boardPointsThisRound = 0;
 		if (powerups != null) powerups.newRound();
 		Cue.all("mus_zombie_round_start", level);
-		for (ServerPlayer p : level.players()) pg(p).say("Round " + n, 80);
 	}
 
 	private void endRound() {
@@ -294,6 +293,19 @@ public final class Game {
 			float yaw = (float) Math.toDegrees(Math.atan2(f.getStepX(), -f.getStepZ()));
 			for (ServerPlayer p : level.players()) p.teleportTo(level, px, cp.getY(), pz, Set.of(), yaw, 22f, true);
 		}
+		// dev: -Dzombiecraft.debugPowerups=true lays out every power-up in an arc in front of the player and saves a screenshot
+		if (Boolean.getBoolean("zombiecraft.debugPowerups") && powerups != null && (tick - startedAt == 60 || tick - startedAt == 120)) {
+			for (ServerPlayer p : level.players()) {
+				if (tick - startedAt == 120) { net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, new Payloads.Shot("view_powerups")); continue; }
+				p.teleportTo(level, p.getX(), p.getY(), p.getZ(), Set.of(), p.getYRot(), 10f, true);
+				double yaw = Math.toRadians(p.getYRot());
+				PowerUps.Kind[] ks = PowerUps.Kind.values();
+				for (int i = 0; i < ks.length; i++) {
+					double a = yaw + Math.toRadians((i - (ks.length - 1) / 2.0) * 22);
+					powerups.dropNow(ks[i], p.position().add(-Math.sin(a) * 3.2, 0.2, Math.cos(a) * 3.2));
+				}
+			}
+		}
 		// dev: -Dzombiecraft.debugView=jug,speed,doubletap,revive,power,pap visits each in turn (100 ticks apiece) and saves a screenshot;
 		// -Dzombiecraft.debugPower=true turns the power on first
 		String view = System.getProperty("zombiecraft.debugView");
@@ -368,7 +380,7 @@ public final class Game {
 		ServerPlayNetworking.send(p, new Payloads.StateSync(phase, round, pg.points, g == null ? -1 : g.mag, g == null ? 0 : g.reserve,
 				g == null ? "" : g.displayName(), pg.prompt, pg.messageTicks > 0 ? pg.message : "", pg.interactable,
 				zombiesToSpawn + alive.size(), sec, roundsSurvived,
-				pg.perks | (machines.power ? 256 : 0), powerups.instaTicks / 20, powerups.doubleTicks / 20,
+				pg.perks | (machines.power ? 256 : 0) | (pg.drinking ? 512 | (pg.drinkPerk << 10) : 0), powerups.instaTicks / 20, powerups.doubleTicks / 20,
 				pg.kills, pg.headshots, pg.downs, pg.revives));
 	}
 }

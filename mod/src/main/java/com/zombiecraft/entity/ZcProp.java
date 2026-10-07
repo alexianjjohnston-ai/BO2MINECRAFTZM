@@ -13,7 +13,9 @@ import net.minecraft.world.level.Level;
 /** A map prop drawn from a local BO2 model: the perk machines, Pack-a-Punch and the power switch. Only the server's Machines/PapSystem create it. */
 public class ZcProp extends Entity {
 	/** What it is; the client picks the model from this. */
-	public static final int JUG = 0, SPEED = 1, DOUBLETAP = 2, REVIVE = 3, PAP = 4, SWITCH = 5;
+	public static final int JUG = 0, SPEED = 1, DOUBLETAP = 2, REVIVE = 3, PAP = 4, SWITCH = 5,
+			/** Power-up pickups: they spin and bob; BUSY hides one (the blink before it expires). */
+			AMMO = 6, INSTA = 7, X2 = 8, NUKE = 9, CARPENTER = 10;
 	public static final EntityDataAccessor<Integer> KIND = SynchedEntityData.defineId(ZcProp.class, EntityDataSerializers.INT);
 	/** Lit and humming (power is on). */
 	public static final EntityDataAccessor<Boolean> POWERED = SynchedEntityData.defineId(ZcProp.class, EntityDataSerializers.BOOLEAN);

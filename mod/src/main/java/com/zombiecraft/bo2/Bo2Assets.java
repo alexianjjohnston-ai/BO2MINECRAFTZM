@@ -24,10 +24,10 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 4;
+	public static final int VERSION = 5;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
-	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit"};
+	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit", "common_zm"};
 	static final String[] ASSET_TYPES = {"xmodel", "material", "image", "xanim"};
 	/** Animations copied into the cache (compiled xanim files are small). The renderer picks them by these names. */
 	public static final String[] ANIMS = {"ai_zombie_walk_v1", "ai_zombie_walk_v2", "ai_zombie_walk_v3", "ai_zombie_walk_v4",

@@ -136,10 +136,10 @@ public final class Machines {
 		}
 		pg.points -= perk.cost;
 		pg.drinking = true;
+		pg.drinkPerk = perk.bit;
 		Cue.ui("zmb_cha_ching", p);
 		Cue.ui("evt_perk_bottle_open", p);
 		Cue.ui(perk.sting, p);
-		pg.say("Drinking " + perk.title + "...", DRINK_TICKS);
 		WeaponSystem.cancelReload(p, pg);
 		pg.fireCooldown = game.tick + DRINK_TICKS;
 		game.later(DRINK_TICKS - 12, () -> Cue.ui("evt_perk_swallow", p));
@@ -157,7 +157,6 @@ public final class Machines {
 				game.later(40, () -> Cue.at(Perk.of(d.perk()).jingle, level, center(d)));
 			}
 		}
-		for (ServerPlayer q : level.players()) game.pg(q).say("Power on", 60);
 	}
 
 	private boolean has(PlayerGame pg, Perk perk) { return (pg.perks & (1 << perk.bit)) != 0; }
@@ -175,7 +174,6 @@ public final class Machines {
 			case DOUBLETAP -> pg.perkFireFactor = 0.75;
 			case REVIVE -> pg.revivesBought++;
 		}
-		pg.say(perk.title + "!", 50);
 	}
 
 	/** Solo Quick Revive: spends the perk, restores health, and gives a moment of safety. Returns true when it saved the player. */
@@ -187,7 +185,6 @@ public final class Machines {
 		p.setHealth(p.getMaxHealth());
 		pg.shieldUntil = game.tick + 80;
 		Cue.ui("mus_perks_revive_sting", p);
-		pg.say("Revived!", 60);
 		// push the crowd back
 		for (var z : game.alive) {
 			double dx = z.getX() - p.getX(), dz = z.getZ() - p.getZ(), d = Math.sqrt(dx * dx + dz * dz);

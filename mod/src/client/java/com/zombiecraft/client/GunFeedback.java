@@ -122,6 +122,7 @@ public final class GunFeedback {
 	public static void renderHeldGun(InteractionHand hand, ItemStack stack, float partialTick,
 			PoseStack pose, MultiBufferSource buffers) {
 		Minecraft mc = Minecraft.getInstance();
+		if (hand == InteractionHand.MAIN_HAND && mc.options.getCameraType().isFirstPerson() && mc.player != null) drink(mc, pose, buffers);
 		if (hand != InteractionHand.MAIN_HAND || !refreshContext(mc) || weapon == null
 				|| !weapon.equals(ModItems.weaponOf(stack)) || !mc.options.getCameraType().isFirstPerson()) return;
 		int side = mc.player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
@@ -145,6 +146,34 @@ public final class GunFeedback {
 
 		float flash = Mth.clamp(1f - (float) (now - shotAt) / 1.5f, 0f, 1f);
 		if (flash > 0f) renderMuzzleFlash(pose, buffers, side, flash);
+	}
+
+	private static boolean drinkingPrev;
+	private static long drinkStart;
+	private static final float DRINK_SECONDS = 2.5f;
+
+	/** First-person perk drink (BO2: the gun drops, the bottle comes up, tips toward the mouth and goes away). Lowers the pose for the gun that follows. */
+	private static boolean drink(Minecraft mc, PoseStack pose, MultiBufferSource buffers) {
+		int perks = com.zombiecraft.client.ZombiecraftClient.state.perks();
+		boolean on = (perks & 512) != 0;
+		if (on && !drinkingPrev) drinkStart = System.nanoTime();
+		drinkingPrev = on;
+		float p = (System.nanoTime() - drinkStart) / 1e9f / DRINK_SECONDS;
+		if (!on || p >= 1f) return false;
+		int side = mc.player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
+		float away = smooth(0f, 0.15f, p) * (1f - smooth(0.85f, 1f, p));
+		float up = smooth(0.05f, 0.3f, p) * (1f - smooth(0.82f, 1f, p));
+		float tip = smooth(0.32f, 0.5f, p) * (1f - smooth(0.62f, 0.78f, p));
+		pose.pushPose();
+		pose.translate(-side * 0.05f * tip, -0.75f * (1f - up) + 0.12f * tip, 0.1f * tip);
+		pose.mulPose(Axis.XP.rotationDegrees(-70f * tip));
+		pose.mulPose(Axis.ZP.rotationDegrees(side * 12f * tip));
+		String[] bottles = {"bottle_jugg", "bottle_speed", "bottle_doubletap", "bottle_revive"};
+		int bit = (perks >> 10) & 3;
+		com.zombiecraft.client.render.ZcItemModels.render(bottles[bit], net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, pose, buffers, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT);
+		pose.popPose();
+		pose.translate(0f, -0.9f * away, 0f);
+		return true;
 	}
 
 	private static float recoil(double now) {
