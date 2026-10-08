@@ -85,7 +85,7 @@ public final class Projectiles {
 			if (d > r) continue;
 			double t = Math.max(0, Math.min(1, d / r));
 			double dmg = w.damage() + (w.damageMin() - w.damage()) * t;
-			ZombieHealth.hit(game, owner, pg, z, pg.instaKill ? 1e9 : dmg, false, false);
+			ZombieHealth.hit(game, owner, pg, z, dmg, false, false);
 		}
 	}
 }

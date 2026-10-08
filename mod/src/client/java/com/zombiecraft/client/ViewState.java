@@ -39,7 +39,7 @@ public final class ViewState {
 		// grenade: pin out on press, thrown on release once the pin animation is done, the gun returns after the throw
 		if (!playing || p == null) { gActive = gHeld = false; }
 		else {
-			if (grenadeKey && !gHeld && !gActive && grenades > 0 && !reloading && (ZombiecraftClient.state.perks() & 512) == 0) {
+			if (grenadeKey && !gHeld && !gActive && grenades > 0 && !reloading && !ZombiecraftClient.state.drinking()) {
 				gActive = true; gPress = now; gRelease = 0;
 			}
 			gHeld = grenadeKey;

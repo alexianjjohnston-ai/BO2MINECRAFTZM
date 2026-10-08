@@ -28,6 +28,7 @@ public final class Bo2Mesh {
 	private Bo2Mesh() {}
 
 	public static final float INCH = 0.0254f;
+	private static final byte GLOW = 1, SELF_LIT = 2, HIDDEN = 4;
 
 	/** A loaded model with its per-surface textures (null where the texture is missing). */
 	public static final class Loaded {
@@ -36,10 +37,23 @@ public final class Bo2Mesh {
 		/** Bounding box centre in BO2 inches. */
 		public final float cx, cy, cz;
 		public final float minX, maxX, minY, maxY, minZ, maxZ;
+		/** Per surface, from its material name: glow, self-lit or hidden (see Bo2Mesh). */
+		final byte[] flags;
 		/** The per-surface textures (the view model rig patches the ones the install lacks). */
 		ResourceLocation[] surfaceTextures() { return tex; }
 		Loaded(XModel m, ResourceLocation[] tex) {
 			this.model = m; this.tex = tex;
+			flags = new byte[m.surfaces.size()];
+			for (int i = 0; i < flags.length; i++) {
+				String name = m.materials.get(m.surfaces.get(i).material).name();
+				if (name == null) continue;
+				// "objective" materials (the box's question marks) have a black texture and are lit by colour constants: full-bright additive gold, pulsing
+				if (name.endsWith("_obj")) flags[i] |= GLOW;
+				// lit parts of the powered machines ("..._on", "..._moving") are self-lit by the game and stay bright in the dark
+				if (name.endsWith("_on") || name.endsWith("_moving")) flags[i] |= SELF_LIT;
+				// attachments modelled into the view meshes (the FAL's M203 launcher) are hidden in BO2 until equipped
+				if (name.contains("_attach_gl")) flags[i] |= HIDDEN;
+			}
 			float a = 1e9f, b = -1e9f, c = 1e9f, d = -1e9f, e = 1e9f, f = -1e9f;
 			for (int i = 0; i < m.vertCount; i++) {
 				float x = m.pos[i * 3], y = m.pos[i * 3 + 1], z = m.pos[i * 3 + 2];
@@ -49,6 +63,9 @@ public final class Bo2Mesh {
 			cx = (a + b) / 2; cy = (c + d) / 2; cz = (e + f) / 2;
 		}
 	}
+
+	/** Skinned vertex positions of the model being drawn (render thread only; grown to the biggest model). */
+	private static float[] skinX = new float[0], skinY = new float[0], skinZ = new float[0];
 
 	private static final Map<String, Loaded> MODELS = new HashMap<>();
 	private static final Map<String, ResourceLocation> TEXTURES = new HashMap<>();
@@ -140,28 +157,25 @@ public final class Bo2Mesh {
 		XModel m = l.model;
 		float[] sx = null, sy = null, sz = null;
 		if (pose != null) {
-			sx = new float[m.vertCount]; sy = new float[m.vertCount]; sz = new float[m.vertCount];
+			if (skinX.length < m.vertCount) { skinX = new float[m.vertCount]; skinY = new float[m.vertCount]; skinZ = new float[m.vertCount]; }
+			sx = skinX; sy = skinY; sz = skinZ;
 			float[] t = new float[3];
 			for (int v = 0; v < m.vertCount; v++) { pose.skinPos(v, t); sx[v] = t[0]; sy[v] = t[1]; sz[v] = t[2]; }
 		}
 		PoseStack.Pose p = ps.last();
 		float[] n = new float[3];
+		float pulse = pulse();
 		for (int s = 0; s < m.surfaces.size(); s++) {
 			XModel.Surface surf = m.surfaces.get(s);
-			// "objective" materials (the box's question marks) have a black texture and are lit by colour constants: full-bright additive gold, pulsing
-			boolean glow = m.materials.get(surf.material).name() != null && m.materials.get(surf.material).name().endsWith("_obj");
-			// attachments modelled into the view meshes (the FAL's M203 launcher) are hidden in BO2 until equipped
-			if (m.materials.get(surf.material).name() != null && m.materials.get(surf.material).name().contains("_attach_gl")) continue;
+			int flag = l.flags[s];
+			if ((flag & HIDDEN) != 0) continue;
+			boolean glow = (flag & GLOW) != 0;
 			boolean flat = halo != 0;
 			ResourceLocation tex = glow || flat ? white() : l.tex[s];
 			if (tex == null) continue;
 			VertexConsumer vc = buf.getBuffer(glow || flat ? RenderType.entityTranslucentEmissive(tex) : RenderType.entityCutoutNoCull(tex));
-			float pulse = pulse();
 			int cr = glow ? (int) (8 + 247 * pulse) : 255, cg = glow ? (int) (8 + 207 * pulse) : 255, cb = glow ? (int) (8 + 0 * pulse) : 255;
-			// lit parts of the powered machines ("..._on", "..._moving") are self-lit by the game and stay bright in the dark
-			String mn = m.materials.get(surf.material).name();
-			boolean selfLit = mn != null && (mn.endsWith("_on") || mn.endsWith("_moving"));
-			int lv = glow || selfLit || flat ? 0xF000F0 : light;
+			int lv = glow || (flag & SELF_LIT) != 0 || flat ? 0xF000F0 : light;
 			int ca = 255;
 			if (flat) { cr = halo >> 16 & 255; cg = halo >> 8 & 255; cb = halo & 255; ca = halo >>> 24; }
 			for (int c = 0; c + 2 < surf.cornerCount(); c += 3) {

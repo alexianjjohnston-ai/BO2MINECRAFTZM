@@ -134,7 +134,7 @@ public final class Grenades {
 			// walls shield: the blast must reach the zombie in a straight line
 			if (Barrier.shotClip(level, from, c).getType() != HitResult.Type.MISS) continue;
 			double dmg = inner + (outer - inner) * (d / r);
-			ZombieHealth.hit(g, owner, pg, z, pg.instaKill ? 1e9 : dmg, false, false);
+			ZombieHealth.hit(g, owner, pg, z, dmg, false, false);
 		}
 	}
 }

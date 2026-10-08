@@ -25,8 +25,11 @@ public final class UiFont {
 
 	private record Tex(ResourceLocation loc, int w, int h) {}
 
-	private static final Map<String, Tex> CACHE = new LinkedHashMap<>(256, 0.75f, true) {
-		@Override protected boolean removeEldestEntry(Map.Entry<String, Tex> e) {
+	/** A string at a size (height in quarter pixels) and GUI scale. */
+	private record Key(String s, int quarterHeight, double scale) {}
+
+	private static final Map<Key, Tex> CACHE = new LinkedHashMap<>(256, 0.75f, true) {
+		@Override protected boolean removeEldestEntry(Map.Entry<Key, Tex> e) {
 			if (size() <= 300) return false;
 			Minecraft.getInstance().getTextureManager().release(e.getValue().loc);
 			return true;
@@ -52,7 +55,7 @@ public final class UiFont {
 
 	private static Tex tex(String s, float height, double scale) {
 		if (broken) return null;
-		String key = s + "|" + Math.round(height * 4) + "|" + scale;
+		Key key = new Key(s, Math.round(height * 4), scale);
 		Tex t = CACHE.get(key);
 		if (t != null) return t;
 		try {
@@ -72,7 +75,8 @@ public final class UiFont {
 			g2.drawString(s, 2, asc);
 			g2.dispose();
 			NativeImage img = new NativeImage(w, h, false);
-			for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) img.setPixel(x, y, (bi.getRGB(x, y) & 0xFF000000) | 0xFFFFFF);
+			int[] argb = bi.getRGB(0, 0, w, h, null, 0, w);
+			for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) img.setPixel(x, y, (argb[y * w + x] & 0xFF000000) | 0xFFFFFF);
 			ResourceLocation loc = ResourceLocation.fromNamespaceAndPath("zombiecraft", "uifont/" + (counter++));
 			Minecraft.getInstance().getTextureManager().register(loc, new DynamicTexture(img));
 			t = new Tex(loc, w, h);

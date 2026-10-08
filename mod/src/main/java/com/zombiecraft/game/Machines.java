@@ -75,7 +75,6 @@ public final class Machines {
 		for (MachineDef d : Sheets.MACHINES) {
 			if (LocalAssets.models) spawnProp(d);
 			paint(d, false);
-			Vec3 c = center(d);
 		}
 	}
 

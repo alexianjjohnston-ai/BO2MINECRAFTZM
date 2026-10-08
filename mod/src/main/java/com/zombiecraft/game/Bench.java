@@ -87,7 +87,7 @@ public final class Bench {
 					log(g.round == 1 && g.zombiesToSpawn + g.alive.size() == Sheets.round(1).zombies(), "round-start", "round=" + g.round + " zombies=" + (g.zombiesToSpawn + g.alive.size()) + " expected=" + Sheets.round(1).zombies());
 					var g0 = pg.guns[0]; log(g0 != null && g0.mag == 8 && g0.reserve == 32, "start-pistol-8/32", "m1911 ammo=" + (g0 == null ? "none" : g0.mag + "/" + g0.reserve));
 					shot(p, "01_round1");
-					next(1, 60);
+					next(Integer.getInteger("zombiecraft.benchStart", 1), 60);
 				}
 			}
 			case 1 -> { // shooting a free zombie in front of the player

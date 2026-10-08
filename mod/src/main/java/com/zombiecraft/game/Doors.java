@@ -31,7 +31,7 @@ public final class Doors {
 		for (DoorDef d : Sheets.DOORS) locked.addAll(rooms(d));
 		for (WindowDef w : Sheets.WINDOWS) if (!locked.contains(w.room())) openRooms.add(w.room());
 		game.cmd("kill @e[tag=zc_door]");
-		BlockState clip = com.zombiecraft.game.Barrier.parse(level, "zombiecraft:door_clip");
+		BlockState clip = Barrier.parse(level, "zombiecraft:door_clip");
 		for (DoorDef d : Sheets.DOORS) {
 			forEach(d, p -> level.setBlock(p, clip, FLAGS));
 			leaves(d, false);
@@ -77,13 +77,11 @@ public final class Doors {
 		if (pg.points < d.cost()) { Cue.ui("zmb_no_cha_ching", p); return; }
 		pg.points -= d.cost();
 		Cue.ui("zmb_cha_ching", p);
-		open(d);
+		open(d, true);
 	}
 
 	/** dev (debugTour): swing every door open */
 	void openAll() { for (DoorDef d : Sheets.DOORS) open(d, true); }
-
-	private void open(DoorDef d) { open(d, true); }
 
 	private void open(DoorDef d, boolean paid) {
 		if (!opened.add(d.id())) return;
@@ -126,7 +124,7 @@ public final class Doors {
 			String tag = "zcl_" + d.id() + "_" + i;
 			if (!swing) {
 				game.cmd(String.format(Locale.ROOT, "summon block_display %.4f %.4f %.4f {block_state:{Name:\"%s\"},Tags:[\"zc\",\"zc_door\",\"zcd_%s\",\"%s\"],transformation:%s}",
-						o.getX() + hx - 0.5 * th * Math.sin(th0) + (alongX ? 0 : 0), (double) (o.getY() + Math.min(d.y1(), d.y2())), o.getZ() + hz - 0.5 * th * Math.cos(th0),
+						o.getX() + hx - 0.5 * th * Math.sin(th0), (double) (o.getY() + Math.min(d.y1(), d.y2())), o.getZ() + hz - 0.5 * th * Math.cos(th0),
 						d.block(), d.id(), tag, transform(th0, len, h, th)));
 			} else {
 				game.cmd(String.format(Locale.ROOT, "data merge entity @e[tag=%s,limit=1] {start_interpolation:0,interpolation_duration:30,transformation:%s}", tag, transform(th0 + phi, len, h, th)));

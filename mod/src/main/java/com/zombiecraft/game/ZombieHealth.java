@@ -15,7 +15,7 @@ public final class ZombieHealth {
 	public static void hit(Game game, ServerPlayer p, PlayerGame pg, ZcZombie z, double dmg, boolean head, boolean melee) {
 		if (!z.isAlive() || z.hp <= 0) return;
 		ServerLevel level = (ServerLevel) z.level();
-		z.hp -= dmg;
+		z.hp -= pg.instaKill ? z.hp : dmg; // Insta-Kill: any hit is lethal
 		ServerPlayNetworking.send(p, new Payloads.CombatFeedback(Payloads.FEEDBACK_HIT, -1, "", 0, head, z.hp <= 0));
 		if (z.hp > 0) {
 			pg.earn(Sheets.sysInt("hit_points"));

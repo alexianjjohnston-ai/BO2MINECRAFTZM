@@ -24,6 +24,9 @@ public final class UiArt {
 	private record Tex(ResourceLocation loc, int w, int h) {}
 
 	private static final Map<String, Tex> TEX = new HashMap<>();
+	/** When an image was last looked for and not found: the HUD asks for these every frame, so the disk is only checked again after a moment (the art may still be converting). */
+	private static final Map<String, Long> MISSING = new HashMap<>();
+	private static final long RECHECK_NS = 2_000_000_000L;
 	private static volatile boolean working, failed;
 
 	/** Starts the one-time conversion in the background if the cache is missing. */
@@ -50,8 +53,8 @@ public final class UiArt {
 	private static Tex tex(String name) {
 		Tex t = TEX.get(name);
 		if (t != null) return t;
-		Path f = UiAssets.file(Minecraft.getInstance().gameDirectory.toPath(), name);
-		if (!Files.isRegularFile(f)) return null;
+		Path f = file(name);
+		if (f == null) return null;
 		try (var in = Files.newInputStream(f)) {
 			NativeImage img = NativeImage.read(in);
 			ResourceLocation loc = ResourceLocation.fromNamespaceAndPath("zombiecraft", "bo2ui/" + name);
@@ -65,6 +68,17 @@ public final class UiArt {
 		return t;
 	}
 
+	/** The cached file of an image, or null (and no disk check for a moment) when it is not there. */
+	private static Path file(String name) {
+		Long checked = MISSING.get(name);
+		long now = System.nanoTime();
+		if (checked != null && now - checked < RECHECK_NS) return null;
+		Path f = UiAssets.file(Minecraft.getInstance().gameDirectory.toPath(), name);
+		if (Files.isRegularFile(f)) { MISSING.remove(name); return f; }
+		MISSING.put(name, now);
+		return null;
+	}
+
 	/** The registered texture of a menu image (loads it on first use), or null while the art is not there. */
 	public static ResourceLocation location(String name) { Tex t = tex(name); return t == null ? null : t.loc; }
 
@@ -72,10 +86,11 @@ public final class UiArt {
 
 	/** The same image as pure white chalk (alpha kept and boosted), for drawings that glow on a wall; null while the art is not there. */
 	public static ResourceLocation chalk(String name) {
-		if (CHALK.containsKey(name)) return CHALK.get(name);
-		ResourceLocation loc = null;
-		Path f = UiAssets.file(Minecraft.getInstance().gameDirectory.toPath(), name);
-		if (Files.isRegularFile(f)) try (var in = Files.newInputStream(f)) {
+		ResourceLocation loc = CHALK.get(name);
+		if (loc != null) return loc;
+		Path f = file(name);
+		if (f == null) return null;
+		try (var in = Files.newInputStream(f)) {
 			NativeImage img = NativeImage.read(in);
 			for (int y = 0; y < img.getHeight(); y++) for (int x = 0; x < img.getWidth(); x++) {
 				int a = img.getPixel(x, y) >>> 24;
@@ -85,9 +100,23 @@ public final class UiArt {
 			Minecraft.getInstance().getTextureManager().register(loc, new DynamicTexture(img));
 		} catch (IOException | RuntimeException e) {
 			ZombiecraftMod.LOG.warn("Block Ops 2 chalk art {} unreadable: {}", name, e.toString());
+			MISSING.put(name, Long.MAX_VALUE / 2); // do not retry an unreadable file every frame
 		}
-		CHALK.put(name, loc);
+		if (loc != null) CHALK.put(name, loc);
 		return loc;
+	}
+
+	/** BO2 icon image of a weapon id (pack-a-punched guns use the base gun's). */
+	public static String weaponIcon(String weaponId) {
+		String id = weaponId.replace("_pap", "");
+		return switch (id) {
+			case "m1911" -> "menu_mp_weapons_1911_big";
+			case "rottweil72" -> "menu_mp_weapons_olympia_big";
+			case "mp5k" -> "menu_mp_weapons_mp5_big";
+			case "fnfal" -> "menu_mp_weapons_fal_big";
+			case "ray_gun" -> "menu_zm_weapons_raygun_big";
+			default -> "menu_mp_weapons_" + id + "_big";
+		};
 	}
 
 	public static boolean has(String name) { Tex t = tex(name); return t != null && t.loc != null; }

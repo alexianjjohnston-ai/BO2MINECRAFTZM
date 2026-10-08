@@ -28,8 +28,6 @@ public final class GunFeedback {
 	private static float shotStrength;
 	private static int reloadTicks, shotSequence;
 	private static boolean headshot, killed, reloadEmpty;
-	/** Ticks since this gun was equipped (the client re-counts from zero whenever the held gun changes). */
-
 	private GunFeedback() {}
 
 	/** Call on the client thread; effects start only after the server accepts the action. */
@@ -57,7 +55,7 @@ public final class GunFeedback {
 			}
 			case Payloads.FEEDBACK_RELOAD_START -> {
 				reloadEmpty = ZombiecraftClient.state.mag() <= 0;
-					reloadAt = now;
+				reloadAt = now;
 				reloadTicks = Math.max(1, event.durationTicks());
 				shotAt = NO_EVENT;
 			}
@@ -173,11 +171,12 @@ public final class GunFeedback {
 	private static boolean drinkingPrev;
 	private static long drinkStart;
 	private static final float DRINK_SECONDS = 2.5f;
+	/** Item model of the bottle of each perk bit. */
+	private static final String[] BOTTLES = {"bottle_jugg", "bottle_speed", "bottle_doubletap", "bottle_revive"};
 
 	/** First-person perk drink (BO2: the gun drops, the bottle comes up, tips toward the mouth and goes away). Lowers the pose for the gun that follows. */
 	private static boolean drink(Minecraft mc, PoseStack pose, MultiBufferSource buffers) {
-		int perks = com.zombiecraft.client.ZombiecraftClient.state.perks();
-		boolean on = (perks & 512) != 0;
+		boolean on = ZombiecraftClient.state.drinking();
 		if (on && !drinkingPrev) drinkStart = System.nanoTime();
 		drinkingPrev = on;
 		float p = (System.nanoTime() - drinkStart) / 1e9f / DRINK_SECONDS;
@@ -186,10 +185,10 @@ public final class GunFeedback {
 		float away = smooth(0f, 0.15f, p) * (1f - smooth(0.85f, 1f, p));
 		float up = smooth(0.05f, 0.3f, p) * (1f - smooth(0.82f, 1f, p));
 		float tip = smooth(0.32f, 0.5f, p) * (1f - smooth(0.62f, 0.78f, p));
-		String[] bottleIds = {"bottle_jugg", "bottle_speed", "bottle_doubletap", "bottle_revive"};
-		if (com.zombiecraft.client.render.ViewModel.has(bottleIds[(perks >> 10) & 3])) {
+		String bottle = BOTTLES[ZombiecraftClient.state.drinkPerk()];
+		if (com.zombiecraft.client.render.ViewModel.has(bottle)) {
 			// the real rig: BO2's hands holding the bottle through its own drink clip; the gun lowers out of view meanwhile
-			com.zombiecraft.client.render.ZcItemModels.render(bottleIds[(perks >> 10) & 3], net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, pose, buffers, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT);
+			com.zombiecraft.client.render.ZcItemModels.render(bottle, net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, pose, buffers, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT);
 			pose.translate(0f, -0.9f * away, 0f);
 			return true;
 		}
@@ -197,9 +196,7 @@ public final class GunFeedback {
 		pose.translate(-side * 0.30f * tip, -0.75f * (1f - up) + 0.26f * tip, -0.10f * tip);
 		pose.mulPose(Axis.XP.rotationDegrees(48f * tip));
 		pose.mulPose(Axis.ZP.rotationDegrees(side * 12f * tip));
-		String[] bottles = {"bottle_jugg", "bottle_speed", "bottle_doubletap", "bottle_revive"};
-		int bit = (perks >> 10) & 3;
-		com.zombiecraft.client.render.ZcItemModels.render(bottles[bit], net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, pose, buffers, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT);
+		com.zombiecraft.client.render.ZcItemModels.render(bottle, net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, pose, buffers, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT);
 		pose.popPose();
 		pose.translate(0f, -0.9f * away, 0f);
 		return true;

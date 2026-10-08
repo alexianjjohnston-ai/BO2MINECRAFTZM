@@ -39,6 +39,8 @@ public final class ModBlocks {
 	private ModBlocks() {}
 
 	public static final Map<String, Block> ALL = new LinkedHashMap<>();
+	/** The boards and the players-only window clip: shots pass through both (Barrier.shotClip). */
+	public static Block BOARD, WINDOW_CLIP;
 
 	/** Boards nailed across a window: drawn as rough planks, but a full solid cell to walk into. Runs along the wall (axis x or z). */
 	public static class BoardBlock extends Block {
@@ -130,10 +132,11 @@ public final class ModBlocks {
 		reg("light_panel", SoundType.GLASS, 12, false, false);
 		for (String id : new String[] {"plaster_wall", "concrete_floor", "yellow_trim", "green_panel", "red_brick", "door_metal", "door_wood", "road_bus", "road_stop"})
 			reg(id, SoundType.STONE, 0, false, false);
-		reg("barricade_board", SoundType.WOOD, 0, true, true);
+		BOARD = reg("barricade_board", SoundType.WOOD, 0, true, true);
 		for (String id : new String[] {"window_clip", "door_clip"}) {
 			ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Payloads.id(id));
-			Registry.register(BuiltInRegistries.BLOCK, key, new ClipBlock(BlockBehaviour.Properties.of().strength(-1f, 3600000f).noOcclusion().noLootTable().setId(key), id.equals("window_clip")));
+			Block clip = Registry.register(BuiltInRegistries.BLOCK, key, new ClipBlock(BlockBehaviour.Properties.of().strength(-1f, 3600000f).noOcclusion().noLootTable().setId(key), id.equals("window_clip")));
+			if (id.equals("window_clip")) WINDOW_CLIP = clip;
 		}
 		try (var in = ModBlocks.class.getResourceAsStream("/assets/zombiecraft/decor.json")) {
 			JsonObject all = JsonParser.parseReader(new InputStreamReader(in)).getAsJsonObject();

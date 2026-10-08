@@ -189,7 +189,7 @@ public final class WeaponSystem {
 				level.sendParticles(ParticleTypes.SMOKE, l.x, l.y, l.z, 2, 0.05, 0.05, 0.05, 0.01);
 			}
 		}
-		for (var e : hits.entrySet()) ZombieHealth.hit(game, p, pg, e.getKey(), pg.instaKill ? 1e9 : e.getValue()[0], e.getValue()[1] > 0, false);
+		for (var e : hits.entrySet()) ZombieHealth.hit(game, p, pg, e.getKey(), e.getValue()[0], e.getValue()[1] > 0, false);
 	}
 
 	/** V is the knife. */
@@ -210,7 +210,7 @@ public final class WeaponSystem {
 		}
 		if (best != null) {
 			Cue.ui("wpn_melee_hit", p);
-			ZombieHealth.hit(game, p, pg, best, pg.instaKill ? 1e9 : Sheets.sys("melee_damage"), false, true);
+			ZombieHealth.hit(game, p, pg, best, Sheets.sys("melee_damage"), false, true);
 		}
 	}
 }

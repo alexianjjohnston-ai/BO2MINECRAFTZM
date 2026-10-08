@@ -28,9 +28,8 @@ public class ZcZombie extends Zombie {
 	/** 0 walk to the window, 1 tear boards, 2 climb in, 3 free (hunting). */
 	public int stage = 3;
 	public Barrier barrier;
-	public double hp = 150, hpMax = 150;
+	public double hp = 150;
 	public String tier = "walk";
-	public boolean headGibbed;
 	private static final int BODY_TICKS = 160;
 	private int tearTicks, stuckTicks, vocalTimer;
 	private double stepDist;
@@ -63,7 +62,7 @@ public class ZcZombie extends Zombie {
 	public void setup(String tierId, int health, Barrier window) {
 		ZombieTier t = Sheets.tier(tierId);
 		this.tier = tierId;
-		this.hp = this.hpMax = health;
+		this.hp = health;
 		this.barrier = window;
 		this.stage = window == null ? 3 : 0;
 		getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(t.speedRatio() * Sheets.sys("zombie_sprint_speed_attr"));

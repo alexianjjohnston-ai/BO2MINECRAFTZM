@@ -3,6 +3,7 @@ package com.zombiecraft.game;
 import com.zombiecraft.entity.ZcEntities;
 import com.zombiecraft.entity.ZcProp;
 import com.zombiecraft.entity.ZcZombie;
+import com.zombiecraft.sheet.Sheets;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -114,7 +115,7 @@ public final class PowerUps {
 		Cue.all("zmb_powerup_grabbed", level);
 		Cue.all(d.kind.cue, level);
 		switch (d.kind) {
-			case MAX_AMMO -> { for (ServerPlayer p : level.players()) { for (var g : game.pg(p).guns) if (g != null) g.refill(); game.pg(p).grenades = com.zombiecraft.sheet.Sheets.sysInt("grenade_max"); } }
+			case MAX_AMMO -> { for (ServerPlayer p : level.players()) { for (var g : game.pg(p).guns) if (g != null) g.refill(); game.pg(p).grenades = Sheets.sysInt("grenade_max"); } }
 			case INSTA_KILL -> {
 				if (instaTicks == 0) Cue.all("zmb_insta_kill_loop", level);
 				instaTicks = EFFECT_TICKS; setInsta(true);

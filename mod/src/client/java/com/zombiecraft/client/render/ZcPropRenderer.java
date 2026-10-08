@@ -2,8 +2,8 @@ package com.zombiecraft.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.zombiecraft.bo2.Pose;
 import com.zombiecraft.entity.ZcProp;
+import com.zombiecraft.client.menu.UiArt;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -27,8 +27,6 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 	private static final String[] ON = {"zombie_vending_jugg_on", "zombie_vending_sleight_on", "zombie_vending_doubletap2_on", "zombie_vending_revive_on", "p6_anim_zm_buildable_pap_on", "p6_zm_buildable_pswitch_body"};
 	/** Blocks per BO2 inch: a machine is about 2.2 blocks tall. */
 	public static final float SCALE = 0.0225f;
-
-	private final java.util.Map<Bo2Mesh.Loaded, Pose> poses = new java.util.HashMap<>();
 
 	public ZcPropRenderer(EntityRendererProvider.Context ctx) { super(ctx); }
 
@@ -91,22 +89,9 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 		ps.popPose();
 	}
 
-	/** BO2 icon image of a weapon id (pack-a-punched guns use the base gun's). */
-	private static String iconOf(String weaponId) {
-		String id = weaponId.replace("_pap", "");
-		return switch (id) {
-			case "m1911" -> "menu_mp_weapons_1911_big";
-			case "rottweil72" -> "menu_mp_weapons_olympia_big";
-			case "mp5k" -> "menu_mp_weapons_mp5_big";
-			case "fnfal" -> "menu_mp_weapons_fal_big";
-			case "ray_gun" -> "menu_zm_weapons_raygun_big";
-			default -> "menu_mp_weapons_" + id + "_big";
-		};
-	}
-
 	/** BO2's wall weapon: the gun drawn in glowing white chalk flat on the wall (the weapon icon, a faint bloom behind it); the real model hangs in front. */
 	private static boolean chalk(String weapon, PoseStack ps, MultiBufferSource buf, float t) {
-		var tex = com.zombiecraft.client.menu.UiArt.chalk(iconOf(weapon));
+		var tex = UiArt.chalk(UiArt.weaponIcon(weapon));
 		if (tex == null) return false;
 		float hx = 1.5f, hy = hx * 0.5f, pulse = 0.85f + 0.15f * (float) Math.sin(t * 2f);
 		var vc = buf.getBuffer(net.minecraft.client.renderer.RenderType.entityTranslucentEmissive(tex));

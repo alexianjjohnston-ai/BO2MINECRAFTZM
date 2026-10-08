@@ -28,14 +28,6 @@ public final class Cue {
 		}
 	}
 
-	/** A sound in the world with a pitch change (used for upgraded guns etc.). */
-	public static void at(String cue, ServerLevel level, Vec3 pos, float pitch) {
-		for (ServerPlayer p : level.players()) {
-			if (p.position().distanceToSqr(pos) < 96 * 96)
-				ServerPlayNetworking.send(p, new Payloads.CuePlay(cue, pos.x, pos.y, pos.z, true, 1f, pitch));
-		}
-	}
-
 	public static void stopAll(String cue, ServerLevel level) {
 		for (ServerPlayer p : level.players()) ServerPlayNetworking.send(p, new Payloads.CueStop(cue));
 	}

@@ -139,17 +139,11 @@ public final class XModel {
 		String line;
 		int curBone = -1, curVert = -1;
 		String section = "";
-		Surface cur = null; int curMat = -1;
-		// triangle-corner staging
-		List<int[]> cornerVert = null; List<float[]> cornerData = null;
-		int[] triState = new int[2];            // corners read for the open triangle, material of it
 		int pendingVert = -1; float[] pendingNormal = null, pendingUv = null;
-		List<Integer> sVert = new ArrayList<>(); List<Float> sNorm = new ArrayList<>(), sUv = new ArrayList<>();
 		java.util.Map<Integer, SurfBuilder> builders = new java.util.TreeMap<>();
 		SurfBuilder sb = null;
 		int influences = 0, infRead = 0;
 		float[] tmpW = new float[16]; int[] tmpB = new int[16];
-		int boneBlockMode = 0;
 
 		while ((line = r.readLine()) != null) {
 			if (line.isEmpty() || line.startsWith("//")) continue;
@@ -207,11 +201,10 @@ public final class XModel {
 				case "TRI" -> {
 					int mat = Integer.parseInt(t[2]);
 					sb = builders.computeIfAbsent(mat, SurfBuilder::new);
-					triState[0] = 0;
 				}
 				case "NORMAL" -> { if (pendingNormal != null) { pendingNormal[0] = Float.parseFloat(t[1]); pendingNormal[1] = Float.parseFloat(t[2]); pendingNormal[2] = Float.parseFloat(t[3]); } }
 				case "UV" -> {
-					if (pendingUv != null && sb != null && triState[1] == 0) {
+					if (pendingUv != null && sb != null) {
 						pendingUv[0] = Float.parseFloat(t[2]); pendingUv[1] = Float.parseFloat(t[3]);
 						sb.add(pendingVert, pendingNormal, pendingUv);
 						pendingNormal = null; pendingUv = null; pendingVert = -1;

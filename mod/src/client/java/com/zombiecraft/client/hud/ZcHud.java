@@ -8,7 +8,6 @@ import com.zombiecraft.item.ModItems;
 import com.zombiecraft.net.Payloads;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -134,39 +133,26 @@ public final class ZcHud {
 	}
 
 	/** Downed: red screen, bleed-out countdown. Reviving (either side): a progress bar under the crosshair. */
-	private static void downedOverlay(GuiGraphics g, Font font, Payloads.StateSync s, int w, int h) {
+	private static void downedOverlay(GuiGraphics g, Payloads.StateSync s, int w, int h) {
 		boolean down = s.bleedSec() > 0;
 		if (down) {
 			float pulse = 0.7f + 0.3f * (float) Math.sin(System.currentTimeMillis() / 250.0);
 			if (!UiArt.draw(g, "overlay_low_health", 0, 0, w, h, ((int) (255 * pulse) << 24) | 0xFFFFFF)) g.fill(0, 0, w, h, 0x50A01010);
-			text(g, font, "BLEEDING OUT  " + s.bleedSec(), w / 2, h - h / 5, 1.6f, s.bleedSec() <= 10 ? 0xFFFF4444 : 0xFFFFFFFF, true);
+			text(g, "BLEEDING OUT  " + s.bleedSec(), w / 2, h - h / 5, 1.6f, s.bleedSec() <= 10 ? 0xFFFF4444 : 0xFFFFFFFF, true);
 		}
 		if (s.revivePct() > 0) {
 			int bw = Math.max(120, w / 6), x = (w - bw) / 2, y = h / 2 + h / 8;
 			g.fill(x - 1, y - 1, x + bw + 1, y + 7, 0xA0000000);
 			g.fill(x, y, x + bw * s.revivePct() / 100, y + 6, down ? 0xFF5FE0E8 : 0xFFD8A020);
-			text(g, font, down ? "BEING REVIVED" : "REVIVING", w / 2, y + 12, 0.9f, 0xFFFFFFFF, true);
+			text(g, down ? "BEING REVIVED" : "REVIVING", w / 2, y + 12, 0.9f, 0xFFFFFFFF, true);
 		}
-	}
-
-	/** BO2 weapon icon files by weapon id (pack-a-punched guns use the base gun's icon). */
-	private static String icon(String weaponId) {
-		String id = weaponId.replace("_pap", "");
-		return switch (id) {
-			case "m1911" -> "menu_mp_weapons_1911_big";
-			case "rottweil72" -> "menu_mp_weapons_olympia_big";
-			case "mp5k" -> "menu_mp_weapons_mp5_big";
-			case "fnfal" -> "menu_mp_weapons_fal_big";
-			case "ray_gun" -> "menu_zm_weapons_raygun_big";
-			default -> "menu_mp_weapons_" + id + "_big";
-		};
 	}
 
 	/** Icon file of the gun in hand, or null. */
 	private static String heldIcon(Minecraft mc) {
 		Inventory inventory = mc.player.getInventory();
 		String id = ModItems.weaponOf(inventory.getItem(inventory.selected));
-		return id == null ? null : icon(id);
+		return id == null ? null : UiArt.weaponIcon(id);
 	}
 
 	/** BO2's small four-tick crosshair (the vanilla one is hidden while a match runs). */
@@ -210,6 +196,9 @@ public final class ZcHud {
 		if (rest > 0) UiArt.draw(g, "chalkmarks_" + rest, x + groups * step, y, size, size, color);
 	}
 
+	private static final String[] PERK_ICONS = {"specialty_juggernaut_zombies", "specialty_fastreload_zombies", "specialty_doubletap_zombies", "specialty_quickrevive_zombies"};
+	private static final String[] POWERUP_ICONS = {"specialty_instakill_zombies", "specialty_doublepoints_zombies"};
+
 	private static float lerp(float a, float b, float t) { return a + (b - a) * t; }
 	private static float ease(float t) { t = Math.max(0f, Math.min(1f, t)); return t * t * (3f - 2f * t); }
 
@@ -221,7 +210,7 @@ public final class ZcHud {
 	 * BO2's round change: the new chalk tally fades in large in the middle of the screen, holds, then shrinks into the
 	 * bottom-left corner. No text. Returns true while the animation owns the tally.
 	 */
-	private static boolean roundTally(GuiGraphics g, Font font, int round, int w, int h, int cornerSize) {
+	private static boolean roundTally(GuiGraphics g, int round, int w, int h, int cornerSize) {
 		if (round != lastRound) {
 			if (round > 0 && lastRound >= 0) roundAnimStart = System.nanoTime();
 			lastRound = round;
@@ -233,7 +222,7 @@ public final class ZcHud {
 			float scale = lerp(14f, 4f, move);
 			int ph = (int) (9 * scale * 1.3f), px = (int) lerp(w / 2, 14 + UiFont.width(String.valueOf(round), 9f * 4f * 1.3f) / 2, move);
 			int py = (int) lerp(h / 2 - ph / 2, h - 14 - (int) (9 * 4f * 1.3f), move);
-			text(g, font, String.valueOf(round), px, py, scale, ((int) (255 * fade) << 24) | 0xB01010, true);
+			text(g, String.valueOf(round), px, py, scale, ((int) (255 * fade) << 24) | 0xB01010, true);
 			return true;
 		}
 		int size = (int) lerp(h * 0.62f, cornerSize, move), step = size * 3 / 4, groups = round / 5, rest = round % 5;
@@ -244,7 +233,7 @@ public final class ZcHud {
 		return true;
 	}
 
-	private static void text(GuiGraphics g, Font font, String s, int x, int y, float scale, int color, boolean centered) {
+	private static void text(GuiGraphics g, String s, int x, int y, float scale, int color, boolean centered) {
 		float height = 9f * scale * 1.3f;
 		int px = centered ? x - UiFont.width(s, height) / 2 : x;
 		UiFont.draw(g, s, px, y, height, color, true);
@@ -260,20 +249,20 @@ public final class ZcHud {
 		UiFont.draw(g, p.substring(6), x + UiFont.width("Hold F", hh), y, hh, 0xFFFFFFFF, true);
 	}
 
+	private static final String[] SCORE_HEADS = {"Score", "Kills", "Downs", "Revives", "Headshots"};
+
 	/** BO2's tab screen: one row per player with score, kills, downs, revives, headshots and ping. */
 	private static void scoreboard(GuiGraphics g, Minecraft mc, Payloads.StateSync s) {
 		if (s.phase() != Payloads.PHASE_GAMEOVER && !mc.options.keyPlayerList.isDown()) return;
-		Font font = mc.font;
 		int w = g.guiWidth(), h = g.guiHeight();
 		int pw = Math.min(w - 40, 560), x0 = (w - pw) / 2, y0 = (int) (h * (s.phase() == Payloads.PHASE_GAMEOVER ? 0.45 : 0.32)), rowH = 18, rows = 4;
 		int nameX = x0 + (int) (pw * 0.2);
 		int[] colX = new int[5];
 		for (int i = 0; i < 5; i++) colX[i] = x0 + (int) (pw * (0.58 + 0.08 * i));
-		String[] heads = {"Score", "Kills", "Downs", "Revives", "Headshots"};
 		g.fill(x0, y0, x0 + pw, y0 + rowH, 0xD0101010);
-		text(g, font, "Survival - Green Run", x0 + 10, y0 + 2, 0.9f, 0xFFFFFFFF, false);
-		for (int i = 0; i < 5; i++) text(g, font, heads[i], colX[i], y0 + 4, 0.65f, 0xFFBBBBBB, true);
-		text(g, font, "Ping", x0 + pw - 14, y0 + 4, 0.65f, 0xFFBBBBBB, true);
+		text(g, "Survival - Green Run", x0 + 10, y0 + 2, 0.9f, 0xFFFFFFFF, false);
+		for (int i = 0; i < 5; i++) text(g, SCORE_HEADS[i], colX[i], y0 + 4, 0.65f, 0xFFBBBBBB, true);
+		text(g, "Ping", x0 + pw - 14, y0 + 4, 0.65f, 0xFFBBBBBB, true);
 		g.fill(x0, y0 + rowH + 1, x0 + pw, y0 + rowH + 1 + rowH * rows, 0xA0000000);
 		// the gold column bands behind the stats
 		for (int i = 0; i < 5; i += 2) g.fill(colX[i] - 22, y0 + rowH + 1, colX[i] + 22, y0 + rowH + 1 + rowH * rows, 0x60B09020);
@@ -289,16 +278,15 @@ public final class ZcHud {
 			if (mine) g.renderOutline(x0 + pw / 10, ry, pw - pw / 10, rowH, 0xFFE8760A);
 			// the local numbers are live (the roster refreshes a few times a second)
 			int[] vals = mine ? new int[] {s.points(), s.kills(), s.downs(), s.revives(), s.headshots()} : new int[] {e.points(), e.kills(), e.downs(), e.revives(), e.headshots()};
-			text(g, font, mine ? mc.getUser().getName() : e.name(), nameX, ry + 2, 0.8f, mine ? 0xFFF0D060 : e.stance() == Payloads.RosterEntry.DEAD ? 0xFF888888 : 0xFFFFFFFF, false);
-			for (int i = 0; i < 5; i++) text(g, font, String.valueOf(vals[i]), colX[i], ry + 3, 0.7f, 0xFFFFFFFF, true);
+			text(g, mine ? mc.getUser().getName() : e.name(), nameX, ry + 2, 0.8f, mine ? 0xFFF0D060 : e.stance() == Payloads.RosterEntry.DEAD ? 0xFF888888 : 0xFFFFFFFF, false);
+			for (int i = 0; i < 5; i++) text(g, String.valueOf(vals[i]), colX[i], ry + 3, 0.7f, 0xFFFFFFFF, true);
 			var info = mc.getConnection() == null ? null : mc.getConnection().getPlayerInfo(e.id());
-			text(g, font, String.valueOf(info == null ? 0 : info.getLatency()), x0 + pw - 14, ry + 3, 0.7f, 0xFFFFFFFF, true);
+			text(g, String.valueOf(info == null ? 0 : info.getLatency()), x0 + pw - 14, ry + 3, 0.7f, 0xFFFFFFFF, true);
 		}
 	}
 
 	/** BO2: the world goes red (darker at the edges), white text in the upper centre, then the score screen, and a fade out before leaving. */
 	private static void gameOverScreen(GuiGraphics g, Minecraft mc, Payloads.StateSync s) {
-		Font font = mc.font;
 		int w = g.guiWidth(), h = g.guiHeight();
 		if (gameOverAt == 0) gameOverAt = System.nanoTime();
 		float in = Math.min(1f, (System.nanoTime() - gameOverAt) / 1.2e9f);
@@ -306,8 +294,8 @@ public final class ZcHud {
 		g.fillGradient(0, 0, w, h / 3, ((int) (0x60 * in) << 24) | 0x300000, 0x00000000);
 		g.fillGradient(0, h * 2 / 3, w, h, 0x00000000, ((int) (0x80 * in) << 24) | 0x300000);
 		int textAlpha = (int) (255 * in) << 24;
-		text(g, font, "GAME OVER", w / 2, (int) (h * 0.16), 1.9f, textAlpha | 0xFFFFFF, true);
-		text(g, font, "You Survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " Round" : " Rounds"), w / 2, (int) (h * 0.16) + 26, 1.1f, textAlpha | 0xFFFFFF, true);
+		text(g, "GAME OVER", w / 2, (int) (h * 0.16), 1.9f, textAlpha | 0xFFFFFF, true);
+		text(g, "You Survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " Round" : " Rounds"), w / 2, (int) (h * 0.16) + 26, 1.1f, textAlpha | 0xFFFFFF, true);
 		if (in > 0.6f) scoreboard(g, mc, s);
 		if (s.countdownSec() <= 2) g.fill(0, 0, w, h, (s.countdownSec() <= 1 ? 0xFF : 0x70) << 24);
 	}
@@ -322,12 +310,11 @@ public final class ZcHud {
 
 	private static void spectateHud(GuiGraphics g, Minecraft mc) {
 		int w = g.guiWidth(), h = g.guiHeight();
-		Font font = mc.font;
 		var cam = mc.getCameraEntity();
 		g.fillGradient(0, h * 3 / 4, w, h, 0x00000000, 0x90000000);
-		text(g, font, "YOU HAVE BLED OUT", w / 2, h - h / 5 - 26, 1.3f, 0xFFB01010, true);
-		text(g, font, cam instanceof net.minecraft.world.entity.player.Player p && p != mc.player ? "Spectating " + p.getName().getString() : "Waiting for a teammate", w / 2, h - h / 5, 1.0f, 0xFFFFFFFF, true);
-		text(g, font, "You will return next round", w / 2, h - h / 5 + 20, 0.8f, 0xFFBBBBBB, true);
+		text(g, "YOU HAVE BLED OUT", w / 2, h - h / 5 - 26, 1.3f, 0xFFB01010, true);
+		text(g, cam instanceof net.minecraft.world.entity.player.Player p && p != mc.player ? "Spectating " + p.getName().getString() : "Waiting for a teammate", w / 2, h - h / 5, 1.0f, 0xFFFFFFFF, true);
+		text(g, "You will return next round", w / 2, h - h / 5 + 20, 0.8f, 0xFFBBBBBB, true);
 		if (ZombiecraftClient.state.phase() == Payloads.PHASE_GAMEOVER) gameOverScreen(g, mc, ZombiecraftClient.state);
 		if (mc.options.keyPlayerList.isDown()) scoreboard(g, mc, ZombiecraftClient.state);
 	}
@@ -338,16 +325,15 @@ public final class ZcHud {
 		if (spectating(mc) && !mc.options.hideGui) { spectateHud(g, mc); return; }
 		if (!usesWeaponHud(mc) || mc.options.hideGui) return;
 		Payloads.StateSync s = ZombiecraftClient.state;
-		Font font = mc.font;
 		int w = g.guiWidth(), h = g.guiHeight();
 		float partialTick = dt.getGameTimeDeltaPartialTick(false);
 		damageFlash(g, mc, partialTick);
-		if (s.bleedSec() > 0 || s.revivePct() > 0) downedOverlay(g, font, s, w, h);
+		if (s.bleedSec() > 0 || s.revivePct() > 0) downedOverlay(g, s, w, h);
 
 		// tell the player where the sounds come from
 		var audio = com.zombiecraft.client.audio.AudioCache.status;
-		if (audio == com.zombiecraft.client.audio.AudioCache.Status.WORKING) text(g, font, "Preparing Black Ops II sounds...", 8, 6, 1f, 0xFF999999, false);
-		else if (audio == com.zombiecraft.client.audio.AudioCache.Status.NO_BO2) text(g, font, "Black Ops II not found: using Minecraft sounds (see config/zombiecraft.properties)", 8, 6, 1f, 0xFFCC9944, false);
+		if (audio == com.zombiecraft.client.audio.AudioCache.Status.WORKING) text(g, "Preparing Black Ops II sounds...", 8, 6, 1f, 0xFF999999, false);
+		else if (audio == com.zombiecraft.client.audio.AudioCache.Status.NO_BO2) text(g, "Black Ops II not found: using Minecraft sounds (see config/zombiecraft.properties)", 8, 6, 1f, 0xFFCC9944, false);
 
 		if (s.phase() == Payloads.PHASE_GAMEOVER) { gameOverScreen(g, mc, s); return; }
 		hitMarker(g, mc, partialTick);
@@ -357,8 +343,8 @@ public final class ZcHud {
 
 		// round tallies bottom left (a number once past round 10)
 		int tallySize = Math.max(32, h / 6);
-		if (!roundTally(g, font, s.round(), w, h, tallySize)) {
-			if (s.round() > 10) text(g, font, String.valueOf(s.round()), 14, h - 14 - (int) (9 * 4f * 1.3f), 4f, 0xFFB01010, false);
+		if (!roundTally(g, s.round(), w, h, tallySize)) {
+			if (s.round() > 10) text(g, String.valueOf(s.round()), 14, h - 14 - (int) (9 * 4f * 1.3f), 4f, 0xFFB01010, false);
 			else if (s.round() > 0) tally(g, s.round(), 6, h - tallySize - 6, tallySize);
 		}
 
@@ -369,17 +355,17 @@ public final class ZcHud {
 		UiArt.draw(g, "hud_dpad_blood", right - 130, pointsY - 12, 170, 85 + (h - 10 - pointsY) - 40, 0xA0B01010);
 		if (s.points() != lastPoints) { if (s.points() > lastPoints && lastPoints >= 0) { popup = s.points() - lastPoints; popupTicks = 50; } lastPoints = s.points(); }
 		String pts = String.valueOf(s.points());
-		text(g, font, pts, right - UiFont.width(pts, 9f * pointsScale * 1.3f), pointsY, pointsScale, 0xFFFFFFFF, false);
+		text(g, pts, right - UiFont.width(pts, 9f * pointsScale * 1.3f), pointsY, pointsScale, 0xFFFFFFFF, false);
 		if (popupTicks > 0) {
 			String pop = "+" + popup;
-			text(g, font, pop, right - UiFont.width(pop, 9f * popScale * 1.3f), popY, popScale, (Math.min(255, popupTicks * 8) << 24) | 0x5FE0E8, false);
+			text(g, pop, right - UiFont.width(pop, 9f * popScale * 1.3f), popY, popScale, (Math.min(255, popupTicks * 8) << 24) | 0x5FE0E8, false);
 		}
 		if (s.mag() >= 0) {
 			String ammo = s.mag() + "/" + s.reserve();
 			int ammoW = UiFont.width(ammo, 9f * ammoScale * 1.3f);
-			text(g, font, ammo, right - ammoW, ammoY, ammoScale, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
+			text(g, ammo, right - ammoW, ammoY, ammoScale, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
 			String held = heldIcon(mc);
-			if (held != null && !UiArt.draw(g, held, right - ammoW - 70, ammoY - 4, 64, 32, 0xC0FFFFFF)) text(g, font, s.gun(), right - ammoW - 8 - UiFont.width(s.gun(), 9f * 1.3f), ammoY + 6, 1f, 0xFFDDDDDD, false);
+			if (held != null && !UiArt.draw(g, held, right - ammoW - 70, ammoY - 4, 64, 32, 0xC0FFFFFF)) text(g, s.gun(), right - ammoW - 8 - UiFont.width(s.gun(), 9f * 1.3f), ammoY + 6, 1f, 0xFFDDDDDD, false);
 			// one icon per frag grenade, stacked upward from the ammo line (dim when there are none)
 			for (int n = 0; n < Math.max(1, s.grenades()); n++) UiArt.draw(g, "grenadeicon_32", right + 8, ammoY - n * 12, 20, 20, s.grenades() > 0 ? 0xFFFFFFFF : 0x50FFFFFF);
 			if (GunFeedback.isReloading()) {
@@ -390,29 +376,27 @@ public final class ZcHud {
 		}
 
 		// perk icons (BO2's own) along the bottom, power-up timers at the top middle
-		String[] perkIcons = {"specialty_juggernaut_zombies", "specialty_fastreload_zombies", "specialty_doubletap_zombies", "specialty_quickrevive_zombies"};
 		int owned = 0;
 		for (int b = 0; b < 4; b++) if ((s.perks() & (1 << b)) != 0) owned++;
 		int ix = w / 2 - owned * 17;
 		for (int b = 0; b < 4; b++) {
 			if ((s.perks() & (1 << b)) == 0) continue;
-			UiArt.draw(g, perkIcons[b], ix, h - 40, 32, 32);
+			UiArt.draw(g, PERK_ICONS[b], ix, h - 40, 32, 32);
 			ix += 34;
 		}
 		// active power-ups: BO2's own icon with the seconds left, in a row above the perks
 		int[] secs = {s.instaSec(), s.doubleSec()};
-		String[] puIcons = {"specialty_instakill_zombies", "specialty_doublepoints_zombies"};
 		int active = (secs[0] > 0 ? 1 : 0) + (secs[1] > 0 ? 1 : 0), px = w / 2 - active * 22;
 		for (int i = 0; i < 2; i++) {
 			if (secs[i] <= 0) continue;
 			boolean blink = secs[i] <= 5 && (System.currentTimeMillis() / 250) % 2 == 0;
-			if (!blink && !UiArt.draw(g, puIcons[i], px, h - 84, 40, 40)) text(g, font, i == 0 ? "INSTA" : "x2", px + 20, h - 80, 1f, 0xFFFFFFFF, true);
-			text(g, font, String.valueOf(secs[i]), px + 20, h - 44, 0.8f, 0xFFFFFFFF, true);
+			if (!blink && !UiArt.draw(g, POWERUP_ICONS[i], px, h - 84, 40, 40)) text(g, i == 0 ? "INSTA" : "x2", px + 20, h - 80, 1f, 0xFFFFFFFF, true);
+			text(g, String.valueOf(secs[i]), px + 20, h - 44, 0.8f, 0xFFFFFFFF, true);
 			px += 44;
 		}
 
 		// banners
-		if (!s.message().isEmpty()) text(g, font, s.message(), w / 2, h / 2 + 24, 1.2f, 0xFFFFFFFF, true);
+		if (!s.message().isEmpty()) text(g, s.message(), w / 2, h / 2 + 24, 1.2f, 0xFFFFFFFF, true);
 
 		scoreboard(g, mc, s);
 

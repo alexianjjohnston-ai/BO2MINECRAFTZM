@@ -43,6 +43,13 @@ public final class Payloads {
 		public static final Type<StateSync> TYPE = new Type<>(id("state"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, StateSync> CODEC = StreamCodec.ofMember(StateSync::write, StateSync::read);
 
+		/** Above the four perk bits of {@code perks}: the power is on, a perk bottle is being drunk, and which one (two bits from DRINK_PERK_SHIFT). */
+		public static final int FLAG_POWER = 256, FLAG_DRINKING = 512, DRINK_PERK_SHIFT = 10;
+
+		public boolean drinking() { return (perks & FLAG_DRINKING) != 0; }
+		/** Bit number of the perk being drunk (0 Juggernog, 1 Speed Cola, 2 Double Tap, 3 Quick Revive). */
+		public int drinkPerk() { return (perks >> DRINK_PERK_SHIFT) & 3; }
+
 		void write(RegistryFriendlyByteBuf b) {
 			b.writeVarInt(phase); b.writeVarInt(round); b.writeVarInt(points); b.writeVarInt(mag); b.writeVarInt(reserve);
 			b.writeUtf(gun); b.writeUtf(prompt); b.writeUtf(message); b.writeBoolean(interactable);

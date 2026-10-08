@@ -1,6 +1,7 @@
 package com.zombiecraft.game;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.zombiecraft.block.ModBlocks;
 import com.zombiecraft.sheet.Rows.WindowDef;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
@@ -51,8 +52,7 @@ public final class Barrier {
 		return level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()) {
 			@Override
 			public VoxelShape getBlockShape(BlockState state, BlockGetter world, BlockPos pos) {
-				String id = state.getBlock().builtInRegistryHolder().key().location().getPath();
-				if (id.equals("barricade_board") || id.equals("window_clip")) return Shapes.empty();
+				if (state.is(ModBlocks.BOARD) || state.is(ModBlocks.WINDOW_CLIP)) return Shapes.empty();
 				return super.getBlockShape(state, world, pos);
 			}
 		});
@@ -96,8 +96,6 @@ public final class Barrier {
 	public int boardsLeft() { int n = 0; for (boolean b : intact) if (b) n++; return n; }
 	public int boardsTotal() { return intact.length; }
 	public boolean open() { return boardsLeft() == 0; }
-
-	public boolean contains(BlockPos p) { return cells.contains(p); }
 
 	/** A zombie tears one board off. Returns true if a board was removed. */
 	public boolean tear() {
