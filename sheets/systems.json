@@ -369,11 +369,11 @@
  },
  {
   "id": "game_over_delay_s",
-  "value": 8,
+  "value": 12,
   "unit": "s",
   "source": "",
   "status": "tuned",
-  "note": "time on the game-over screen before restart"
+  "note": "time on the game-over screen (red world, then the scoreboard) before the match ends: back to the online lobby, or the title screen"
  },
  {
   "id": "zombie_sprint_speed_attr",

@@ -296,8 +296,46 @@ public final class ZcHud {
 		}
 	}
 
+	/** BO2: the world goes red (darker at the edges), white text in the upper centre, then the score screen, and a fade out before leaving. */
+	private static void gameOverScreen(GuiGraphics g, Minecraft mc, Payloads.StateSync s) {
+		Font font = mc.font;
+		int w = g.guiWidth(), h = g.guiHeight();
+		if (gameOverAt == 0) gameOverAt = System.nanoTime();
+		float in = Math.min(1f, (System.nanoTime() - gameOverAt) / 1.2e9f);
+		g.fill(0, 0, w, h, ((int) (0x60 * in) << 24) | 0xA01010);
+		g.fillGradient(0, 0, w, h / 3, ((int) (0x60 * in) << 24) | 0x300000, 0x00000000);
+		g.fillGradient(0, h * 2 / 3, w, h, 0x00000000, ((int) (0x80 * in) << 24) | 0x300000);
+		int textAlpha = (int) (255 * in) << 24;
+		text(g, font, "GAME OVER", w / 2, (int) (h * 0.16), 1.9f, textAlpha | 0xFFFFFF, true);
+		text(g, font, "You Survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " Round" : " Rounds"), w / 2, (int) (h * 0.16) + 26, 1.1f, textAlpha | 0xFFFFFF, true);
+		if (in > 0.6f) scoreboard(g, mc, s);
+		if (s.countdownSec() <= 2) g.fill(0, 0, w, h, (s.countdownSec() <= 1 ? 0xFF : 0x70) << 24);
+	}
+
+	private static long gameOverAt;
+
+	/** Bled out with teammates still up: watching one of them until the next round. */
+	private static boolean spectating(Minecraft mc) {
+		int phase = ZombiecraftClient.state.phase();
+		return mc.player != null && mc.level != null && mc.player.isSpectator() && phase != Payloads.PHASE_IDLE && phase != Payloads.PHASE_LOBBY;
+	}
+
+	private static void spectateHud(GuiGraphics g, Minecraft mc) {
+		int w = g.guiWidth(), h = g.guiHeight();
+		Font font = mc.font;
+		var cam = mc.getCameraEntity();
+		g.fillGradient(0, h * 3 / 4, w, h, 0x00000000, 0x90000000);
+		text(g, font, "YOU HAVE BLED OUT", w / 2, h - h / 5 - 26, 1.3f, 0xFFB01010, true);
+		text(g, font, cam instanceof net.minecraft.world.entity.player.Player p && p != mc.player ? "Spectating " + p.getName().getString() : "Waiting for a teammate", w / 2, h - h / 5, 1.0f, 0xFFFFFFFF, true);
+		text(g, font, "You will return next round", w / 2, h - h / 5 + 20, 0.8f, 0xFFBBBBBB, true);
+		if (ZombiecraftClient.state.phase() == Payloads.PHASE_GAMEOVER) gameOverScreen(g, mc, ZombiecraftClient.state);
+		if (mc.options.keyPlayerList.isDown()) scoreboard(g, mc, ZombiecraftClient.state);
+	}
+
 	public static void render(GuiGraphics g, DeltaTracker dt) {
 		Minecraft mc = Minecraft.getInstance();
+		if (ZombiecraftClient.state.phase() != Payloads.PHASE_GAMEOVER) gameOverAt = 0;
+		if (spectating(mc) && !mc.options.hideGui) { spectateHud(g, mc); return; }
 		if (!usesWeaponHud(mc) || mc.options.hideGui) return;
 		Payloads.StateSync s = ZombiecraftClient.state;
 		Font font = mc.font;
@@ -311,16 +349,7 @@ public final class ZcHud {
 		if (audio == com.zombiecraft.client.audio.AudioCache.Status.WORKING) text(g, font, "Preparing Black Ops II sounds...", 8, 6, 1f, 0xFF999999, false);
 		else if (audio == com.zombiecraft.client.audio.AudioCache.Status.NO_BO2) text(g, font, "Black Ops II not found: using Minecraft sounds (see config/zombiecraft.properties)", 8, 6, 1f, 0xFFCC9944, false);
 
-		if (s.phase() == Payloads.PHASE_GAMEOVER) {
-			// BO2: the world goes red (darker at the edges), white text in the upper centre
-			g.fill(0, 0, w, h, 0x60A01010);
-			g.fillGradient(0, 0, w, h / 3, 0x60300000, 0x00000000);
-			g.fillGradient(0, h * 2 / 3, w, h, 0x00000000, 0x80300000);
-			text(g, font, "GAME OVER", w / 2, (int) (h * 0.16), 1.9f, 0xFFFFFFFF, true);
-			text(g, font, "You Survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " Round" : " Rounds"), w / 2, (int) (h * 0.16) + 26, 1.1f, 0xFFFFFFFF, true);
-			scoreboard(g, mc, s);
-			return;
-		}
+		if (s.phase() == Payloads.PHASE_GAMEOVER) { gameOverScreen(g, mc, s); return; }
 		hitMarker(g, mc, partialTick);
 		hitDirection(g, mc, partialTick);
 		muzzleBloom(g, mc, partialTick);

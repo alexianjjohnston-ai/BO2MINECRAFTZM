@@ -136,6 +136,13 @@ public final class Payloads {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** The game over screen is done: leave the match for the title screen. */
+	public record EndMatch() implements CustomPacketPayload {
+		public static final Type<EndMatch> TYPE = new Type<>(id("end_match"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, EndMatch> CODEC = StreamCodec.ofMember((p, b) -> {}, b -> new EndMatch());
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	/** Test harness only: ask the client to save a screenshot of its own frame. */
 	public record Shot(String name) implements CustomPacketPayload {
 		public static final Type<Shot> TYPE = new Type<>(id("shot"));
@@ -148,6 +155,7 @@ public final class Payloads {
 		PayloadTypeRegistry.playS2C().register(CombatFeedback.TYPE, CombatFeedback.CODEC);
 		PayloadTypeRegistry.playS2C().register(HitDirection.TYPE, HitDirection.CODEC);
 		PayloadTypeRegistry.playS2C().register(Roster.TYPE, Roster.CODEC);
+		PayloadTypeRegistry.playS2C().register(EndMatch.TYPE, EndMatch.CODEC);
 		PayloadTypeRegistry.playS2C().register(CuePlay.TYPE, CuePlay.CODEC);
 		PayloadTypeRegistry.playS2C().register(CueStop.TYPE, CueStop.CODEC);
 		PayloadTypeRegistry.playS2C().register(Shot.TYPE, Shot.CODEC);

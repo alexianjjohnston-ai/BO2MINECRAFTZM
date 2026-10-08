@@ -50,6 +50,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 		AttackBlockCallback.EVENT.register((player, level, hand, pos, dir) -> InteractionResult.FAIL);
 
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.StateSync.TYPE, (payload, ctx) -> state = payload);
+		ClientPlayNetworking.registerGlobalReceiver(Payloads.EndMatch.TYPE, (payload, ctx) -> com.zombiecraft.client.menu.Bo2Menus.endGame());
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.Roster.TYPE, (payload, ctx) -> ZcRoster.set(payload.entries()));
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.CombatFeedback.TYPE, (payload, ctx) -> {
 			GunFeedback.accept(payload);

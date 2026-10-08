@@ -54,6 +54,8 @@ public final class Game {
 	public int teamEarned;
 	/** Ticks left of the lobby's "Game starting in N" (0 = waiting for the host). */
 	public int lobbyCountdown;
+	/** The match was opened from an online lobby: after game over everyone goes back to it instead of to the title screen. */
+	public boolean online;
 	private final java.util.TreeMap<Long, List<Runnable>> scheduled = new java.util.TreeMap<>();
 	private final Random rng = new Random();
 
@@ -237,6 +239,7 @@ public final class Game {
 
 	/** With {@code lobby} the map is built and players gather at the spawn, but the match only begins when the host starts it. */
 	public void start(boolean lobby) {
+		online = lobby;
 		level = server.overworld();
 		int surface = level.getHeight(Heightmap.Types.WORLD_SURFACE, 0, 0);
 		origin = new BlockPos(0, surface - 1, 0);
@@ -402,8 +405,18 @@ public final class Game {
 		machines.shutdown();
 		if (pap != null) pap.shutdown();
 		powerups.shutdown();
-		cmd("kill @e[type=zombiecraft:zombie]");
-		alive.clear();
+		// BO2: the horde stays where it is, standing over you, until the match is over
+		for (ZcZombie z : alive) z.setNoAi(true);
+		for (ServerPlayer player : level.players()) player.setInvulnerable(true);
+	}
+
+	/** After the game over screen: back to the online lobby, or out to the title screen (the bench scripts restart instead). */
+	private void endMatch() {
+		boolean dev = Boolean.getBoolean("zombiecraft.bench") || Boolean.getBoolean("zombiecraft.feelBench") || Boolean.getBoolean("zombiecraft.papBench");
+		if (online) { start(true); return; }
+		if (dev) { start(); return; }
+		for (ServerPlayer p : level.players()) ServerPlayNetworking.send(p, new Payloads.EndMatch());
+		phase = Payloads.PHASE_IDLE;
 	}
 
 	// ------------------------------------------------------------------ the tick
@@ -427,6 +440,13 @@ public final class Game {
 			for (ServerPlayer p : level.players())
 				if (p.position().distanceToSqr(origin.getX() + sp.x(), origin.getY() + sp.y(), origin.getZ() + sp.z()) > 25 * 25)
 					p.teleportTo(level, origin.getX() + sp.x() + 0.5, origin.getY() + sp.y(), origin.getZ() + sp.z() + 0.5, Set.of(), (float) sp.yaw(), 0f, true);
+		}
+		// dev: -Dzombiecraft.debugDie=true ends the match after 12 s and screenshots the game over screen (zc-die1/2.png); the normal end flow then runs
+		if (Boolean.getBoolean("zombiecraft.debugDie") && !level.players().isEmpty()) {
+			long t = tick - startedAt;
+			ServerPlayer first = level.players().get(0);
+			if (t == 240 && phase != Payloads.PHASE_GAMEOVER) gameOver(first);
+			if (t == 240 + 40 || t == 240 + 160) ServerPlayNetworking.send(first, new Payloads.Shot(t < 300 ? "die1" : "die2"));
 		}
 		// dev: -Dzombiecraft.debugBox=true stands the player in front of the Mystery Box looking at it (for screenshots)
 		if (Boolean.getBoolean("zombiecraft.debugBox") && tick - startedAt == 60 && box != null) {
@@ -561,7 +581,7 @@ public final class Game {
 				if (zombiesToSpawn <= 0 && alive.isEmpty()) endRound();
 			}
 			case Payloads.PHASE_INTERMISSION -> { if (--intermission <= 0) beginRound(round + 1); }
-			case Payloads.PHASE_GAMEOVER -> { if (--gameOverTicks <= 0) start(); }
+			case Payloads.PHASE_GAMEOVER -> { if (--gameOverTicks <= 0) endMatch(); }
 			default -> {}
 		}
 
@@ -609,7 +629,7 @@ public final class Game {
 
 	private void sync(ServerPlayer p, PlayerGame pg) {
 		Gun g = WeaponSystem.active(p, pg);
-		int sec = phase == Payloads.PHASE_LOBBY ? (lobbyCountdown + 19) / 20 : phase == Payloads.PHASE_COUNTDOWN ? (countdown + 19) / 20 : phase == Payloads.PHASE_INTERMISSION ? (intermission + 19) / 20 : 0;
+		int sec = phase == Payloads.PHASE_LOBBY ? (lobbyCountdown + 19) / 20 : phase == Payloads.PHASE_COUNTDOWN ? (countdown + 19) / 20 : phase == Payloads.PHASE_INTERMISSION ? (intermission + 19) / 20 : phase == Payloads.PHASE_GAMEOVER ? (gameOverTicks + 19) / 20 : 0;
 		ServerPlayNetworking.send(p, new Payloads.StateSync(phase, round, pg.points, g == null ? -1 : g.mag, g == null ? 0 : g.reserve,
 				g == null ? "" : g.displayName(), pg.prompt, pg.messageTicks > 0 ? pg.message : "", pg.interactable,
 				zombiesToSpawn + alive.size(), sec, roundsSurvived,

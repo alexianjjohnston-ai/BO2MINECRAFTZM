@@ -24,7 +24,7 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 10;
+	public static final int VERSION = 11;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
 	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit", "common_zm",
@@ -129,6 +129,14 @@ public final class Bo2Assets {
 		Path zoneDir = bo2Dir.resolve("zone").resolve("all");
 		List<String> cmd = new ArrayList<>(List.of(exe.toString(), "--no-color", "--model-format", "XMODEL_EXPORT", "--image-format", "DDS",
 				"--include-assets", String.join(",", types), "-o", out.toString() + "/?zone?"));
+		// the survivors' body/head images are streamed from zm.ipak, which the tool only loads for zones named zm_*: hand it a copy under the character zone's own name
+		Path zm = zoneDir.resolve("zm.ipak");
+		if (Files.isRegularFile(zm) && Files.isRegularFile(zoneDir.resolve("so_zclassic_zm_transit.ff"))) {
+			Path ipakDir = out.resolve("_ipak");
+			Files.createDirectories(ipakDir);
+			Files.copy(zm, ipakDir.resolve("so_zclassic_zm_transit.ipak"), StandardCopyOption.REPLACE_EXISTING);
+			cmd.add("--search-path"); cmd.add(ipakDir + ";" + zoneDir);
+		}
 		for (String z : zones) {
 			Path ff = zoneDir.resolve(z + ".ff");
 			if (Files.isRegularFile(ff)) cmd.add(ff.toString());

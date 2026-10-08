@@ -67,6 +67,7 @@ public final class Revive {
 	/** Back to a normal standing player (new game, respawn, revive). */
 	public static void clear(ServerPlayer p) {
 		raiseBody(p);
+		if (p.getCamera() != p) p.setCamera(p);
 		p.setGlowingTag(false);
 	}
 
@@ -187,8 +188,14 @@ public final class Revive {
 			if (pg.downed) {
 				if (!advanced.contains(p.getUUID())) pg.reviveTicks = 0;
 				if (g.tick >= pg.bleedEnd) bleedOut(g, p, pg);
-			} else if (pg.dead && g.tick % 40 == 0) {
-				p.displayClientMessage(Component.literal("You bled out. You will return next round"), true);
+			} else if (pg.dead && g.tick % 10 == 0) {
+				// BO2: spectate a teammate who is still up until the next round brings you back
+				var cam = p.getCamera();
+				if (!(cam instanceof ServerPlayer c) || c == p || !standing(g, c)) {
+					ServerPlayer next = null;
+					for (ServerPlayer o : g.level.players()) if (o != p && standing(g, o)) { next = o; break; }
+					if (next != null) p.setCamera(next);
+				}
 			}
 		}
 	}
