@@ -62,7 +62,7 @@ class Zone:
 			except MemoryError:
 				continue
 			i = cm['info']
-			if cm['isInUse'] in (0, 1) and 100 < i['planeCount'] < 2_000_000 and i['planes'] and 0 < i['numBrushes'] < 500_000 and i['brushes'] and i['numBrushSides'] and i['brushsides']:
+			if cm['isInUse'] in (0, 1) and cm['numSubModels'] < 100_000 and cm['numNodes'] < 2_000_000 and cm['numLeafs'] < 2_000_000 and cm['vertCount'] < 20_000_000 and 100 < i['planeCount'] < 2_000_000 and i['planes'] and 0 < i['numBrushes'] < 500_000 and i['brushes'] and i['numBrushSides'] and i['brushsides']:
 				return q
 		return None
 

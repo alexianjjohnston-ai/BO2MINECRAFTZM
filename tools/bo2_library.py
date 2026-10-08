@@ -259,6 +259,13 @@ def cmd_index(a):
 					rel = os.path.relpath(os.path.join(root, f), LIB).replace(os.sep, '/')
 					rows.append(('gsc', os.path.splitext(f)[0], rel.split('/')[2] if rel.count('/') > 2 else 'scripts', rel, os.path.getsize(os.path.join(root, f))))
 					counts['gsc']['scripts'] += 1
+	for sub, kind in (('misc', 'misc'), ('video', 'video'), ('extra', 'extra')):  # misc: glass / destructibles / impact tables / fonts (bo2_misc.py); video: the game's .webm movies; extra: localization and player config files
+		base = os.path.join(LIB, sub)
+		if os.path.isdir(base):
+			for root, _, files in os.walk(base):
+				for f in files:
+					rel = os.path.relpath(os.path.join(root, f), LIB).replace(os.sep, '/')
+					rows.append((kind, os.path.splitext(f)[0], sub, rel, os.path.getsize(os.path.join(root, f)))); counts[kind][sub] += 1
 	ai = os.path.join(LIB, 'ai')
 	if os.path.isdir(ai):
 		for f in sorted(os.listdir(ai)):
@@ -294,7 +301,7 @@ def cmd_find(a):
 	if a.zone: q += ' and zone=?'; args.append(a.zone)
 	n = 0
 	for kind, zone, name, rel, size in con.execute(q + ' order by kind, zone, name limit ?', args + [a.limit]):
-		print('%-9s %-28s %s  (%d B)' % (kind, zone, os.path.join(LIB, rel if kind in ('sound', 'alias', 'worldmap', 'fx', 'gsc', 'ai') else 'zones/' + zone + '/' + rel), size)); n += 1
+		print('%-9s %-28s %s  (%d B)' % (kind, zone, os.path.join(LIB, rel if kind in ('sound', 'alias', 'worldmap', 'fx', 'gsc', 'ai', 'misc', 'video', 'extra') else 'zones/' + zone + '/' + rel), size)); n += 1
 	print(n, 'hits')
 
 
