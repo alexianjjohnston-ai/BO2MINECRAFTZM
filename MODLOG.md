@@ -299,4 +299,4 @@ Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulati
 - Game Over: red tint over the world and smaller text (BO2 look), scoreboard unchanged.
 - Built-in depot only: `cinder_block` now uses the plaster image (it was a near-black brick). The Tranzit Reimagined depot is mostly stone/ore stand-ins; measured mean brightness of the in-game screenshots (26-38 of 255) matches the BO2 interior frames (26-38), so no global brightening.
 - Known gaps: real BO2 wall geometry (needs the BSP export), BO2 door models, the glass-block/checker detail of the hall, the cracked-glass overlay on menu pages (not found in the dump), the lobby menu entries SERVER BROWSER / CUSTOM GAMES / THEATER / LEADERBOARDS / MODS (no such features), Controls > Look has only sensitivity and invert.
-- Bench: 48 pass (the one FAIL line at the top of `zc-bench.txt` is the previous run's leftover).
+- Bench: 46 pass, 0 fail (run on this branch before the prompt wording change; the bench does not check prompt text).
