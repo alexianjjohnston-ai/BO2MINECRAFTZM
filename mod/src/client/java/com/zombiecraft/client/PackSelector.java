@@ -15,7 +15,10 @@ public final class PackSelector {
 	/** Call on the render thread. {@code rebuilt}: the pack files changed this session, so a selected pack must be reloaded. */
 	public static void enable(boolean rebuilt) {
 		Minecraft mc = Minecraft.getInstance();
-		if (!Files.isRegularFile(TexturePack.dir(mc.gameDirectory.toPath()).resolve("pack.mcmeta"))) return;
+		if (!Files.isRegularFile(TexturePack.dir(mc.gameDirectory.toPath()).resolve("pack.mcmeta"))) {
+			com.zombiecraft.ZombiecraftMod.LOG.warn("Block Ops 2 textures: no pack at {} (it is built from a Black Ops II install by the Unlinker; on a Mac copy resourcepacks/BlockOps2 from a PC)", TexturePack.dir(mc.gameDirectory.toPath()));
+			return;
+		}
 		PackRepository repo = mc.getResourcePackRepository();
 		repo.reload();
 		String id = "file/" + TexturePack.FOLDER;
