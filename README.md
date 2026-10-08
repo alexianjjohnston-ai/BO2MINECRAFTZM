@@ -10,7 +10,7 @@ and cached locally (about 27 MB). Without Black Ops II the game still plays with
 1. Install a JDK 25 (needed only to run the build tool) and own Minecraft: Java Edition.
 2. Double-click **`play.bat`** (first run downloads Minecraft + build tools, several minutes). It opens straight into a flat world.
 
-Controls: **right click** shoot · **R** reload · **left click** knife · **F** buy / open Mystery Box / Pack-a-Punch / hold to repair windows.
+Controls (Black Ops II PC defaults): **WASD** move · **left click** fire · **right click** aim down the sight · **R** reload · **V** knife · **G** frag grenade (hold to cook, let go to throw) · **F** buy / open Mystery Box / Pack-a-Punch / revive / hold to repair windows · **Left Shift** sprint · **C** crouch · **Z** prone · **Space** jump · **1-3 / mouse wheel** switch weapon · **Tab** scoreboard · **T** chat. All of them can be changed in Options > Controls.
 
 Black Ops II is found automatically (Steam libraries). To point at it by hand: `mod/run/config/zombiecraft.properties` with `bo2.dir=D:/path/to/Call of Duty Black Ops II`.
 

@@ -369,7 +369,54 @@ public final class Bench {
 					default -> {}
 				}
 			}
-			case 12 -> {
+			case 12 -> { // aiming down the sight and the frag grenade
+				switch (sub) {
+					case 0 -> {
+						if (g.phase != Payloads.PHASE_ACTIVE) break;
+						g.zombiesToSpawn = Math.max(g.zombiesToSpawn, 2);
+						pg.ads = true;
+						log(Math.abs(Revive.spreadFactor(p, pg) - Sheets.sys("ads_spread_mult")) < 1e-6, "ads-tightens-spread", "factor=" + Revive.spreadFactor(p, pg));
+						pg.ads = false;
+						log(Math.abs(Revive.spreadFactor(p, pg) - 1.0) < 1e-6, "hip-spread-normal", "factor=" + Revive.spreadFactor(p, pg));
+						log(pg.grenades == Sheets.sysInt("grenade_start"), "grenade-start-count", "grenades=" + pg.grenades);
+						Vec3 zp = abs(g, -21.5, 1, -6.5);
+						for (int i = 0; i < 2; i++) {
+							ZcZombie z = new ZcZombie(ZcEntities.ZOMBIE, g.level);
+							z.moveTo(zp.x + i * 1.2, zp.y, zp.z + i * 0.8, 180f, 0f);
+							z.setup("walk", 150, null);
+							z.setNoAi(true);
+							g.level.addFreshEntity(z);
+							g.alive.add(z);
+							if (i == 0) target = z;
+						}
+						Vec3 pos = abs(g, -21.5, 1, -10.5);
+						p.connection.teleport(pos.x, pos.y, pos.z, 0f, 35f);
+						pointsBefore = pg.points; shots = 0;
+						Grenades.input(g, p, pg, true); // pull the pin
+						sub = 1; until = g.tick + 14;
+					}
+					case 1 -> {
+						log(pg.cookStart >= 0, "grenade-pin-out", "cookStart=" + pg.cookStart);
+						Vec3 pos = abs(g, -21.5, 1, -10.5);
+						p.connection.teleport(pos.x, pos.y, pos.z, 0f, 35f);
+						Grenades.input(g, p, pg, false); // let go: it leaves the hand
+						sub = 2; until = g.tick + 6;
+					}
+					case 2 -> {
+						log(pg.cookStart < 0 && pg.grenades == Sheets.sysInt("grenade_start") - 1, "grenade-thrown", "grenades=" + pg.grenades + " cookStart=" + pg.cookStart);
+						shot(p, "18_grenade_flight");
+						sub = 3; until = g.tick + 60;
+					}
+					case 3 -> {
+						boolean dead = !target.isAlive() || target.hp <= 0;
+						log(dead && pg.points > pointsBefore, "grenade-kills", "target alive=" + target.isAlive() + " hp=" + target.hp + " points +" + (pg.points - pointsBefore));
+						shot(p, "19_grenade_after");
+						next(13, 20);
+					}
+					default -> {}
+				}
+			}
+			case 13 -> {
 				log(fails == 0, "BENCH-DONE", passes + " passed, " + fails + " failed");
 				step = 999;
 			}

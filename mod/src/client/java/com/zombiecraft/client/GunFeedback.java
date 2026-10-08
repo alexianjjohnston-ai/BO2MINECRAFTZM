@@ -24,7 +24,7 @@ public final class GunFeedback {
 	private static int slot = -1;
 	private static String weapon;
 	private static long ticks;
-	private static double shotAt = NO_EVENT, hitAt = NO_EVENT, reloadAt = NO_EVENT;
+	private static double shotAt = NO_EVENT, hitAt = NO_EVENT, reloadAt = NO_EVENT, equipBase;
 	private static float shotStrength;
 	private static int reloadTicks, shotSequence;
 	private static boolean headshot, killed, reloadEmpty;
@@ -94,6 +94,7 @@ public final class GunFeedback {
 		slot = -1;
 		weapon = null;
 		ticks = 0;
+		equipBase = 0;
 		shotAt = hitAt = reloadAt = NO_EVENT;
 		shotStrength = 0;
 		reloadTicks = shotSequence = 0;
@@ -114,7 +115,9 @@ public final class GunFeedback {
 
 	/** Ticks since the last shot (large when none), since the gun was equipped, and whether the current reload started on an empty magazine. */
 	public static float shotAgeTicks(float partialTick) { return shotAt <= NO_EVENT ? 1e6f : (float) (time(partialTick) - shotAt); }
-	public static float equipAgeTicks(float partialTick) { return (float) time(partialTick); }
+	public static float equipAgeTicks(float partialTick) { return (float) (time(partialTick) - equipBase); }
+	/** Replays the pull-out clip (after a grenade throw). */
+	public static void requestEquip() { equipBase = ticks; }
 	public static boolean reloadWasEmpty() { return reloadEmpty; }
 
 	public static boolean isReloading() {
@@ -129,7 +132,7 @@ public final class GunFeedback {
 	public static void renderHeldGun(InteractionHand hand, ItemStack stack, float partialTick,
 			PoseStack pose, MultiBufferSource buffers) {
 		Minecraft mc = Minecraft.getInstance();
-		if (hand == InteractionHand.MAIN_HAND && mc.options.getCameraType().isFirstPerson() && mc.player != null) drink(mc, pose, buffers);
+		if (hand == InteractionHand.MAIN_HAND && mc.options.getCameraType().isFirstPerson() && mc.player != null) { if (!drink(mc, pose, buffers)) grenade(mc, pose, buffers); }
 		if (hand != InteractionHand.MAIN_HAND || !refreshContext(mc) || weapon == null
 				|| !weapon.equals(ModItems.weaponOf(stack)) || !mc.options.getCameraType().isFirstPerson()) return;
 		// the real BO2 rig animates recoil and reloads itself
@@ -155,6 +158,13 @@ public final class GunFeedback {
 
 		float flash = Mth.clamp(1f - (float) (now - shotAt) / 1.5f, 0f, 1f);
 		if (flash > 0f) renderMuzzleFlash(pose, buffers, side, flash);
+	}
+
+	/** First-person grenade throw: BO2's hands holding the M67 through its own pin and throw clips while the gun lowers out of view. */
+	private static void grenade(Minecraft mc, PoseStack pose, MultiBufferSource buffers) {
+		if (!ViewState.grenadeActive()) return;
+		com.zombiecraft.client.render.ZcItemModels.render("frag_grenade", net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, pose, buffers, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT);
+		pose.translate(0f, -0.9f, 0f);
 	}
 
 	/** Seconds since the perk drink began (for the BO2 drink clip). */

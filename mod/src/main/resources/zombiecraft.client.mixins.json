@@ -9,6 +9,7 @@
     "ZcTabOverlayMixin",
     "ZcLivingEntityRendererMixin",
     "ZcMouseHandlerMixin",
+    "ZcGameRendererMixin",
     "ZcItemInHandRendererMixin",
     "ZcLoadingScreenMixin",
     "ZcConnectScreenMixin",

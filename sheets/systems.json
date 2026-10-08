@@ -494,5 +494,117 @@
   "source": "BO2 bg_gravity 800 in/s2 = 20 blocks/s2 = 0.05 per tick (Minecraft 0.08)",
   "status": "tuned",
   "note": "gravity of a player: a longer, floatier jump than Minecraft"
+ },
+ {
+  "id": "ads_spread_mult",
+  "value": 0.25,
+  "unit": "mult",
+  "source": "",
+  "status": "tuned",
+  "note": "gun spread multiplier while aiming down the sight (hold ADS)"
+ },
+ {
+  "id": "ads_zoom_fov_mult",
+  "value": 0.78,
+  "unit": "mult",
+  "source": "",
+  "status": "tuned",
+  "note": "field of view multiplier while fully aimed down the sight"
+ },
+ {
+  "id": "ads_move_mult",
+  "value": 0.7,
+  "unit": "mult",
+  "source": "",
+  "status": "tuned",
+  "note": "walking speed while aiming down the sight"
+ },
+ {
+  "id": "grenade_start",
+  "value": 2,
+  "unit": "x",
+  "source": "",
+  "status": "tuned",
+  "note": "frag grenades a player starts with"
+ },
+ {
+  "id": "grenade_max",
+  "value": 4,
+  "unit": "x",
+  "source": "frag_grenade_zm maxAmmo",
+  "status": "script",
+  "note": "most frag grenades a player can hold (Max Ammo refills to this)"
+ },
+ {
+  "id": "grenade_fuse_sec",
+  "value": 3.5,
+  "unit": "s",
+  "source": "frag_grenade_zm fuseTime",
+  "status": "script",
+  "note": "time from pulling the pin until it explodes (cooking counts)"
+ },
+ {
+  "id": "grenade_pin_sec",
+  "value": 0.55,
+  "unit": "s",
+  "source": "frag_grenade_zm holdFireTime",
+  "status": "script",
+  "note": "pin-pull time: the earliest a grenade can leave the hand"
+ },
+ {
+  "id": "grenade_throw_speed",
+  "value": 23.0,
+  "unit": "blocks",
+  "source": "frag_grenade_zm projectileSpeed 920 in/s / 40 in per block (blocks per second)",
+  "status": "script",
+  "note": "throw speed"
+ },
+ {
+  "id": "grenade_throw_up",
+  "value": 3.0,
+  "unit": "blocks",
+  "source": "frag_grenade_zm projectileSpeedRelativeUp 120 in/s / 40 (blocks per second)",
+  "status": "script",
+  "note": "extra upward speed on the throw"
+ },
+ {
+  "id": "grenade_gravity",
+  "value": 20.0,
+  "unit": "blocks",
+  "source": "g_gravity 800 in/s2 / 40 in per block (blocks per second squared)",
+  "status": "script",
+  "note": "gravity on a thrown grenade"
+ },
+ {
+  "id": "grenade_bounce",
+  "value": 0.45,
+  "unit": "mult",
+  "source": "",
+  "status": "tuned",
+  "note": "speed kept after hitting a surface"
+ },
+ {
+  "id": "grenade_radius",
+  "value": 6.4,
+  "unit": "blocks",
+  "source": "frag_grenade_zm explosionRadius 256 in / 40 in per block",
+  "status": "script",
+  "note": "blast radius"
+ },
+ {
+  "id": "grenade_damage_inner",
+  "value": 300,
+  "unit": "hp",
+  "source": "frag_grenade_zm explosionInnerDamage",
+  "status": "script",
+  "note": "damage at the centre of the blast"
+ },
+ {
+  "id": "grenade_damage_outer",
+  "value": 75,
+  "unit": "hp",
+  "source": "frag_grenade_zm explosionOuterDamage",
+  "status": "script",
+  "note": "damage at the edge of the blast"
  }
 ]

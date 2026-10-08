@@ -3782,5 +3782,82 @@
   "channels": 1,
   "rateHz": 48000,
   "frames": 71853
+ },
+ {
+  "id": "wpn_grenade_pull_pin#0",
+  "cue": "wpn_grenade_pull_pin",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2145800731,
+  "size": 74360,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 37180
+ },
+ {
+  "id": "wpn_grenade_bounce_concrete#0",
+  "cue": "wpn_grenade_bounce_concrete",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 4078439563,
+  "size": 39608,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 19804
+ },
+ {
+  "id": "wpn_grenade_bounce_concrete#1",
+  "cue": "wpn_grenade_bounce_concrete",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 3214944652,
+  "size": 49036,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 24518
+ },
+ {
+  "id": "wpn_grenade_bounce_concrete#2",
+  "cue": "wpn_grenade_bounce_concrete",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 2351449741,
+  "size": 35356,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 17678
+ },
+ {
+  "id": "wpn_grenade_bounce_concrete#3",
+  "cue": "wpn_grenade_bounce_concrete",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 1487954830,
+  "size": 26876,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 13438
+ },
+ {
+  "id": "wpn_grenade_bounce_concrete#4",
+  "cue": "wpn_grenade_bounce_concrete",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 624459919,
+  "size": 69928,
+  "format": "pcm16",
+  "channels": 1,
+  "rateHz": 48000,
+  "frames": 34964
+ },
+ {
+  "id": "wpn_grenade_explode#0",
+  "cue": "wpn_grenade_explode",
+  "bank": "cmn_root.all.sabl",
+  "entryId": 1788078440,
+  "size": 415020,
+  "format": "pcm16",
+  "channels": 2,
+  "rateHz": 48000,
+  "frames": 103755
  }
 ]

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.zombiecraft.bo2.Pose;
 import com.zombiecraft.bo2.XAnim;
 import com.zombiecraft.client.GunFeedback;
+import com.zombiecraft.client.ViewState;
 import com.zombiecraft.sheet.Rows.Bo2Model;
 import com.zombiecraft.sheet.Sheets;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -121,10 +122,22 @@ public final class ViewModel {
 		float reload = GunFeedback.isReloading() ? GunFeedback.reloadProgress(partialTick) : -1f;
 		float shotAge = GunFeedback.shotAgeTicks(partialTick) / 20f, equipAge = GunFeedback.equipAgeTicks(partialTick) / 20f;
 		XAnim fire = clip(m, "fire"), pull = clip(m, "pullout"), drink = weaponId.startsWith("bottle_") ? clip(m, "drink") : null;
+		boolean grenade = weaponId.equals("frag_grenade");
+		XAnim adsUp = grenade ? null : clip(m, "ads_up"), adsDown = grenade ? null : clip(m, "ads_down"), adsFire = grenade ? null : clip(m, "ads_fire");
+		XAnim sprintIn = grenade ? null : clip(m, "sprint_in"), sprintLoop = grenade ? null : clip(m, "sprint_loop"), sprintOut = grenade ? null : clip(m, "sprint_out");
+		float adsAge = ViewState.adsSeconds(), adsOff = ViewState.adsOffSeconds(), sprintAge = ViewState.sprintSeconds(), sprintOffAge = ViewState.sprintOffSeconds();
+		boolean aimed = ViewState.ads() && adsUp != null && adsAge >= adsUp.lengthSeconds();
 		XAnim reloadClip = reload < 0f ? null : clip(m, GunFeedback.reloadWasEmpty() ? "reload_empty" : "reload");
 		if (reload >= 0f && reloadClip == null) reloadClip = clip(m, GunFeedback.reloadWasEmpty() ? "reload" : "reload_empty"); // some guns have only one reload clip
 		XAnim segIn = reload >= 0f && reloadClip == null ? clip(m, "reload_in") : null; // shell-by-shell guns (Remington 870 MCS): in, one loop per shell, out
-		if (drink != null) {
+		if (grenade) {
+			// the pin comes out, is held while the key is down, and the throw follows (BO2's M67 clips)
+			float thrown = ViewState.grenadeThrownSeconds();
+			XAnim throwClip = clip(m, "throw"), pin = clip(m, "pullpin");
+			if (thrown >= 0f && throwClip != null) { a = throwClip; frame = Math.min(a.numFrames, thrown * a.frameRate); }
+			else if (pin != null) { a = pin; frame = Math.min(a.numFrames, ViewState.grenadeSeconds() * a.frameRate); }
+			else { a = clip(m, "idle"); frame = 0; if (a == null) return false; }
+		} else if (drink != null) {
 			a = drink;
 			frame = Math.min(a.numFrames, GunFeedback.drinkSeconds() * a.frameRate);
 		} else if (reloadClip != null) {
@@ -139,10 +152,24 @@ public final class ViewModel {
 			else if (pos < tIn + shells * tLp) { a = lp; frame = ((pos - tIn) % tLp) * lp.frameRate; }
 			else if (out != null) { a = out; frame = Math.min(out.numFrames, (pos - tIn - shells * tLp) * out.frameRate); }
 			else { a = clip(m, "idle"); frame = 0; if (a == null) return false; }
-		} else if (fire != null && shotAge >= 0f && shotAge < fire.lengthSeconds()) {
+		} else if (aimed && adsFire != null && shotAge >= 0f && shotAge < adsFire.lengthSeconds()) {
+			a = adsFire; frame = shotAge * adsFire.frameRate;
+		} else if (fire != null && !aimed && shotAge >= 0f && shotAge < fire.lengthSeconds()) {
 			a = fire; frame = shotAge * fire.frameRate;
 		} else if (pull != null && equipAge < pull.lengthSeconds()) {
 			a = pull; frame = equipAge * pull.frameRate;
+		} else if (ViewState.ads() && adsUp != null) {
+			// raising the sight, then holding its last frame
+			a = adsUp; frame = Math.min(a.numFrames, adsAge * a.frameRate);
+		} else if (adsDown != null && adsUp != null && adsOff < adsDown.lengthSeconds() && ViewState.adsHeldAtRelease() > 0f) {
+			// lowering it, starting from wherever the raise had got to
+			float raised = Math.min(1f, ViewState.adsHeldAtRelease() / adsUp.lengthSeconds());
+			a = adsDown; frame = Math.min(a.numFrames, (adsOff + (1f - raised) * adsDown.lengthSeconds()) * a.frameRate);
+		} else if (ViewState.sprinting() && sprintIn != null) {
+			if (sprintAge < sprintIn.lengthSeconds() || sprintLoop == null) { a = sprintIn; frame = Math.min(a.numFrames, sprintAge * a.frameRate); }
+			else { a = sprintLoop; frame = a.numFrames <= 0 ? 0 : ((sprintAge - sprintIn.lengthSeconds()) * a.frameRate) % a.numFrames; }
+		} else if (sprintOut != null && sprintOffAge < sprintOut.lengthSeconds()) {
+			a = sprintOut; frame = Math.min(a.numFrames, sprintOffAge * a.frameRate);
 		} else {
 			a = clip(m, "idle");
 			if (a != null) frame = a.numFrames <= 0 ? 0 : ((System.nanoTime() / 1e9f) * a.frameRate) % a.numFrames;

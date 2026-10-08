@@ -84,7 +84,7 @@ public final class WeaponSystem {
 
 		// fire cadence in seconds: several shots may fall in one tick for fast guns
 		pg.fireCooldown = Math.max(pg.fireCooldown - TICK, -TICK);
-		if (g != null && pg.reloadSlot < 0) {
+		if (g != null && pg.reloadSlot < 0 && pg.cookStart < 0) {
 			WeaponDef w = g.def();
 			double gap = w.fireTime() * pg.perkFireFactor;
 			int guard = 0;
@@ -192,7 +192,7 @@ public final class WeaponSystem {
 		for (var e : hits.entrySet()) ZombieHealth.hit(game, p, pg, e.getKey(), pg.instaKill ? 1e9 : e.getValue()[0], e.getValue()[1] > 0, false);
 	}
 
-	/** Left click is the knife. */
+	/** V is the knife. */
 	public static void melee(Game game, ServerPlayer p, PlayerGame pg) {
 		long now = game.tick;
 		if (now < pg.nextMelee) return;

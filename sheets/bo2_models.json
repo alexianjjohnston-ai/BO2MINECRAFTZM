@@ -682,5 +682,20 @@
   "xmodel": "veh_t6_civ_smallwagon_dead",
   "world": "",
   "note": "map scenery"
+ },
+ {
+  "id": "frag_grenade",
+  "group": "grenade",
+  "xmodel": "t6_wpn_grenade_frag_view",
+  "world": "t6_wpn_grenade_frag_world",
+  "note": "lethal grenade in hand; clips viewmodel_m67_*",
+  "anim": "m67"
+ },
+ {
+  "id": "frag_grenade_proj",
+  "group": "grenade",
+  "xmodel": "t6_wpn_grenade_frag_projectile",
+  "world": "",
+  "note": "the thrown grenade"
  }
 ]

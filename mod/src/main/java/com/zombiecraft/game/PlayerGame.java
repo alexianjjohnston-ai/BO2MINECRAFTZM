@@ -19,6 +19,12 @@ public final class PlayerGame {
 	public int burstLeft;
 	public boolean prevFire, prevInteract;
 	public boolean fireHeld, interactHeld, fireClick;
+	/** Aiming down the sight (right mouse held). */
+	public boolean ads;
+	/** Frag grenades in hand, the key being held, and the tick the pin was pulled (-1: not cooking). */
+	public int grenades;
+	public boolean grenadeHeld;
+	public long cookStart = -1;
 	public long lastHurtTick;
 	public int boardPointsThisRound;
 	public long lastBoardRepair;

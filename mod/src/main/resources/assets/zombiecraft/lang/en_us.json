@@ -1,6 +1,9 @@
 {
  "key.zombiecraft.interact": "Buy / Use / Repair",
  "key.zombiecraft.reload": "Reload",
+ "key.zombiecraft.melee": "Melee Attack",
+ "key.zombiecraft.grenade": "Frag Grenade",
+ "key.zombiecraft.prone": "Prone",
  "key.categories.zombiecraft": "Block Ops 2",
  "item.zombiecraft.m1911": "M1911",
  "item.zombiecraft.rottweil72": "Olympia",

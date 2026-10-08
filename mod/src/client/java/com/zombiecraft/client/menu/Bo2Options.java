@@ -60,7 +60,7 @@ final class Bo2Options {
 	}
 
 	private static Row key(KeyMapping km) {
-		return new Row(Component.translatable(km.getName()).getString().toUpperCase(), () -> km.getTranslatedKeyMessage().getString().toUpperCase(), d -> {});
+		return new Row(com.zombiecraft.client.ZombiecraftClient.label(km), () -> km.getTranslatedKeyMessage().getString().toUpperCase(), d -> {});
 	}
 
 	/** Shared look: title, tab bar, rows with an orange bracket on the selected one, key hints. */
@@ -334,8 +334,9 @@ final class Bo2Options {
 		private static boolean in(KeyMapping km, int tab) {
 			if (!com.zombiecraft.client.ZombiecraftClient.keyNeeded(km)) return false;
 			String c = km.getCategory();
-			boolean move = c.equals("key.categories.movement");
-			boolean combat = c.equals("key.categories.gameplay") || c.equals("key.categories.zombiecraft") || km.getName().startsWith("key.zombiecraft");
+			boolean prone = km.getName().equals("key.zombiecraft.prone");
+			boolean move = c.equals("key.categories.movement") || prone;
+			boolean combat = !prone && (c.equals("key.categories.gameplay") || c.equals("key.categories.zombiecraft") || km.getName().startsWith("key.zombiecraft"));
 			return switch (tab) {
 				case 1 -> move;
 				case 2 -> combat;
@@ -394,7 +395,7 @@ final class Bo2Options {
 
 		private void resetAll() {
 			var o = Minecraft.getInstance().options;
-			for (KeyMapping km : o.keyMappings) km.setKey(com.zombiecraft.client.ZombiecraftClient.keyNeeded(km) ? km.getDefaultKey() : InputConstants.UNKNOWN);
+			for (KeyMapping km : o.keyMappings) km.setKey(com.zombiecraft.client.ZombiecraftClient.keyNeeded(km) ? com.zombiecraft.client.ZombiecraftClient.defaultKey(km) : InputConstants.UNKNOWN);
 			KeyMapping.resetMapping();
 			save();
 			MenuAudio.play("uin_main_nav");

@@ -100,8 +100,10 @@ public final class Game {
 			PlayerGame pg = g.players.get(p.getUUID());
 			if (pg == null) return;
 			pg.interactHeld = payload.interactHeld();
-			if (pg.downed || pg.dead) { pg.fireHeld = false; return; }
+			if (pg.downed || pg.dead) { pg.fireHeld = false; pg.ads = false; Grenades.input(g, p, pg, false); return; }
 			pg.fireHeld = payload.fireHeld();
+			pg.ads = payload.ads();
+			Grenades.input(g, p, pg, payload.grenade());
 			if (payload.fireClick()) pg.fireClick = true;
 			if (payload.prone()) Revive.toggleProne(g, p, pg);
 			if (payload.reload() && g.phase != Payloads.PHASE_GAMEOVER) WeaponSystem.startReload(g, p, pg);
@@ -248,6 +250,7 @@ public final class Game {
 		cmd("kill @e[tag=zc]");
 		alive.clear();
 		Projectiles.clear();
+		Grenades.clear();
 		MapBuilder.buildOps(level, origin);
 		barriers.clear();
 		for (var w : Sheets.WINDOWS) { Barrier b = new Barrier(level, origin, w); b.build(); barriers.add(b); }
@@ -306,6 +309,7 @@ public final class Game {
 		players.put(p.getUUID(), pg);
 		Revive.clear(p);
 		pg.points = Sheets.sysInt("start_points");
+		pg.grenades = Sheets.sysInt("grenade_start");
 		p.getInventory().clearContent();
 		p.setGameMode(GameType.ADVENTURE);
 		p.setInvulnerable(false);
@@ -335,6 +339,18 @@ public final class Game {
 		if (on) speed.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(SPRINT_BOOST, Sheets.sys("player_sprint_scale") / 1.3 - 1.0,
 				net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 		else speed.removeModifier(SPRINT_BOOST);
+	}
+
+	private static final net.minecraft.resources.ResourceLocation ADS_SLOW = Payloads.id("ads_slow");
+
+	/** Aiming down the sight walks slower (BO2's adsMoveSpeedScale). */
+	private static void adsSlow(ServerPlayer p, PlayerGame pg) {
+		var speed = p.getAttribute(Attributes.MOVEMENT_SPEED);
+		boolean on = pg.ads && !p.isSprinting() && !pg.downed && !pg.dead;
+		if (on == (speed.getModifier(ADS_SLOW) != null)) return;
+		if (on) speed.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(ADS_SLOW, Sheets.sys("ads_move_mult") - 1.0,
+				net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+		else speed.removeModifier(ADS_SLOW);
 	}
 
 	private void placeWallBuys() {
@@ -610,6 +626,7 @@ public final class Game {
 		}
 
 		Projectiles.tick(this);
+		Grenades.tick(this);
 		if (phase != Payloads.PHASE_GAMEOVER) {
 			box.tick();
 			if (pap != null) pap.tick();
@@ -640,6 +657,8 @@ public final class Game {
 	private void tickPlayer(ServerPlayer p) {
 		PlayerGame pg = pg(p);
 		sprintBoost(p);
+		adsSlow(p, pg);
+		Grenades.cook(this, p, pg);
 		if (pg.downed || pg.dead || phase == Payloads.PHASE_LOBBY) pg.prompt = "";
 		else if (phase != Payloads.PHASE_GAMEOVER) {
 			WeaponSystem.tick(this, p, pg);
@@ -660,6 +679,6 @@ public final class Game {
 				zombiesToSpawn + alive.size(), sec, roundsSurvived,
 				pg.perks | (machines.power ? 256 : 0) | (pg.drinking ? 512 | (pg.drinkPerk << 10) : 0), powerups.instaTicks / 20, powerups.doubleTicks / 20,
 				pg.kills, pg.headshots, pg.downs, pg.revives,
-				pg.downed ? (int) Math.max(1, (pg.bleedEnd - tick + 19) / 20) : 0, pg.reviveShow));
+				pg.downed ? (int) Math.max(1, (pg.bleedEnd - tick + 19) / 20) : 0, pg.reviveShow, pg.grenades));
 	}
 }

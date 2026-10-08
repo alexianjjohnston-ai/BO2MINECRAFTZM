@@ -171,7 +171,7 @@ public final class ZcHud {
 
 	/** BO2's small four-tick crosshair (the vanilla one is hidden while a match runs). */
 	private static void crosshair(GuiGraphics g, Minecraft mc) {
-		if (!mc.options.getCameraType().isFirstPerson() || mc.screen != null) return;
+		if (!mc.options.getCameraType().isFirstPerson() || mc.screen != null || com.zombiecraft.client.ViewState.sighted()) return;
 		int cx = g.guiWidth() / 2, cy = g.guiHeight() / 2;
 		for (int pass = 0; pass < 2; pass++) {
 			int c = pass == 0 ? 0x90000000 : 0xFFFFFFFF, o = pass == 0 ? 1 : 0;
@@ -380,7 +380,8 @@ public final class ZcHud {
 			text(g, font, ammo, right - ammoW, ammoY, ammoScale, s.mag() == 0 ? 0xFFFF4444 : 0xFFFFFFFF, false);
 			String held = heldIcon(mc);
 			if (held != null && !UiArt.draw(g, held, right - ammoW - 70, ammoY - 4, 64, 32, 0xC0FFFFFF)) text(g, font, s.gun(), right - ammoW - 8 - UiFont.width(s.gun(), 9f * 1.3f), ammoY + 6, 1f, 0xFFDDDDDD, false);
-			UiArt.draw(g, "grenadeicon_32", right + 8, ammoY, 20, 20);
+			// one icon per frag grenade, stacked upward from the ammo line (dim when there are none)
+			for (int n = 0; n < Math.max(1, s.grenades()); n++) UiArt.draw(g, "grenadeicon_32", right + 8, ammoY - n * 12, 20, 20, s.grenades() > 0 ? 0xFFFFFFFF : 0x50FFFFFF);
 			if (GunFeedback.isReloading()) {
 				int barWidth = 64;
 				g.fill(right - barWidth, h - 6, right, h - 4, 0xA0404040);

@@ -91,7 +91,8 @@ public final class Revive {
 
 	/** Gun spread factor for the current stance. */
 	public static double spreadFactor(ServerPlayer p, PlayerGame pg) {
-		return pg.prone ? Sheets.sys("prone_spread_mult") : p.isShiftKeyDown() ? Sheets.sys("crouch_spread_mult") : 1.0;
+		double stance = pg.prone ? Sheets.sys("prone_spread_mult") : p.isShiftKeyDown() ? Sheets.sys("crouch_spread_mult") : 1.0;
+		return pg.ads && pg.reloadSlot < 0 ? stance * Sheets.sys("ads_spread_mult") : stance;
 	}
 
 	// ------------------------------------------------------------------ going down

@@ -1988,5 +1988,35 @@
   "loop": false,
   "variants": 6,
   "fallback": "minecraft:block.chain.step"
+ },
+ {
+  "cue": "wpn_grenade_bounce_concrete",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 0.8,
+  "positional": true,
+  "loop": false,
+  "variants": 5,
+  "fallback": "minecraft:block.stone.hit"
+ },
+ {
+  "cue": "wpn_grenade_explode",
+  "category": "world",
+  "soundSource": "BLOCKS",
+  "volume": 1.0,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:entity.generic.explode"
+ },
+ {
+  "cue": "wpn_grenade_pull_pin",
+  "category": "ui",
+  "soundSource": "PLAYERS",
+  "volume": 0.9,
+  "positional": false,
+  "loop": false,
+  "variants": 1,
+  "fallback": "minecraft:block.tripwire.click_on"
  }
 ]

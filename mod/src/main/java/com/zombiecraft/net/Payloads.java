@@ -39,7 +39,7 @@ public final class Payloads {
 	public record StateSync(int phase, int round, int points, int mag, int reserve, String gun, String prompt, String message,
 			boolean interactable, int zombiesLeft, int countdownSec, int roundsSurvived,
 			int perks, int instaSec, int doubleSec, int kills, int headshots, int downs, int revives,
-			int bleedSec, int revivePct) implements CustomPacketPayload {
+			int bleedSec, int revivePct, int grenades) implements CustomPacketPayload {
 		public static final Type<StateSync> TYPE = new Type<>(id("state"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, StateSync> CODEC = StreamCodec.ofMember(StateSync::write, StateSync::read);
 
@@ -49,13 +49,13 @@ public final class Payloads {
 			b.writeVarInt(zombiesLeft); b.writeVarInt(countdownSec); b.writeVarInt(roundsSurvived);
 			b.writeVarInt(perks); b.writeVarInt(instaSec); b.writeVarInt(doubleSec);
 			b.writeVarInt(kills); b.writeVarInt(headshots); b.writeVarInt(downs); b.writeVarInt(revives);
-			b.writeVarInt(bleedSec); b.writeVarInt(revivePct);
+			b.writeVarInt(bleedSec); b.writeVarInt(revivePct); b.writeVarInt(grenades);
 		}
 
 		static StateSync read(RegistryFriendlyByteBuf b) {
 			return new StateSync(b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(),
 					b.readUtf(), b.readUtf(), b.readUtf(), b.readBoolean(), b.readVarInt(), b.readVarInt(), b.readVarInt(),
-					b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt());
+					b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt());
 		}
 
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
@@ -114,11 +114,11 @@ public final class Payloads {
 	}
 
 	/** What the player is holding down. Sent when it changes, and every tick while firing. */
-	public record Input(boolean fireHeld, boolean fireClick, boolean interactHeld, boolean reload, boolean melee, boolean prone) implements CustomPacketPayload {
+	public record Input(boolean fireHeld, boolean fireClick, boolean interactHeld, boolean reload, boolean melee, boolean prone, boolean ads, boolean grenade) implements CustomPacketPayload {
 		public static final Type<Input> TYPE = new Type<>(id("input"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, Input> CODEC = StreamCodec.ofMember(
-				(p, b) -> { b.writeBoolean(p.fireHeld); b.writeBoolean(p.fireClick); b.writeBoolean(p.interactHeld); b.writeBoolean(p.reload); b.writeBoolean(p.melee); b.writeBoolean(p.prone); },
-				b -> new Input(b.readBoolean(), b.readBoolean(), b.readBoolean(), b.readBoolean(), b.readBoolean(), b.readBoolean()));
+				(p, b) -> { b.writeBoolean(p.fireHeld); b.writeBoolean(p.fireClick); b.writeBoolean(p.interactHeld); b.writeBoolean(p.reload); b.writeBoolean(p.melee); b.writeBoolean(p.prone); b.writeBoolean(p.ads); b.writeBoolean(p.grenade); },
+				b -> new Input(b.readBoolean(), b.readBoolean(), b.readBoolean(), b.readBoolean(), b.readBoolean(), b.readBoolean(), b.readBoolean(), b.readBoolean()));
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
