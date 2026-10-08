@@ -32,7 +32,7 @@ public final class CueMixer {
 	private record Sample(short[] pcm, int channels) {}
 
 	private static final class Voice {
-		String cue; Sample s; double pos; double step; float gain; boolean loop, positional, menu; double x, y, z;
+		String cue; Sample s; double pos; double step; float gain; boolean loop, positional, menu; double x, y, z; float fade = 1f, fadeStep;
 	}
 
 	private final Map<String, List<Sample>> bank = new HashMap<>();
@@ -114,6 +114,11 @@ public final class CueMixer {
 		synchronized (voices) { return voices.stream().anyMatch(v -> v.cue.equals(cue)); }
 	}
 
+	/** Fades a cue out over {@code seconds} instead of cutting it (a hard cut clicks). */
+	public void fadeOut(String cue, float seconds) {
+		synchronized (voices) { for (Voice v : voices) if (v.cue.equals(cue)) v.fadeStep = (FRAMES / (float) RATE) / Math.max(0.05f, seconds); }
+	}
+
 	public void stop(String cue) {
 		synchronized (voices) { voices.removeIf(v -> v.cue.equals(cue)); }
 	}
@@ -146,6 +151,7 @@ public final class CueMixer {
 							gl = (float) (v.gain * att * Math.sqrt((1 - pan) / 2) * 1.2);
 							gr = (float) (v.gain * att * Math.sqrt((1 + pan) / 2) * 1.2);
 						}
+						gl *= v.fade; gr *= v.fade;
 						short[] pcm = v.s.pcm();
 						int ch = v.s.channels();
 						int n = pcm.length / ch;
@@ -162,6 +168,7 @@ public final class CueMixer {
 							mix[i * 2 + 1] += r * gr / 32768f;
 							v.pos += v.step;
 						}
+						if (v.fadeStep > 0 && (v.fade -= v.fadeStep) <= 0) finished = true;
 						if (finished) it.remove();
 					}
 				}

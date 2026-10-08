@@ -631,6 +631,74 @@
    "soundSource": "BLOCKS",
    "volume": 1.0,
    "fallback": "minecraft:block.wooden_door.open"
+  },
+  "amb_wind_howl": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.2,
+   "fallback": "minecraft:ambient.cave"
+  },
+  "amb_crickets": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.15,
+   "fallback": "minecraft:ambient.cave",
+   "loop": true
+  },
+  "amb_neon_stdy": {
+   "category": "ui",
+   "soundSource": "AMBIENT",
+   "volume": 0.1,
+   "fallback": "minecraft:block.beacon.ambient"
+  },
+  "amb_crows": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.5,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_wolves": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.35,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_church_bell": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.3,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_screams": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.25,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_wood_creak": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.5,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_sign_creak": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.5,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
+  },
+  "amb_metal_groan": {
+   "category": "world",
+   "soundSource": "AMBIENT",
+   "volume": 0.5,
+   "fallback": "minecraft:block.chain.step",
+   "loop": false
   }
  },
  "roles": {
