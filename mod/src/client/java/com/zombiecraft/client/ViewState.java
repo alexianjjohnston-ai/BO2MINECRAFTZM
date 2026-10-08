@@ -28,7 +28,20 @@ public final class ViewState {
 	}
 
 	/** Once per client tick from the input poll. */
+	/** Dev: -Dzombiecraft.debugHands=ads|grenade|sprint plays that action by itself and saves zc-view-*.png (no human input needed). */
+	private static final String DEBUG = System.getProperty("zombiecraft.debugHands", "");
+	private static int debugTicks;
+
 	public static void update(Minecraft mc, boolean playing, boolean adsKey, boolean grenadeKey, int grenades) {
+		if (!DEBUG.isEmpty() && mc.player != null && ZombiecraftClient.state.phase() == com.zombiecraft.net.Payloads.PHASE_ACTIVE) {
+			int t = ++debugTicks;
+			playing = true; grenades = Math.max(grenades, 1);
+			adsKey = DEBUG.equals("ads") && t >= 100 && t < 180;
+			grenadeKey = DEBUG.equals("grenade") && t >= 100 && t < 150;
+			if (DEBUG.equals("sprint")) mc.player.setSprinting(t >= 100 && t < 180);
+			for (int at : new int[] {110, 125, 140, 155, 170, 185})
+				if (t == at) net.minecraft.client.Screenshot.grab(mc.gameDirectory, "zc-hands-" + DEBUG + "-" + t + ".png", mc.getMainRenderTarget(), c -> { });
+		}
 		long now = System.nanoTime();
 		var p = mc.player;
 		boolean reloading = GunFeedback.isReloading();

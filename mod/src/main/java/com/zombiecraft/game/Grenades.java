@@ -96,7 +96,18 @@ public final class Grenades {
 			l.vel = l.vel.add(0, -gravity * DT, 0);
 			Vec3 next = l.pos.add(l.vel.scale(DT));
 			BlockHitResult hit = Barrier.shotClip(level, l.pos, next);
-			if (hit.getType() == HitResult.Type.MISS) l.pos = next;
+			Vec3 reach = hit.getType() == HitResult.Type.MISS ? next : hit.getLocation();
+			// zombies stop it: it drops off them with most of its speed gone
+			Vec3 bump = null;
+			for (ZcZombie z : level.getEntitiesOfClass(ZcZombie.class, new AABB(l.pos, reach).inflate(0.5), e -> e.isAlive())) {
+				var in = z.getBoundingBox().inflate(0.1).clip(l.pos, reach);
+				if (in.isPresent()) { bump = in.get(); break; }
+			}
+			if (bump != null) {
+				l.pos = l.pos.add(bump.subtract(l.pos).scale(0.9));
+				l.vel = new Vec3(-l.vel.x * 0.2, Math.min(l.vel.y, 0) * 0.3, -l.vel.z * 0.2);
+				if (l.quiet <= 0) { Cue.at("wpn_grenade_bounce_concrete", level, l.pos); l.quiet = 4; }
+			} else if (hit.getType() == HitResult.Type.MISS) l.pos = next;
 			else {
 				Vec3 n = new Vec3(hit.getDirection().getStepX(), hit.getDirection().getStepY(), hit.getDirection().getStepZ());
 				double into = l.vel.dot(n);
