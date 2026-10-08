@@ -16,7 +16,7 @@ TYPES = ['sprite_billboard', 'sprite_oriented', 'sprite_rotated', 'tail', 'line'
 
 def clean(o):
 	if isinstance(o, dict):
-		if set(o) == {'x', 'y', 'z', 'v'}: return [round(x, 4) for x in o['v']]
+		if set(o) in ({'x', 'y', 'z', 'v'}, {'x', 'y', 'v'}): return [round(x, 4) for x in o['v']]
 		return {k: clean(v) for k, v in o.items()}
 	if isinstance(o, list): return [clean(x) for x in o]
 	if isinstance(o, float): return None if math.isnan(o) or math.isinf(o) else round(o, 5)
@@ -73,12 +73,44 @@ class Dump:
 				'gravity': e['gravity'], 'reflectionFactor': e['reflectionFactor'], 'atlas': e['atlas'], 'windInfluence': e['windInfluence'], 'visuals': vis,
 				'velocity': vel, 'visualState': vs, 'collMins': e['collMins'], 'collMaxs': e['collMaxs'], 'emitDist': e['emitDist'], 'emitDistVariance': e['emitDistVariance'],
 				'sortOrder': e['sortOrder'], 'lightingFrac': e['lightingFrac'], 'billboardPivot': e['billboardPivot'], 'spawnSound': c.cstr(e['spawnSound'].get('spawnSound', 0) if isinstance(e['spawnSound'], dict) else 0)}
+			el['extra'] = self.extras(e, ty)
 			for k in ('effectOnImpact', 'effectOnDeath', 'effectEmitted', 'effectAttached'):
 				el[k] = self.fxref(e[k])
 			elems.append(el)
 		return clean({'name': name, 'flags': fx['flags'], 'priority': fx['efPriority'], 'elemsLooping': fx['elemDefCountLooping'], 'elemsOneShot': fx['elemDefCountOneShot'],
 			'elemsEmission': fx['elemDefCountEmission'], 'msecLoopingLife': fx['msecLoopingLife'], 'msecNonLoopingLife': fx['msecNonLoopingLife'],
 			'boundingBoxDim': fx['boundingBoxDim'], 'boundingBoxCentre': fx['boundingBoxCentre'], 'elements': elems})
+
+	def extras(self, e, ty):
+		"""Trail geometry, spot light cone, decal (mark) materials, billboard trim / cloud density: the per-type part of an element."""
+		c, S = self.c, self.S
+		name = TYPES[ty]; x = {}
+		ext = e['extended']; ptr = list(ext.values())[0] if isinstance(ext, dict) and ext else 0
+		try:
+			if name == 'trail' and ptr:
+				t = S.read(c.read, 'FxTrailDef', ptr)
+				x['trail'] = {'scrollTimeMsec': t['scrollTimeMsec'], 'repeatDist': t['repeatDist'], 'splitDist': t['splitDist'],
+					'verts': [[v['pos'], v['normal'], v['texCoord']] for v in self._arr('FxTrailVertex', t['verts'], t['vertCount'])] if t['verts'] and 0 < t['vertCount'] < 512 else [],
+					'inds': list(struct.unpack('<%dH' % t['indCount'], c.read(t['inds'], t['indCount'] * 2))) if t['inds'] and 0 < t['indCount'] < 2048 else []}
+			elif name == 'spot_light' and ptr:
+				x['spotLight'] = S.read(c.read, 'FxSpotLightDef', ptr)
+			elif name == 'decal':
+				v = e['visuals']; arr = (list(v.values())[0] if isinstance(v, dict) else v)
+				n = e['visualCount']
+				if arr and 0 < n < 64:
+					raw = c.try_read(arr, 8 * n)
+					if raw:
+						pairs = struct.unpack('<%dI' % (2 * n), raw)
+						x['marks'] = [[(self._matname(pairs[2 * i]) if pairs[2 * i] else None), (self._matname(pairs[2 * i + 1]) if pairs[2 * i + 1] else None)] for i in range(n)]
+		except (MemoryError, KeyError, struct.error):
+			pass
+		if name in ('sprite_billboard', 'sprite_oriented', 'sprite_rotated', 'tail'): x['billboardTrim'] = e['u']
+		elif name == 'cloud': x['cloudDensity'] = e['u']
+		return x
+
+	def _matname(self, p):
+		try: return (self.c.cstr(self.S.read(self.c.read, 'Material', p)['info']['name']) or '').lstrip(',')
+		except MemoryError: return None
 
 	def fxref(self, ref):
 		p = ref.get('name') or ref.get('handle') if isinstance(ref, dict) else ref
@@ -97,7 +129,7 @@ class Dump:
 	def visuals(self, e, ty):
 		c = self.c; n = e['visualCount']
 		v = e['visuals']; ptrs = []
-		if n == 0: return []
+		if n == 0 or TYPES[ty] == 'decal': return []
 		if n == 1: ptrs = [list(v.values())[0] if isinstance(v, dict) else v]
 		else:
 			arr = v.get('array') if isinstance(v, dict) else v

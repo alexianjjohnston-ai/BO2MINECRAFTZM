@@ -251,6 +251,18 @@ def cmd_index(a):
 			zone = f[:-5]
 			for name in json.load(open(os.path.join(fr, f))):
 				rows.append(('fx', name, zone, 'fx/' + f, 0)); counts['fx'][zone] += 1
+	sr = os.path.join(LIB, 'scripts')  # decompiled GSC/CSC, copied in by bo2_ai.py
+	if os.path.isdir(sr):
+		for root, _, files in os.walk(sr):
+			for f in files:
+				if f.endswith(('.gsc', '.csc')):
+					rel = os.path.relpath(os.path.join(root, f), LIB).replace(os.sep, '/')
+					rows.append(('gsc', os.path.splitext(f)[0], rel.split('/')[2] if rel.count('/') > 2 else 'scripts', rel, os.path.getsize(os.path.join(root, f))))
+					counts['gsc']['scripts'] += 1
+	ai = os.path.join(LIB, 'ai')
+	if os.path.isdir(ai):
+		for f in sorted(os.listdir(ai)):
+			rows.append(('ai', f, 'ai', 'ai/' + f, os.path.getsize(os.path.join(ai, f)))); counts['ai']['ai'] += 1
 	af = os.path.join(ar, 'aliases.json')  # sound alias name (what the game scripts play) -> first file
 	if os.path.isfile(af):
 		for alias, fl in json.load(open(af)).items():
@@ -265,7 +277,7 @@ def cmd_index(a):
 		lines.append('| %s | %d | %d |' % (k, sum(counts[k].values()), len(counts[k])))
 	lines += ['', '## Beyond what OpenAssetTools v0.33 writes', '- `maps/<zone>/` (tools/bo2_geometry.py): the BSP world mesh (world.obj/.npz, materials with their images), every placed static model, lights, collision triangles and brush boxes. Read out of the memory of the Unlinker.',
 		'- `fx/<zone>.json` (tools/bo2_fx.py): effect definitions (elements, spawn, lifespan, velocity, colour/size over time, materials, models, sounds). Same method.',
-		'- Entity placement is in `zones/<zone>/maps/` (mapents). Footstep tables are still not dumped.', '', '## Zones', '| zone | tier | images | models | anims | sounds |', '|---|---|---|---|---|---|']
+		'- `maps/<zone>/pathnodes.json`, `collision_hulls.*`, `footsteps.json` (tools/bo2_extra.py), `entities.json` + `spawns.json` (tools/bo2_ai.py), `ai/` (animation states, AI types, zombie assets, README) and `scripts/` (decompiled GSC of every map and the zombies core).', '', '## Zones', '| zone | tier | images | models | anims | sounds |', '|---|---|---|---|---|---|']
 	for zone in sorted({z for k in counts for z in counts[k]}):
 		lines.append('| %s | %s | %d | %d | %d | %d |' % (zone, tier_of(zone), counts['image'][zone], counts['model'][zone], counts['xanim'][zone], counts['sound'][zone]))
 	open(os.path.join(LIB, 'INDEX.md'), 'w', encoding='utf-8').write('\n'.join(lines) + '\n')
@@ -282,7 +294,7 @@ def cmd_find(a):
 	if a.zone: q += ' and zone=?'; args.append(a.zone)
 	n = 0
 	for kind, zone, name, rel, size in con.execute(q + ' order by kind, zone, name limit ?', args + [a.limit]):
-		print('%-9s %-28s %s  (%d B)' % (kind, zone, os.path.join(LIB, rel if kind in ('sound', 'alias', 'worldmap', 'fx') else 'zones/' + zone + '/' + rel), size)); n += 1
+		print('%-9s %-28s %s  (%d B)' % (kind, zone, os.path.join(LIB, rel if kind in ('sound', 'alias', 'worldmap', 'fx', 'gsc', 'ai') else 'zones/' + zone + '/' + rel), size)); n += 1
 	print(n, 'hits')
 
 

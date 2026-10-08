@@ -3,7 +3,7 @@ Dev tool: output goes to the local library (<lib>/maps/<zone>/), never into the 
   python tools/bo2_geometry.py <zone> [<zone> ...]      zones as in zone/all (zm_transit, zm_transit_gump_busstation, mp_nuketown_2020 ...)
   python tools/bo2_geometry.py --all                    every zone that has a world
 Writes per zone:  world.obj + world.mtl (game units: x east, y north, z up; one object per surface, usemtl = material)
-                  world.npz   verts[N,3] f4, uvs[N,2] f4, tris[M,3] i4, tri_surface[M] i4   (compact twin of the OBJ)
+                  world.npz   verts, uvs, normals (unit), tangents_sign (xyz + binormal sign), colors (RGBA u8), lightmap_uvs (0..1), tris (CCW), tri_surface   (twin of the OBJ)
                   surfaces.json (per surface: material, lightmap, flags, bounds, tri range)   materials.json (material -> textures/images)
                   smodels.json (every placed static model: name, origin, axis, scale)         lights.json (primary lights)
                   collision.npz + collision.obj (terrain collision triangles) and brushes.json (collision brush boxes with contents)
@@ -54,6 +54,18 @@ class Zone:
 					best.append((q, st))
 		return best[0] if best else (None, None)
 
+	def find_clipmap(self, name_addr):
+		"""clipMap_t: first field is the map name; recognised by a plausible plane / brush table (the same name string is also used by GfxWorld, ComWorld, MapEnts ...)."""
+		for q in self.c.find_ptrs(name_addr):
+			try:
+				cm = self.struct('clipMap_t', q)
+			except MemoryError:
+				continue
+			i = cm['info']
+			if cm['isInUse'] in (0, 1) and 100 < i['planeCount'] < 2_000_000 and i['planes'] and 0 < i['numBrushes'] < 500_000 and i['brushes'] and i['numBrushSides'] and i['brushsides']:
+				return q
+		return None
+
 	def find_by_name_ptr(self, name_addr, test):
 		for q in self.c.find_ptrs(name_addr):
 			try:
@@ -100,6 +112,7 @@ def extract(zone, ff, bo2, out_root):
 			return mat_cache[mp]
 
 		V, UV, F, FS, surf_rows = [], [], [], [], []
+		NRM, TAN, COL, LM = [], [], [], []
 		vbase = 0; fbase = 0
 		for si, s in enumerate(surfs):
 			t = s['tris']
@@ -110,17 +123,20 @@ def extract(zone, ff, bo2, out_root):
 			pos = rows[:, :12].copy().view('<f4').reshape(-1, 3)
 			uv = rows[:, 20:24].copy().view('<f2').astype('<f4').reshape(-1, 2)
 			V.append(pos); UV.append(uv)
-			tri = inv.reshape(-1, 3) + vbase
+			NRM.append(unpack_snorm10(rows[:, 24:28])); TAN.append(np.concatenate([unpack_snorm10(rows[:, 28:32]), rows[:, 12:16].copy().view('<f4')], 1))
+			COL.append(rows[:, 16:20].copy()); LM.append(rows[:, 32:36].copy().view('<u2').astype('<f4').reshape(-1, 2) / 65535.0)
+			tri = inv.reshape(-1, 3)[:, [0, 2, 1]] + vbase  # the game winds clockwise (D3D); flip so face normals point the way the vertex normals do
 			F.append(tri); FS.append(np.full(len(tri), len(surf_rows), np.int32))
 			mat = material(s['material'])
 			surf_rows.append({'surface': si, 'material': mat['name'], 'lightmap': s['lightmapIndex'], 'flags': s['flags'], 'reflectionProbe': s['reflectionProbeIndex'],
 				'bounds': [vec(s['bounds'][0]), vec(s['bounds'][1])], 'verts': [vbase, vbase + len(u)], 'tris': [fbase, fbase + len(tri)]})
 			vbase += len(u); fbase += len(tri)
 		V = np.concatenate(V).astype('<f4'); UV = np.concatenate(UV); F = np.concatenate(F).astype('<i4'); FS = np.concatenate(FS)
-		np.savez_compressed(os.path.join(out, 'world.npz'), verts=V, uvs=UV, tris=F, tri_surface=FS)
+		NRM = np.concatenate(NRM); TAN = np.concatenate(TAN).astype('<f4'); COL = np.concatenate(COL); LM = np.concatenate(LM)
+		np.savez_compressed(os.path.join(out, 'world.npz'), verts=V, uvs=UV, tris=F, tri_surface=FS, normals=NRM, tangents_sign=TAN, colors=COL, lightmap_uvs=LM)
 		json.dump(surf_rows, open(os.path.join(out, 'surfaces.json'), 'w'))
 		json.dump({m['name']: m for m in mat_cache.values()}, open(os.path.join(out, 'materials.json'), 'w'), indent=0)
-		write_obj(os.path.join(out, 'world'), V, UV, F, surf_rows, {m['name']: m for m in mat_cache.values()}, zone)
+		write_obj(os.path.join(out, 'world'), V, UV, F, surf_rows, {m['name']: m for m in mat_cache.values()}, zone, NRM)
 
 		# ---- static models ----
 		sm = Z.array('GfxStaticModelDrawInst', dp['smodelDrawInsts'], dp['smodelCount'])
@@ -145,7 +161,7 @@ def extract(zone, ff, bo2, out_root):
 
 		# ---- collision (clipMap_t) ----
 		ncol = 0
-		cm = Z.find_by_name_ptr(name_addr, lambda w: w[2] == g['planeCount'])
+		cm = Z.find_clipmap(name_addr)
 		if cm:
 			cmd = Z.struct('clipMap_t', cm)
 			if cmd['vertCount'] and cmd['triCount']:
@@ -172,7 +188,15 @@ def extract(zone, ff, bo2, out_root):
 	return True
 
 
-def write_obj(base, V, UV, F, surf_rows, mats, zone):
+def unpack_snorm10(b):
+	"""4 bytes -> 3 signed 10-bit components (x in the low bits), normalised to unit length"""
+	u = b.copy().view('<u4').reshape(-1).astype(np.int64)
+	out = np.stack([((u >> sh) & 0x3FF) for sh in (0, 10, 20)], 1)
+	out = np.where(out >= 512, out - 1024, out) / 511.0
+	return (out / np.maximum(np.linalg.norm(out, axis=1, keepdims=True), 1e-9)).astype('<f4')
+
+
+def write_obj(base, V, UV, F, surf_rows, mats, zone, N):
 	with open(base + '.mtl', 'w') as f:
 		for m in mats.values():
 			colour = next((t['image'] for t in m['textures'] if t['semantic'] == 'color' and t['image']), None)
