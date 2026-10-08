@@ -24,7 +24,7 @@ public final class Bo2Assets {
 	private Bo2Assets() {}
 
 	/** Bump when the cache format or the converted set changes: the cache is rebuilt once. */
-	public static final int VERSION = 9;
+	public static final int VERSION = 10;
 
 	/** Zones that hold the models, in order of preference (patches override the base zone). */
 	static final String[] ZONES = {"zm_transit_patch", "patch_zm", "zm_transit", "so_zclassic_zm_transit", "common_zm",
@@ -38,6 +38,16 @@ public final class Bo2Assets {
 			"ai_zombie_run_v2", "ai_zombie_run_v3", "ai_zombie_sprint_v1", "ai_zombie_sprint_v2", "ai_zombie_attack_v1", "ai_zombie_attack_v2",
 			"ai_zombie_boardtear_aligned_m_1_pull", "ai_zombie_barricade_enter_m_v1", "ch_dazed_a_death", "ch_dazed_b_death",
 			"o_zombie_magic_box_open", "o_zombie_magic_box_close", "o_zombie_magic_box_leave", "o_zombie_magic_box_arrive"};
+
+	/** Third-person clips for the player characters (from common_zm): stand, crouch, prone and downed idles and moves, rifle and pistol holds. */
+	public static final String[] PLAYER_ANIMS = {"pb_stand_alert", "pb_stand_alert_pistol", "pb_sprint", "pb_sprint_pistol",
+			"pb_combatrun_forward_loop", "pb_combatrun_back_loop", "pb_combatrun_left_loop", "pb_combatrun_right_loop",
+			"pb_combatwalk_forward_loop_pistol", "pb_combatrun_back_loop_pistol", "pb_combatrun_left_loop_pistol", "pb_combatrun_right_loop_pistol",
+			"pb_crouch_alert", "pb_crouch_alert_pistol", "pb_crouch_run_forward", "pb_crouch_run_back", "pb_crouch_run_left", "pb_crouch_run_right",
+			"pb_crouch_run_forward_pistol", "pb_crouch_run_back_pistol", "pb_crouch_run_left_pistol", "pb_crouch_run_right_pistol",
+			"pb_prone_aim", "pb_prone_aim_pistol", "pb_prone_crawl", "pb_prone_crawl_back", "pb_prone_crawl_left", "pb_prone_crawl_right",
+			"pb_prone_crawl_pistol", "pb_prone_crawl_pistol_back", "pb_prone_pistol_crawl_left", "pb_prone_pistol_crawl_right",
+			"pb_laststand_idle", "pb_laststand_crawl_forward", "pb_laststand_crawl_back", "pb_laststand_crawl_left", "pb_laststand_crawl_right"};
 
 	public static Path cacheDir(Path gameDir) { return gameDir.resolve("zombiecraft").resolve("bo2"); }
 
@@ -195,6 +205,7 @@ public final class Bo2Assets {
 		Path anims = cache.resolve("anims");
 		Files.createDirectories(anims);
 		java.util.List<String> animNames = new java.util.ArrayList<>(java.util.Arrays.asList(ANIMS));
+			animNames.addAll(java.util.Arrays.asList(PLAYER_ANIMS));
 		for (Bo2Model m : com.zombiecraft.sheet.Sheets.BO2_MODELS)
 			if (m.anim() != null && !m.anim().isEmpty())
 				for (String clip : GUN_CLIPS) animNames.add("viewmodel_" + m.anim() + "_" + clip);

@@ -277,13 +277,23 @@ public final class ZcHud {
 		g.fill(x0, y0 + rowH + 1, x0 + pw, y0 + rowH + 1 + rowH * rows, 0xA0000000);
 		// the gold column bands behind the stats
 		for (int i = 0; i < 5; i += 2) g.fill(colX[i] - 22, y0 + rowH + 1, colX[i] + 22, y0 + rowH + 1 + rowH * rows, 0x60B09020);
-		int ry = y0 + rowH + 2;
-		g.renderOutline(x0 + pw / 10, ry, pw - pw / 10, rowH, 0xFFE8760A);
-		text(g, font, mc.getUser().getName(), nameX, ry + 2, 0.8f, 0xFFF0D060, false);
-		int[] vals = {s.points(), s.kills(), s.downs(), s.revives(), s.headshots()};
-		for (int i = 0; i < 5; i++) text(g, font, String.valueOf(vals[i]), colX[i], ry + 3, 0.7f, 0xFFFFFFFF, true);
-		var info = mc.getConnection() == null ? null : mc.getConnection().getPlayerInfo(mc.player.getUUID());
-		text(g, font, String.valueOf(info == null ? 0 : info.getLatency()), x0 + pw - 14, ry + 3, 0.7f, 0xFFFFFFFF, true);
+		// one row per player; before the first roster arrives (or if it lacks this player) the local player's own numbers stand in
+		java.util.List<Payloads.RosterEntry> list = new java.util.ArrayList<>(com.zombiecraft.client.ZcRoster.all());
+		java.util.UUID me = mc.player.getUUID();
+		if (list.stream().noneMatch(e -> e.id().equals(me)))
+			list.add(0, new Payloads.RosterEntry(me, mc.getUser().getName(), s.points(), s.kills(), s.downs(), s.revives(), s.headshots(), 0));
+		for (int r = 0; r < Math.min(rows, list.size()); r++) {
+			Payloads.RosterEntry e = list.get(r);
+			boolean mine = e.id().equals(me);
+			int ry = y0 + rowH + 2 + r * rowH;
+			if (mine) g.renderOutline(x0 + pw / 10, ry, pw - pw / 10, rowH, 0xFFE8760A);
+			// the local numbers are live (the roster refreshes a few times a second)
+			int[] vals = mine ? new int[] {s.points(), s.kills(), s.downs(), s.revives(), s.headshots()} : new int[] {e.points(), e.kills(), e.downs(), e.revives(), e.headshots()};
+			text(g, font, mine ? mc.getUser().getName() : e.name(), nameX, ry + 2, 0.8f, mine ? 0xFFF0D060 : e.stance() == Payloads.RosterEntry.DEAD ? 0xFF888888 : 0xFFFFFFFF, false);
+			for (int i = 0; i < 5; i++) text(g, font, String.valueOf(vals[i]), colX[i], ry + 3, 0.7f, 0xFFFFFFFF, true);
+			var info = mc.getConnection() == null ? null : mc.getConnection().getPlayerInfo(e.id());
+			text(g, font, String.valueOf(info == null ? 0 : info.getLatency()), x0 + pw - 14, ry + 3, 0.7f, 0xFFFFFFFF, true);
+		}
 	}
 
 	public static void render(GuiGraphics g, DeltaTracker dt) {

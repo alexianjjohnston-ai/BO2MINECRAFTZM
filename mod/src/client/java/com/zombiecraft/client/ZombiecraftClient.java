@@ -50,6 +50,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 		AttackBlockCallback.EVENT.register((player, level, hand, pos, dir) -> InteractionResult.FAIL);
 
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.StateSync.TYPE, (payload, ctx) -> state = payload);
+		ClientPlayNetworking.registerGlobalReceiver(Payloads.Roster.TYPE, (payload, ctx) -> ZcRoster.set(payload.entries()));
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.CombatFeedback.TYPE, (payload, ctx) -> {
 			GunFeedback.accept(payload);
 			FeedbackBench.received(payload);
@@ -80,6 +81,16 @@ public class ZombiecraftClient implements ClientModInitializer {
 				if (ticks[0] == 560) net.minecraft.client.Screenshot.grab(mc.gameDirectory, mc.getMainRenderTarget(), c -> {});
 			});
 		}
+		// dev: -Dzombiecraft.debugBody=stand|prone|down looks at the own character from the front and saves screenshots (see ZcPlayerBody)
+		if (!System.getProperty("zombiecraft.debugBody", "").isEmpty()) {
+			int[] t = {0};
+			ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+				if (mc.player == null || ++t[0] < 200) return;
+				mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+				mc.player.setXRot(12f);
+				if (t[0] % 40 == 0 && t[0] <= 400) net.minecraft.client.Screenshot.grab(mc.gameDirectory, "zc-body" + t[0] + ".png", mc.getMainRenderTarget(), c -> { });
+			});
+		}
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			keepWeaponSelected(mc);
 			GunFeedback.tick(mc);
@@ -93,6 +104,7 @@ public class ZombiecraftClient implements ClientModInitializer {
 
 	private static void resetSession() {
 		state = new Payloads.StateSync(Payloads.PHASE_IDLE, 0, 0, -1, 0, "", "", "", false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		ZcRoster.clear();
 		lastFire = lastInteract = lastAttack = false;
 		lastWeaponSlot = 0;
 		GunFeedback.reset();

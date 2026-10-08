@@ -61,6 +61,35 @@ public final class Payloads {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** One player's line on the scoreboard, plus the stance the BO2 character body is drawn in. */
+	public record RosterEntry(java.util.UUID id, String name, int points, int kills, int downs, int revives, int headshots, int stance) {
+		public static final int STAND = 0, PRONE = 1, DOWNED = 2, DEAD = 3;
+	}
+
+	/** Every player in the match, for the tab scoreboard and for drawing teammates as BO2 characters. */
+	public record Roster(java.util.List<RosterEntry> entries) implements CustomPacketPayload {
+		public static final Type<Roster> TYPE = new Type<>(id("roster"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, Roster> CODEC = StreamCodec.ofMember(Roster::write, Roster::read);
+
+		void write(RegistryFriendlyByteBuf b) {
+			b.writeVarInt(entries.size());
+			for (RosterEntry e : entries) {
+				b.writeUUID(e.id); b.writeUtf(e.name, 32);
+				b.writeVarInt(e.points); b.writeVarInt(e.kills); b.writeVarInt(e.downs); b.writeVarInt(e.revives); b.writeVarInt(e.headshots); b.writeVarInt(e.stance);
+			}
+		}
+
+		static Roster read(RegistryFriendlyByteBuf b) {
+			int n = b.readVarInt();
+			java.util.List<RosterEntry> list = new java.util.ArrayList<>(n);
+			for (int i = 0; i < n; i++)
+				list.add(new RosterEntry(b.readUUID(), b.readUtf(32), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt()));
+			return new Roster(list);
+		}
+
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	/** Play a cue (BO2 sound, or its vanilla fallback) for this client. */
 	public record CuePlay(String cue, double x, double y, double z, boolean at, float volume, float pitch) implements CustomPacketPayload {
 		public static final Type<CuePlay> TYPE = new Type<>(id("cue"));
@@ -118,6 +147,7 @@ public final class Payloads {
 		PayloadTypeRegistry.playS2C().register(StateSync.TYPE, StateSync.CODEC);
 		PayloadTypeRegistry.playS2C().register(CombatFeedback.TYPE, CombatFeedback.CODEC);
 		PayloadTypeRegistry.playS2C().register(HitDirection.TYPE, HitDirection.CODEC);
+		PayloadTypeRegistry.playS2C().register(Roster.TYPE, Roster.CODEC);
 		PayloadTypeRegistry.playS2C().register(CuePlay.TYPE, CuePlay.CODEC);
 		PayloadTypeRegistry.playS2C().register(CueStop.TYPE, CueStop.CODEC);
 		PayloadTypeRegistry.playS2C().register(Shot.TYPE, Shot.CODEC);

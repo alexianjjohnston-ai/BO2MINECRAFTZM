@@ -577,6 +577,20 @@ public final class Game {
 		due.clear();
 		Revive.tickAll(this);
 		for (ServerPlayer p : level.players()) tickPlayer(p);
+		if (tick % 5 == 0) syncRoster();
+	}
+
+	/** Everyone's scoreboard line and stance, to every player (the tab screen, and teammates drawn as BO2 characters). */
+	private void syncRoster() {
+		java.util.List<Payloads.RosterEntry> list = new ArrayList<>();
+		for (ServerPlayer p : level.players()) {
+			PlayerGame pg = players.get(p.getUUID());
+			if (pg == null) continue;
+			int stance = pg.dead || p.isSpectator() ? Payloads.RosterEntry.DEAD : pg.downed ? Payloads.RosterEntry.DOWNED : pg.prone ? Payloads.RosterEntry.PRONE : Payloads.RosterEntry.STAND;
+			list.add(new Payloads.RosterEntry(p.getUUID(), p.getGameProfile().getName(), pg.points, pg.kills, pg.downs, pg.revives, pg.headshots, stance));
+		}
+		Payloads.Roster roster = new Payloads.Roster(list);
+		for (ServerPlayer p : level.players()) ServerPlayNetworking.send(p, roster);
 	}
 
 	private void tickPlayer(ServerPlayer p) {
