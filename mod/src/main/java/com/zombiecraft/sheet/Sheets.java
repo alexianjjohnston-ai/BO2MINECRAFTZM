@@ -105,6 +105,23 @@ public final class Sheets {
 		for (WindowDef w : WINDOWS) WINDOW_BY_ID.put(w.id(), w);
 	}
 
+	/** The Tranzit place the loaded map is set at: depot, town, power, diner or farm (map ids are bo2_depot, tranzit_town ...; the built-in map is the depot). */
+	public static String place() {
+		String m = MAP.startsWith("tranzit_") ? MAP.substring(8) : MAP.startsWith("bo2_") ? MAP.substring(4) : "";
+		return m.isEmpty() ? "depot" : m;
+	}
+
+	/** Fog, sky and clock of a place: its own row, else the shared Tranzit look (bus_depot), else the default row. */
+	public static AtmosphereDef atmosphere(String place) {
+		AtmosphereDef tranzit = null, star = null;
+		for (AtmosphereDef d : ATMOSPHERE) {
+			if (d.id().equals(place)) return d;
+			if (d.id().equals("bus_depot")) tranzit = d;
+			else if (d.id().equals("*")) star = d;
+		}
+		return tranzit != null ? tranzit : star;
+	}
+
 	/** A number from systems.json. Unknown keys fail loudly: the preflight also scans the code for these keys. */
 	public static double sys(String key) {
 		SystemRow s = SYS.get(key);

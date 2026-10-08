@@ -62,7 +62,7 @@ public final class Bo2Menus {
 				for (int i = 0; i < names.length; i++) {
 					int k = i;
 					mc.execute(() -> {
-						if (title[0] == null) { title[0] = new Title(); lobby[0] = new Lobby(title[0]); root[0] = new Bo2Options.Root(title[0]); map[0] = new MapSelect(lobby[0], false); }
+						if (title[0] == null) { title[0] = new Title(); lobby[0] = new Lobby(title[0]); root[0] = new Bo2Options.Root(title[0]); map[0] = new MapSelect(lobby[0]); }
 						mc.setScreen(switch (k) {
 							case 0 -> title[0];
 							case 1 -> lobby[0];
@@ -184,7 +184,6 @@ public final class Bo2Menus {
 		}
 	}
 
-	/** Called in place of the vanilla world-loading screens' own drawing. */
 	/** The loading picture stays up at least this long, so the music is heard (the world often loads in a few seconds). */
 	private static final long MIN_LOADING_NS = 16_000_000_000L;
 
@@ -213,6 +212,7 @@ public final class Bo2Menus {
 	/** Online lobby: while the world loads for it, the menu look and music carry on instead of the loading screen (that comes when the match starts). */
 	public static boolean quietLoad;
 
+	/** Called in place of the vanilla world-loading screens' own drawing. */
 	public static void loading(GuiGraphics g, int w, int h) {
 		if (quietLoad) { Bo2Locations.quietLoading(g, w, h); return; }
 		MenuAudio.loadingMusic();
@@ -337,7 +337,7 @@ public final class Bo2Menus {
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
-			if (i == 0) { MenuAudio.play("zmb_ui_globe_spin_start"); mc.setScreen(new MapSelect(this, false)); }
+			if (i == 0) { MenuAudio.play("zmb_ui_globe_spin_start"); mc.setScreen(new MapSelect(this)); }
 			else if (i == 1) { MenuAudio.play("uin_lobby_join"); mc.setScreen(new Bo2Online.Join(this)); }
 			else mc.setScreen(new Bo2Options.Root(this));
 		}
@@ -355,7 +355,7 @@ public final class Bo2Menus {
 			drawItems(g, mx, my);
 			String desc = switch (sel) {
 				case 0 -> "Survive unending waves of the undead, alone or with friends online. Pick a place, then start the match.";
-				case 1 -> "Join a friend's game with the address they got from playit.gg.";
+				case 1 -> "Join a friend's game with the join code from their lobby.";
 				default -> "Change video, audio and controls.";
 			};
 			int ty = y0 + items.length * step() + 14;
@@ -381,10 +381,9 @@ public final class Bo2Menus {
 		/** Marker centre as a fraction of the planet radius from its centre. */
 		private static final double[][] POS = {{-0.12, -0.02}, {0.42, 0.18}, {-0.5, -0.45}, {0.22, -0.55}, {-0.38, 0.5}, {0.1, 0.62}};
 		private final Screen parent;
-		private final boolean host;
 		private int sel, lastSel = -1;
 
-		MapSelect(Screen parent, boolean host) { super(Component.literal("Select map")); this.parent = parent; this.host = host; }
+		MapSelect(Screen parent) { super(Component.literal("Select map")); this.parent = parent; }
 
 		private int radius() { return (int) (height * 0.36); }
 		private int markerSize(int i) { return (int) (radius() * (i == 0 ? 0.3 : i == 1 ? 0.2 : 0.13)); }
@@ -392,7 +391,7 @@ public final class Bo2Menus {
 		private int my(int i) { return (int) (height / 2 + POS[i][1] * radius()); }
 
 		private void pick() {
-			if (sel == 0) { MenuAudio.play("zmb_ui_globe_spin_stop"); MenuAudio.play("zmb_ui_map_zoom_in"); MenuAudio.play("zmb_ui_map_level_select"); Minecraft.getInstance().setScreen(new Bo2Locations.Select(this, host)); }
+			if (sel == 0) { MenuAudio.play("zmb_ui_globe_spin_stop"); MenuAudio.play("zmb_ui_map_zoom_in"); MenuAudio.play("zmb_ui_map_level_select"); Minecraft.getInstance().setScreen(new Bo2Locations.Select(this)); }
 			else MenuAudio.play("cac_cmn_deny");
 		}
 

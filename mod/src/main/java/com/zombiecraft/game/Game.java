@@ -172,9 +172,9 @@ public final class Game {
 		if (phase == Payloads.PHASE_IDLE) { boolean lobby = lobbyNext; lobbyNext = false; com.zombiecraft.ZombiecraftMod.LOG.info("Block Ops 2: first player joined, starting {}", lobby ? "the lobby" : "the match"); start(lobby); }
 		// the joining player may not be in level.players() yet when start() runs: always make sure they are set up
 		if (!players.containsKey(p.getUUID()) || players.get(p.getUUID()).guns[0] == null) resetPlayer(p);
+		ServerPlayNetworking.send(p, new Payloads.Place(Sheets.place())); // the lobby, loading picture and sky follow the map the host chose
 	}
 
-	/** (Re)start the whole game: rebuild the map, reset every player, count down to round 1. */
 	/** BO2 models standing in the map. With the local model cache the decor blocks they replace become invisible barriers (or air) so the model is all you see. */
 	private void placeProps() {
 		for (var p : Sheets.PROPS) {
@@ -239,7 +239,7 @@ public final class Game {
 
 	public void start() { start(false); }
 
-	/** With {@code lobby} the map is built and players gather at the spawn, but the match only begins when the host starts it. */
+	/** (Re)start the whole game: rebuild the map and reset every player. With {@code lobby} players gather at the spawn and the match only begins when the host starts it; otherwise round 1 counts down. */
 	public void start(boolean lobby) {
 		online = lobby;
 		level = server.overworld();
@@ -273,9 +273,8 @@ public final class Game {
 			cmd("gamerule " + rule);
 		cmd("difficulty normal");
 		cmd("weather clear");
-		var atmo = Sheets.ATMOSPHERE.stream().filter(x -> x.id().equals("bus_depot")).findFirst()
-				.or(() -> Sheets.ATMOSPHERE.stream().filter(x -> x.id().equals("*")).findFirst());
-		cmd("time set " + (atmo.isPresent() && atmo.get().timeOfDay() >= 0 ? atmo.get().timeOfDay() : Sheets.sysInt("world_time")));
+		var atmo = Sheets.atmosphere(Sheets.place());
+		cmd("time set " + (atmo != null && atmo.timeOfDay() >= 0 ? atmo.timeOfDay() : Sheets.sysInt("world_time")));
 		cmd(String.format("setworldspawn %d %d %d", origin.getX() + Sheets.PLAYER_SPAWNS.get(0).x(), origin.getY() + 1, origin.getZ() + Sheets.PLAYER_SPAWNS.get(0).z()));
 
 		round = 0; zombiesToSpawn = 0; roundsSurvived = 0;

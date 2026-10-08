@@ -136,6 +136,13 @@ public final class Payloads {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** Which Tranzit place this game is set at (depot, town, power, diner, farm), sent to every player who joins. */
+	public record Place(String place) implements CustomPacketPayload {
+		public static final Type<Place> TYPE = new Type<>(id("place"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, Place> CODEC = StreamCodec.ofMember((p, b) -> b.writeUtf(p.place, 32), b -> new Place(b.readUtf(32)));
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	/** The game over screen is done: leave the match for the title screen. */
 	public record EndMatch() implements CustomPacketPayload {
 		public static final Type<EndMatch> TYPE = new Type<>(id("end_match"));
@@ -156,6 +163,7 @@ public final class Payloads {
 		PayloadTypeRegistry.playS2C().register(HitDirection.TYPE, HitDirection.CODEC);
 		PayloadTypeRegistry.playS2C().register(Roster.TYPE, Roster.CODEC);
 		PayloadTypeRegistry.playS2C().register(EndMatch.TYPE, EndMatch.CODEC);
+		PayloadTypeRegistry.playS2C().register(Place.TYPE, Place.CODEC);
 		PayloadTypeRegistry.playS2C().register(CuePlay.TYPE, CuePlay.CODEC);
 		PayloadTypeRegistry.playS2C().register(CueStop.TYPE, CueStop.CODEC);
 		PayloadTypeRegistry.playS2C().register(Shot.TYPE, Shot.CODEC);

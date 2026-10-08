@@ -1,5 +1,6 @@
 package com.zombiecraft.client.menu;
 
+import com.zombiecraft.client.Atmosphere;
 import com.zombiecraft.client.audio.MenuAudio;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -244,6 +245,7 @@ public final class Bo2Online {
 			String viaCode;
 			try { viaCode = Relay.resolveJoin(a); } catch (java.io.IOException e) { joinError = e.getMessage(); MenuAudio.play("cac_cmn_deny"); return; }
 			Bo2Menus.quietLoad = true; // joining a lobby: no loading screen or loading music, the lobby screen follows
+			Atmosphere.map = ""; // the host's place is unknown until the server says
 			lastAddress = viaCode != null ? a.toUpperCase() : a;
 			if (viaCode != null) a = viaCode;
 			MenuAudio.play("uin_lobby_join");

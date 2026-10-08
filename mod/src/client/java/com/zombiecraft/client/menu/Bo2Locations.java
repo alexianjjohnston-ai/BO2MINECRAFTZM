@@ -1,6 +1,7 @@
 package com.zombiecraft.client.menu;
 
 import com.zombiecraft.client.AutoWorld;
+import com.zombiecraft.client.Atmosphere;
 import com.zombiecraft.client.audio.MenuAudio;
 import com.zombiecraft.map.ImportedMap;
 import com.zombiecraft.sheet.Sheets;
@@ -57,6 +58,18 @@ final class Bo2Locations {
 		return ImportedMap.available("depot") ? "tranzit_depot" : "";
 	}
 
+	/** The place being played or about to be (set when the host picks it, or by the server when joining); null while a joiner has not heard yet. */
+	static Loc current() {
+		for (Loc l : LOCS) if (l.id().equals(Atmosphere.map)) return l;
+		return null;
+	}
+
+	/** {@link #current} for screens that always show a place: the depot until it is known. */
+	private static Loc currentOrDepot() {
+		Loc l = current();
+		return l != null ? l : LOCS[0];
+	}
+
 	/** The top-down view; blurred (offset copies, dimmed) when something is focused, like BO2. */
 	static void topDown(GuiGraphics g, int w, int h, boolean blur) {
 		UiArt.ensure();
@@ -69,6 +82,39 @@ final class Bo2Locations {
 		g.fill(0, 0, w, h, 0x90000000);
 	}
 
+	/** "BUS DEPOT / SURVIVAL": the place and its last (playable) mode. */
+	private static String title(Loc l) { return l.name() + " / " + l.modes().get(l.modes().size() - 1).name(); }
+
+	/** The title shrinks to fit half the window so it can never run into the player list. */
+	private static float titleScale(String title, int w) {
+		float ts = 1.5f;
+		while (ts > 1.0f && Bo2Menus.tw(title, ts) > w * 0.5) ts -= 0.1f;
+		return ts;
+	}
+
+	/**
+	 * The postcard of the match with BO2's caption above it: bottom-anchored above the hint, shrunk so it never reaches the text above (textBottom).
+	 */
+	private static void postcard(GuiGraphics g, Loc loc, String title, String cap, int x, int width, int height, int textBottom) {
+		int capH = (int) Bo2Menus.H(1.0f), cx = x - 4, cw = (int) (width * 0.33);
+		int bottom = height - 26 - 14;
+		int ch = Math.max(40, Math.min((int) (height * 0.27), bottom - (textBottom + 10 + capH + 8))); // very small windows: the card wins over the description gap
+		int cy = bottom - ch;
+		Bo2Menus.raw(g, cap, cx, cy - capH - 8, 1.0f, Bo2Menus.WHITE);
+		g.fill(cx - 3, cy - 3, cx + cw + 3, cy + ch + 3, 0xFFA8A8A8);
+		g.fill(cx, cy, cx + cw, cy + ch, 0xFF000000);
+		String img = loc.loadscreen();
+		if (UiArt.has(img)) {
+			int iw = UiArt.w(img), ih = UiArt.h(img);
+			int rw = Math.min(iw, (int) (ih * (double) cw / ch));
+			UiArt.strip(g, img, cx + 2, cy + 2, cw - 4, ch - 4, (iw - rw) / 2, 0, rw, ih, 0xFFFFFFFF);
+		}
+		g.fillGradient(cx + 2, cy + ch - 44, cx + cw - 2, cy + ch - 2, 0x00000000, 0xC0000000);
+		String l1 = "GREEN RUN";
+		Bo2Menus.raw(g, l1, cx + cw - 10 - Bo2Menus.tw(l1, 0.8f), cy + ch - 34, 0.8f, Bo2Menus.WHITE);
+		Bo2Menus.raw(g, title, cx + cw - 10 - Bo2Menus.tw(title, 0.7f), cy + ch - 20, 0.7f, Bo2Menus.WHITE);
+	}
+
 	/** The small white arrow BO2 puts in front of descriptions. */
 	private static void arrow(GuiGraphics g, int x, int y) {
 		for (int k = 0; k < 4; k++) g.fill(x + k, y + k, x + k + 1, y + 8 - k, 0xFFD2CEC6);
@@ -76,9 +122,9 @@ final class Bo2Locations {
 
 	/** Dev: -Dzombiecraft.debugOptions=locations|match opens these straight away and screenshots after a few seconds. */
 	static Screen dev(String which, Screen title) {
-		Screen planet = new Bo2Menus.MapSelect(title, false);
+		Screen planet = new Bo2Menus.MapSelect(title);
 		int sel = Integer.getInteger("zombiecraft.debugSel", -1);
-		Select s = new Select(planet, false);
+		Select s = new Select(planet);
 		s.loc = sel;
 		if (sel >= 0) s.mode = LOCS[sel].modes().size() - 1;
 		Screen out = which.equals("match") ? new Match(s, Boolean.getBoolean("zombiecraft.debugOnline"), LOCS[Math.max(0, sel)], LOCS[Math.max(0, sel)].modes().get(LOCS[Math.max(0, sel)].modes().size() - 1)) : s;
@@ -118,14 +164,13 @@ final class Bo2Locations {
 	// ------------------------------------------------------------------ top-down view
 	static final class Select extends Screen {
 		private final Screen parent;
-		private final boolean host;
 		int loc = -1;
 		int mode;
 		private int lastLoc = -2, lastMode = -1;
 		private final int[][] rows = new int[2][4];
 		private int px, py, pw, ph, tx, ty, tw, seenX = -1, seenY = -1;
 
-		Select(Screen parent, boolean host) { super(Component.literal("Select place")); this.parent = parent; this.host = host; }
+		Select(Screen parent) { super(Component.literal("Select place")); this.parent = parent; }
 
 		@Override public boolean shouldCloseOnEsc() { return false; }
 		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
@@ -146,7 +191,7 @@ final class Bo2Locations {
 			Mode m = l.modes().get(Math.min(mode, l.modes().size() - 1));
 			if (!m.playable()) { MenuAudio.play("cac_cmn_deny"); return; }
 			MenuAudio.play("uin_lobby_join");
-			Minecraft.getInstance().setScreen(new Match(this, host, l, m));
+			Minecraft.getInstance().setScreen(new Match(this, false, l, m));
 		}
 
 		@Override public boolean mouseClicked(double x, double y, int button) {
@@ -256,6 +301,7 @@ final class Bo2Locations {
 			launched = true;
 			Bo2Menus.loadScreen = loc.loadscreen();
 			Bo2Menus.loadPlace = loc.name();
+			Atmosphere.map = loc.id();
 			Sheets.useMap(sheetMap(loc));
 			MenuAudio.play("zmb_ui_map_level_select");
 			if (host) Bo2Online.hostNext();
@@ -284,10 +330,8 @@ final class Bo2Locations {
 			boolean moved = seenX >= 0 && (mx != seenX || my != seenY);
 			seenX = mx; seenY = my;
 			int x = x(), hintY = height - 26;
-			// the title shrinks to fit half the window so it can never run into the player list
 			String title = loc.name() + " / " + mode.name();
-			float ts = 1.5f;
-			while (ts > 1.0f && Bo2Menus.tw(title, ts) > width * 0.5) ts -= 0.1f;
+			float ts = titleScale(title, width);
 			Bo2Menus.raw(g, title, x, (int) (height * 0.07), ts, Bo2Menus.WHITE);
 			int y0 = (int) (height * 0.07) + (int) Bo2Menus.H(ts) + 14, step = step();
 			for (int i = 0; i < items.length; i++) {
@@ -318,7 +362,6 @@ final class Bo2Locations {
 				for (String line : Bo2Menus.wrap("Friends can join with this code once the lobby opens (START MATCH).", width - 40 - rx, 0.75f)) { Bo2Menus.raw(g, line, rx, yy, 0.75f, 0xFFD2CEC6); yy += (int) (Bo2Menus.H(0.75f) * 1.2f); }
 			}
 
-			// the postcard of the match with BO2's countdown above it: bottom-anchored above the hint, shrunk so it never reaches the text above
 			String cap = "Ready for the match";
 			if (startAt != 0) {
 				long left = startAt - System.currentTimeMillis();
@@ -327,24 +370,7 @@ final class Bo2Locations {
 				if (secs != lastSecs) { lastSecs = secs; MenuAudio.play("uin_timer"); }
 				cap = "Game starting in " + secs;
 			}
-			int capH = (int) Bo2Menus.H(1.0f), cx = x - 4, cw = (int) (width * 0.33);
-			int bottom = hintY - 14;
-			int ch = Math.min((int) (height * 0.27), bottom - (ty + 10 + capH + 8));
-			if (ch < 40) { ch = 40; } // very small windows: the card wins over the description gap
-			int cy = bottom - ch;
-			Bo2Menus.raw(g, cap, cx, cy - capH - 8, 1.0f, Bo2Menus.WHITE);
-			g.fill(cx - 3, cy - 3, cx + cw + 3, cy + ch + 3, 0xFFA8A8A8);
-			g.fill(cx, cy, cx + cw, cy + ch, 0xFF000000);
-			String img = loc.loadscreen();
-			if (UiArt.has(img)) {
-				int iw = UiArt.w(img), ih = UiArt.h(img);
-				int rw = Math.min(iw, (int) (ih * (double) cw / ch));
-				UiArt.strip(g, img, cx + 2, cy + 2, cw - 4, ch - 4, (iw - rw) / 2, 0, rw, ih, 0xFFFFFFFF);
-			}
-			g.fillGradient(cx + 2, cy + ch - 44, cx + cw - 2, cy + ch - 2, 0x00000000, 0xC0000000);
-			String l1 = "GREEN RUN", l2 = title;
-			Bo2Menus.raw(g, l1, cx + cw - 10 - Bo2Menus.tw(l1, 0.8f), cy + ch - 34, 0.8f, Bo2Menus.WHITE);
-			Bo2Menus.raw(g, l2, cx + cw - 10 - Bo2Menus.tw(l2, 0.7f), cy + ch - 20, 0.7f, Bo2Menus.WHITE);
+			postcard(g, loc, title, cap, x, width, height, ty);
 			Bo2Menus.hint(g, "ESC", "Back", x, hintY);
 		}
 	}
@@ -353,13 +379,12 @@ final class Bo2Locations {
 	static void quietLoading(GuiGraphics g, int w, int h) {
 		MenuAudio.music();
 		topDown(g, w, h, true);
-		Loc loc = LOCS[0];
-		String title = loc.name() + " / " + loc.modes().get(loc.modes().size() - 1).name();
-		float ts = 1.5f;
-		while (ts > 1.0f && Bo2Menus.tw(title, ts) > w * 0.5) ts -= 0.1f;
+		Loc loc = current();
+		String title = loc == null ? "ZOMBIES" : title(loc);
+		float ts = titleScale(title, w);
 		int x = (int) (w * 0.05), y = (int) (h * 0.07);
 		Bo2Menus.raw(g, title, x, y, ts, Bo2Menus.WHITE);
-		Bo2Menus.raw(g, "Opening the lobby...", x, y + (int) Bo2Menus.H(ts) + 14, 1.25f, Bo2Menus.WHITE);
+		Bo2Menus.raw(g, loc == null ? "Joining the lobby..." : "Opening the lobby...", x, y + (int) Bo2Menus.H(ts) + 14, 1.25f, Bo2Menus.WHITE);
 	}
 
 	/** The start of the match, for everyone at once: the BO2 loading picture with its music, for a few seconds. */
@@ -373,8 +398,9 @@ final class Bo2Locations {
 		@Override public void renderBackground(GuiGraphics g, int mx, int my, float dt) {}
 
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
-			Bo2Menus.loadScreen = LOCS[0].loadscreen();
-			Bo2Menus.loadPlace = LOCS[0].name();
+			Loc loc = currentOrDepot();
+			Bo2Menus.loadScreen = loc.loadscreen();
+			Bo2Menus.loadPlace = loc.name();
 			Bo2Menus.loading(g, width, height);
 			if (System.currentTimeMillis() > until) Minecraft.getInstance().setScreen(null);
 		}
@@ -422,15 +448,13 @@ final class Bo2Locations {
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			MenuAudio.music();
 			Minecraft mc = Minecraft.getInstance();
-			Loc loc = LOCS[0];
-			Mode mode = loc.modes().get(loc.modes().size() - 1);
+			Loc loc = currentOrDepot();
 			topDown(g, width, height, true);
 			boolean moved = seenX >= 0 && (mx != seenX || my != seenY);
 			seenX = mx; seenY = my;
 			int x = (int) (width * 0.05), hintY = height - 26, step = (int) (Bo2Menus.H(1.25f) * 1.25f);
-			String title = loc.name() + " / " + mode.name();
-			float ts = 1.5f;
-			while (ts > 1.0f && Bo2Menus.tw(title, ts) > width * 0.5) ts -= 0.1f;
+			String title = title(loc);
+			float ts = titleScale(title, width);
 			Bo2Menus.raw(g, title, x, (int) (height * 0.07), ts, Bo2Menus.WHITE);
 			int y0 = (int) (height * 0.07) + (int) Bo2Menus.H(ts) + 14;
 			int secs = starting();
@@ -475,24 +499,7 @@ final class Bo2Locations {
 			}
 			String cap = secs > 0 ? "Game starting in " + secs : host ? "Waiting for players. Start when everyone is in" : "Waiting for the host to start the match";
 			if (secs > 0 && secs != lastSecs) { lastSecs = secs; MenuAudio.play("uin_timer"); }
-			int capH = (int) Bo2Menus.H(1.0f), cx = x - 4, cw = (int) (width * 0.33);
-			int bottom = hintY - 14;
-			int ch = Math.min((int) (height * 0.27), bottom - (ty + 10 + capH + 8));
-			if (ch < 40) ch = 40;
-			int cy = bottom - ch;
-			Bo2Menus.raw(g, cap, cx, cy - capH - 8, 1.0f, Bo2Menus.WHITE);
-			g.fill(cx - 3, cy - 3, cx + cw + 3, cy + ch + 3, 0xFFA8A8A8);
-			g.fill(cx, cy, cx + cw, cy + ch, 0xFF000000);
-			String img = loc.loadscreen();
-			if (UiArt.has(img)) {
-				int iw = UiArt.w(img), ih = UiArt.h(img);
-				int rw = Math.min(iw, (int) (ih * (double) cw / ch));
-				UiArt.strip(g, img, cx + 2, cy + 2, cw - 4, ch - 4, (iw - rw) / 2, 0, rw, ih, 0xFFFFFFFF);
-			}
-			g.fillGradient(cx + 2, cy + ch - 44, cx + cw - 2, cy + ch - 2, 0x00000000, 0xC0000000);
-			String l1 = "GREEN RUN";
-			Bo2Menus.raw(g, l1, cx + cw - 10 - Bo2Menus.tw(l1, 0.8f), cy + ch - 34, 0.8f, Bo2Menus.WHITE);
-			Bo2Menus.raw(g, title, cx + cw - 10 - Bo2Menus.tw(title, 0.7f), cy + ch - 20, 0.7f, Bo2Menus.WHITE);
+			postcard(g, loc, title, cap, x, width, height, ty);
 			Bo2Menus.hint(g, "ESC", "Leave", x, hintY);
 		}
 	}

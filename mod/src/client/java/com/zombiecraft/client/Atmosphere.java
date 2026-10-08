@@ -9,8 +9,8 @@ import net.minecraft.client.Minecraft;
 public final class Atmosphere {
 	private Atmosphere() {}
 
-	/** Id of the map being played; one map for now (the depot). Map select sets it when more maps arrive. */
-	public static String map = "bus_depot";
+	/** The place being played (depot, town, power, diner, farm), "" until known. Set when the player picks a place and by the server when joining. */
+	public static String map = "";
 
 	private static AtmosphereDef def;
 	private static String defMap;
@@ -19,12 +19,7 @@ public final class Atmosphere {
 	public static AtmosphereDef active() {
 		if (!ZcHud.usesWeaponHud(Minecraft.getInstance())) return null;
 		if (def == null || !map.equals(defMap)) {
-			AtmosphereDef found = null, star = null;
-			for (AtmosphereDef d : Sheets.ATMOSPHERE) {
-				if (d.id().equals(map)) found = d;
-				if (d.id().equals("*")) star = d;
-			}
-			def = found != null ? found : star;
+			def = Sheets.atmosphere(map);
 			defMap = map;
 		}
 		return def;
