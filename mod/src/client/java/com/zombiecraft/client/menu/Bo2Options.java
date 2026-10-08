@@ -151,30 +151,30 @@ final class Bo2Options {
 
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			Bo2Menus.background(g, width, height);
-			g.fill(0, 0, width, height, 0x90000000);
+			g.fill(0, 0, width, height, 0xB8000000);
 			int tw = Bo2Menus.tw(title.getString(), 2.2f);
 			Bo2Menus.raw(g, title.getString(), (width - tw) / 2, (int) (height * 0.04), 2.2f, Bo2Menus.WHITE);
 			if (tabs.length > 1) {
+				// BO2 tab bar: an arrow at each end, the open tab orange, the others dim
 				int x = (int) (width * 0.5 - totalTabsWidth() / 2.0), ty = (int) (height * 0.13);
+				Bo2Menus.raw(g, "<", x - 30, ty, 0.9f, Bo2Menus.WHITE);
 				for (int i = 0; i < tabs.length; i++) {
 					int w = Bo2Menus.tw(tabs[i], 0.9f);
-					boolean on = i == tab;
-					if (on) g.fill(x - 6, ty - 3, x + w + 6, ty + (int) Bo2Menus.H(0.9f) + 3, 0xC0000000);
-					Bo2Menus.raw(g, tabs[i], x, ty, 0.9f, on ? Bo2Menus.ORANGE : Bo2Menus.GREY);
+					Bo2Menus.raw(g, tabs[i], x, ty, 0.9f, i == tab ? Bo2Menus.ORANGE : 0xFF6C675F);
 					x += w + 28;
 				}
+				Bo2Menus.raw(g, ">", x - 14, ty, 0.9f, Bo2Menus.WHITE);
 			}
 			for (int i = scroll; i < Math.min(rows.size(), scroll + visible()); i++) {
 				int y = rowTop() + (i - scroll) * rowStep();
 				Row r = rows.get(i);
 				boolean on = i == sel;
-				if (on) g.renderOutline(labelX() - 6, y - 3, (int) (width * 0.88) - labelX(), rowStep() - 2, Bo2Menus.ORANGE);
 				Bo2Menus.raw(g, r.label(), labelX(), y, 1.0f, on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
 				String v = r.value().get();
 				if (capturing() && on) v = "PRESS A KEY";
 				Bo2Menus.raw(g, v, valueX(), y, 1.0f, on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
 			}
-			if (rows.size() > visible()) Bo2Menus.raw(g, (scroll + 1) + "-" + Math.min(rows.size(), scroll + visible()) + " / " + rows.size(), (int) (width * 0.80), (int) (height * 0.13), 0.9f, Bo2Menus.GREY);
+			if (rows.size() > visible()) Bo2Menus.raw(g, (scroll + 1) + "-" + Math.min(rows.size(), scroll + visible()) + " / " + rows.size(), (int) (width * 0.86), height - 26, 0.8f, Bo2Menus.GREY);
 			Bo2Menus.hint(g, "ESC", "Back", labelX(), height - 26);
 			if (tabs.length > 1) Bo2Menus.hint(g, "Q E", "Change page", (int) (width * 0.36), height - 26);
 			extraHints(g);
@@ -183,7 +183,7 @@ final class Bo2Options {
 		void extraHints(GuiGraphics g) {}
 	}
 
-	/** OPTIONS: Settings or Controls. */
+	/** OPTIONS: Settings or Controls, centred like BO2's: the open entry large and orange, the other smaller and grey. */
 	static final class Root extends Page {
 		Root(Screen parent) { super("OPTIONS", parent); }
 
@@ -193,6 +193,29 @@ final class Bo2Options {
 			r.add(new Row("SETTINGS", () -> "", d -> mc.setScreen(new Settings(this))));
 			r.add(new Row("CONTROLS", () -> "", d -> mc.setScreen(new Controls(this))));
 			return r;
+		}
+
+		private int entryY(int i) { return (int) (height * 0.38) + i * (int) (Bo2Menus.H(2.0f) * 1.5f); }
+		private float entryScale(int i) { return i == sel ? 2.0f : 1.2f; }
+
+		@Override public boolean mouseClicked(double mx, double my, int button) {
+			for (int i = 0; i < rows.size(); i++) {
+				int w = Bo2Menus.tw(rows.get(i).label(), entryScale(i)), h = (int) Bo2Menus.H(entryScale(i));
+				if (Math.abs(mx - width / 2.0) <= w / 2.0 + 10 && my >= entryY(i) - 4 && my <= entryY(i) + h + 4) { sel = i; activate(i); return true; }
+			}
+			return false;
+		}
+
+		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
+			Bo2Menus.background(g, width, height);
+			g.fill(0, 0, width, height, 0xB8000000);
+			Bo2Menus.raw(g, "OPTIONS", (width - Bo2Menus.tw("OPTIONS", 2.2f)) / 2, (int) (height * 0.04), 2.2f, Bo2Menus.WHITE);
+			for (int i = 0; i < rows.size(); i++) {
+				float sc = entryScale(i);
+				String l = rows.get(i).label();
+				Bo2Menus.raw(g, l, (width - Bo2Menus.tw(l, sc)) / 2, entryY(i), sc, i == sel ? Bo2Menus.ORANGE : 0xFF8A857C);
+			}
+			Bo2Menus.hint(g, "ESC", "Back", labelX(), height - 26);
 		}
 	}
 

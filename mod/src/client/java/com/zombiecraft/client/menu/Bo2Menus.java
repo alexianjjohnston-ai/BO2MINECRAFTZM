@@ -36,7 +36,9 @@ public final class Bo2Menus {
 		boolean autoplay = Boolean.getBoolean("zombiecraft.autoplay");
 		ScreenEvents.AFTER_INIT.register((mc, screen, w, h) -> {
 			String dbg = System.getProperty("zombiecraft.debugOptions");
-				if (screen instanceof TitleScreen && dbg != null) {
+				if (screen instanceof TitleScreen && "tour".equals(dbg)) {
+					menuTour(mc);
+				} else if (screen instanceof TitleScreen && dbg != null) {
 					// dev: -Dzombiecraft.debugOptions=title|root|settings|controls opens that Options page straight away
 					mc.execute(() -> {
 						Screen t = new Title(), root = new Bo2Options.Root(t);
@@ -48,6 +50,43 @@ public final class Bo2Menus {
 				mc.execute(() -> mc.setScreen(new Pause()));
 			}
 		});
+	}
+
+	/** Dev: -Dzombiecraft.debugOptions=tour opens every menu screen in turn and saves zc-tour-N-name.png for each. */
+	private static void menuTour(Minecraft mc) {
+		Thread t = new Thread(() -> {
+			try {
+				Thread.sleep(5000);
+				Screen[] title = new Screen[1], lobby = new Screen[1], root = new Screen[1], map = new Screen[1];
+				String[] names = {"title", "lobby", "mapselect", "locations", "match", "options", "settings", "controls", "quit", "join", "invite", "pause"};
+				for (int i = 0; i < names.length; i++) {
+					int k = i;
+					mc.execute(() -> {
+						if (title[0] == null) { title[0] = new Title(); lobby[0] = new Lobby(title[0]); root[0] = new Bo2Options.Root(title[0]); map[0] = new MapSelect(lobby[0], false); }
+						mc.setScreen(switch (k) {
+							case 0 -> title[0];
+							case 1 -> lobby[0];
+							case 2 -> map[0];
+							case 3 -> Bo2Locations.dev("locations", title[0]);
+							case 4 -> Bo2Locations.dev("match", title[0]);
+							case 5 -> root[0];
+							case 6 -> new Bo2Options.Settings(root[0]);
+							case 7 -> new Bo2Options.Controls(root[0]);
+							case 8 -> new QuitDialog(title[0]);
+							case 9 -> new Bo2Online.Join(lobby[0]);
+							case 10 -> new Bo2Online.Invite();
+							default -> new Pause();
+						});
+					});
+					Thread.sleep(2500);
+					String n = "zc-tour-" + (i < 10 ? "0" : "") + i + "-" + names[i] + ".png";
+					mc.execute(() -> net.minecraft.client.Screenshot.grab(mc.gameDirectory, n, mc.getMainRenderTarget(), c -> {}));
+					Thread.sleep(1200);
+				}
+			} catch (InterruptedException ignored) {}
+		}, "zc-menu-tour");
+		t.setDaemon(true);
+		t.start();
 	}
 
 	/** Leaves the running game and returns to the BO2 title (the vanilla one would show with autoplay on). */
@@ -193,6 +232,8 @@ public final class Bo2Menus {
 		String[] items;
 		int sel, x, y0, lastSel = -1;
 		float scale = 1.7f;
+		/** The grey plate behind light text keeps it readable over the bright planet art; dark screens turn it off. */
+		boolean plates = true;
 
 		MenuScreen(String title) { super(Component.literal(title)); }
 
@@ -205,8 +246,7 @@ public final class Bo2Menus {
 				int y = y0 + i * step(), w = tw(items[i], scale);
 				if (mx >= x - 6 && mx <= x + w + 6 && my >= y - 3 && my <= y + step() - 3) sel = i;
 				boolean on = i == sel;
-				if (on) g.renderOutline(x - 6, y - 3, w + 12, step() - 2, ORANGE);
-				text(g, items[i], x, y, scale, on ? ORANGE : WHITE);
+				if (plates) text(g, items[i], x, y, scale, on ? ORANGE : WHITE); else raw(g, items[i], x, y, scale, on ? ORANGE : WHITE);
 			}
 			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("uin_main_nav"); lastSel = sel; }
 		}
@@ -365,16 +405,18 @@ public final class Bo2Menus {
 		}
 	}
 
-	/** In-game pause menu in the same style. */
+	/** In-game pause menu, BO2's: ZOMBIES and its entries over the darkened world (the controls live under Options). */
 	static final class Pause extends MenuScreen {
 		Pause() {
-			super("Paused");
+			super("Zombies");
 			Minecraft mc = Minecraft.getInstance();
+			plates = false;
+			scale = 1.1f;
 			items = Bo2Online.hosting(mc) ? new String[] {"RESUME GAME", "INVITE INFO", "OPTIONS", "END GAME"}
 					: new String[] {"RESUME GAME", "OPTIONS", mc.isLocalServer() ? "END GAME" : "LEAVE GAME"};
 		}
 
-		@Override protected void init() { x = (int) (width * 0.1); y0 = (int) (height * 0.3); MenuAudio.play("uin_main_pause"); }
+		@Override protected void init() { x = (int) (width * 0.05); y0 = (int) (height * 0.07) + (int) H(1.9f) + 8; MenuAudio.play("uin_main_pause"); }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
@@ -390,24 +432,18 @@ public final class Bo2Menus {
 		@Override public boolean isPauseScreen() { return true; }
 
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
-			g.fillGradient(0, 0, width, height, 0x90000000, 0xB0000000);
-			g.fill(0, 0, (int) (width * 0.36), height, 0x70000000);
-			text(g, "PAUSED", x, (int) (height * 0.14), 2.6f, WHITE);
+			g.fillGradient(0, 0, width, height, 0xB0000000, 0xD0000000);
+			raw(g, "ZOMBIES", x, (int) (height * 0.07), 1.9f, WHITE);
 			drawItems(g, mx, my);
-			hint(g, "ESC", "Resume", x, height - 26);
-			// the controls, shown here instead of as a banner over the game
-			int cx = (int) (width * 0.58), cy = y0, line = (int) (H(1.0f) * 1.5f);
-			text(g, "CONTROLS", cx, cy - line - 6, 1.3f, WHITE);
-			String[][] keys = {{"RIGHT CLICK", "Shoot"}, {"R", "Reload"}, {"LEFT CLICK", "Knife"}, {"F", "Buy / Open / Hold to repair or revive"}, {"SHIFT", "Crouch"}, {"Z", "Prone"}};
-			for (String[] k : keys) { hint(g, k[0], k[1], cx, cy); cy += line; }
+			hint(g, "ESC", "Back", x, height - 26);
 		}
 	}
 
-	/** BO2's "Quit Game" confirmation: framed box, Yes / No (No is the default). */
+	/** BO2's "Leave Lobby?" confirmation: framed box with the question, Yes / Cancel (Cancel is the default). */
 	static final class QuitDialog extends MenuScreen {
 		private final Screen parent;
 
-		QuitDialog(Screen parent) { super("Quit Game"); this.parent = parent; items = new String[] {"Yes", "No"}; sel = 1; scale = 1.1f; }
+		QuitDialog(Screen parent) { super("Leave Game"); this.parent = parent; items = new String[] {"Yes", "Cancel"}; sel = 1; scale = 1.1f; plates = false; }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
@@ -424,21 +460,14 @@ public final class Bo2Menus {
 
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			g.fillGradient(0, 0, width, height, 0xA0000000, 0xC0000000);
-			// the box is sized to its content so the answers can never land on the text
-			int bw = Math.max((int) (width * 0.34), 300), pad = 16;
-			List<String> lines = wrap("If you leave, you will lose all progress. Are you sure you want to leave the game?", bw - 2 * pad - 8, 0.75f);
-			int titleH = (int) H(1.5f), lineH = (int) (H(0.75f) * 1.25f);
-			int bh = pad + titleH + 10 + lines.size() * lineH + 16 + 2 * step() + pad;
+			int bw = Math.max((int) (width * 0.3), 280), pad = 16;
+			int titleH = (int) H(1.6f);
+			int bh = pad + titleH + 22 + 2 * step() + pad;
 			int bx = (width - bw) / 2, by = (height - bh) / 2;
 			g.fill(bx - 3, by - 3, bx + bw + 3, by + bh + 3, 0xFF6A645C);
 			g.fill(bx, by, bx + bw, by + bh, 0xF0141210);
-			text(g, "Quit Game", bx + pad, by + pad, 1.5f, WHITE);
-			int ty = by + pad + titleH + 10;
-			for (String line : lines) {
-				text(g, line, bx + pad, ty, 0.75f, 0xFFD2CEC6);
-				ty += lineH;
-			}
-			x = bx + pad; y0 = ty + 16;
+			raw(g, "Leave Game?", bx + pad, by + pad, 1.6f, WHITE);
+			x = bx + pad; y0 = by + pad + titleH + 22;
 			drawItems(g, mx, my);
 			hint(g, "ESC", "Back", bx, by + bh + 12);
 		}
