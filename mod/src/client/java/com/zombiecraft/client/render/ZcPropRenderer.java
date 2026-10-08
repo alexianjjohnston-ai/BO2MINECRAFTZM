@@ -77,6 +77,8 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 		}
 		String name = ZcItemModels.modelName(s.weapon, false);
 		Bo2Mesh.Loaded l = name == null ? null : Bo2Mesh.get(name);
+		// the wall gun is BO2's chalk drawing; the real model only stands in when the icon art is missing
+		if (wall && chalk(s.weapon, ps, buf, t)) { ps.popPose(); return; }
 		if (l != null) {
 			float len = Math.max(l.maxX - l.minX, Math.max(l.maxY - l.minY, l.maxZ - l.minZ));
 			float base = (wall ? 1.35f : 1.1f) / Math.max(1f, len);
@@ -87,6 +89,37 @@ public class ZcPropRenderer extends EntityRenderer<ZcProp, ZcPropRenderer.State>
 			gunLayer(l, ps, buf, 0xC000C0, base, 0);
 		}
 		ps.popPose();
+	}
+
+	/** BO2 icon image of a weapon id (pack-a-punched guns use the base gun's). */
+	private static String iconOf(String weaponId) {
+		String id = weaponId.replace("_pap", "");
+		return switch (id) {
+			case "m1911" -> "menu_mp_weapons_1911_big";
+			case "rottweil72" -> "menu_mp_weapons_olympia_big";
+			case "mp5k" -> "menu_mp_weapons_mp5_big";
+			case "fnfal" -> "menu_mp_weapons_fal_big";
+			case "ray_gun" -> "menu_zm_weapons_raygun_big";
+			default -> "menu_mp_weapons_" + id + "_big";
+		};
+	}
+
+	/** BO2's wall weapon: the gun drawn in glowing white chalk flat on the wall (the weapon icon, a faint bloom behind it); the real model hangs in front. */
+	private static boolean chalk(String weapon, PoseStack ps, MultiBufferSource buf, float t) {
+		var tex = com.zombiecraft.client.menu.UiArt.chalk(iconOf(weapon));
+		if (tex == null) return false;
+		float hx = 1.5f, hy = hx * 0.5f, pulse = 0.85f + 0.15f * (float) Math.sin(t * 2f);
+		var vc = buf.getBuffer(net.minecraft.client.renderer.RenderType.entityTranslucentEmissive(tex));
+		PoseStack.Pose p = ps.last();
+		for (int pass = 0; pass < 2; pass++) {
+			float k = pass == 0 ? 1.12f : 1f, z = pass == 0 ? 0.02f : 0.03f;
+			int a = (int) ((pass == 0 ? 110 : 255) * pulse), r = 255, g = pass == 0 ? 236 : 250, b = pass == 0 ? 190 : 245;
+			float[][] c = {{-hx * k, -hy * k, 0, 1}, {hx * k, -hy * k, 1, 1}, {hx * k, hy * k, 1, 0}, {-hx * k, hy * k, 0, 0}};
+			for (float[] v : c)
+				vc.addVertex(p, v[0], v[1], z).setColor(r, g, b, a).setUv(v[2], v[3])
+						.setOverlay(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY).setLight(0xF000F0).setNormal(p, 0, 0, 1);
+		}
+		return true;
 	}
 
 	/** A power-up: the BO2 model, lit from within, spinning and bobbing above the spot (hidden on the blink frames). */

@@ -65,6 +65,31 @@ public final class UiArt {
 		return t;
 	}
 
+	/** The registered texture of a menu image (loads it on first use), or null while the art is not there. */
+	public static ResourceLocation location(String name) { Tex t = tex(name); return t == null ? null : t.loc; }
+
+	private static final Map<String, ResourceLocation> CHALK = new HashMap<>();
+
+	/** The same image as pure white chalk (alpha kept and boosted), for drawings that glow on a wall; null while the art is not there. */
+	public static ResourceLocation chalk(String name) {
+		if (CHALK.containsKey(name)) return CHALK.get(name);
+		ResourceLocation loc = null;
+		Path f = UiAssets.file(Minecraft.getInstance().gameDirectory.toPath(), name);
+		if (Files.isRegularFile(f)) try (var in = Files.newInputStream(f)) {
+			NativeImage img = NativeImage.read(in);
+			for (int y = 0; y < img.getHeight(); y++) for (int x = 0; x < img.getWidth(); x++) {
+				int a = img.getPixel(x, y) >>> 24;
+				img.setPixel(x, y, (Math.min(255, a * 2) << 24) | 0xFFFFFF);
+			}
+			loc = ResourceLocation.fromNamespaceAndPath("zombiecraft", "bo2ui/chalk_" + name);
+			Minecraft.getInstance().getTextureManager().register(loc, new DynamicTexture(img));
+		} catch (IOException | RuntimeException e) {
+			ZombiecraftMod.LOG.warn("Block Ops 2 chalk art {} unreadable: {}", name, e.toString());
+		}
+		CHALK.put(name, loc);
+		return loc;
+	}
+
 	public static boolean has(String name) { Tex t = tex(name); return t != null && t.loc != null; }
 
 	/** Whole image stretched into the box. */

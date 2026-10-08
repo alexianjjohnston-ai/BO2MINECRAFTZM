@@ -56,7 +56,9 @@ public final class Bo2Menus {
 	private static void menuTour(Minecraft mc) {
 		Thread t = new Thread(() -> {
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(3000);
+				while (mc.getOverlay() != null) Thread.sleep(500);
+				Thread.sleep(2500);
 				Screen[] title = new Screen[1], lobby = new Screen[1], root = new Screen[1], map = new Screen[1];
 				String[] names = {"title", "lobby", "mapselect", "locations", "match", "options", "settings", "controls", "quit", "join", "invite", "pause"};
 				for (int i = 0; i < names.length; i++) {
