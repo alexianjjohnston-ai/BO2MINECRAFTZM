@@ -4,13 +4,13 @@ Dev tool: output goes to the local library (<lib>/fx/<zone>.json), never into th
 Each effect: name, flags, life, bounding box and its elements (sprites, models, lights, sounds, nested effects) with spawn rates, lifespans, velocities,
 colour/size over time, atlas and the names of the materials / models / effects / sounds they use."""
 import argparse, json, math, os, struct, sys, time
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from bo2_paths import LIB, OAT
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from bo2_proc import Capture
 from bo2_structs import Structs
 
-LIB = os.environ.get('BO2_LIB', r'C:\Users\alexi\bo2-dump\library')
-OAT = os.environ.get('BO2_OAT', r'C:\Users\alexi\bo2-dump\oat\Unlinker.exe')
 TYPES = ['sprite_billboard', 'sprite_oriented', 'sprite_rotated', 'tail', 'line', 'trail', 'cloud', 'model', 'omni_light', 'spot_light', 'sound', 'decal', 'runner', 'spark_cloud', 'spark_fountain', 'particle_sim_animation']
 
 

@@ -9,13 +9,13 @@ Writes per zone:  world.obj + world.mtl (game units: x east, y north, z up; one 
                   collision.npz + collision.obj (terrain collision triangles) and brushes.json (collision brush boxes with contents)
                   meta.json (name, bounds, counts)"""
 import argparse, collections, json, os, re, struct, sys, time
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from bo2_paths import LIB, OAT
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from bo2_proc import Capture
 from bo2_structs import Structs
 
-LIB = os.environ.get('BO2_LIB', r'C:\Users\alexi\bo2-dump\library')
-OAT = os.environ.get('BO2_OAT', r'C:\Users\alexi\bo2-dump\oat\Unlinker.exe')
 STRIDE = 36  # world vertex 0: xyz f4 | binormal sign f4 | color 4 | uv f2 f2 | lightmap uv f2 f2 | packed normal | packed tangent
 SEMANTICS = {0: '2d', 1: 'function', 2: 'color', 3: 'detail', 5: 'normal', 8: 'specular', 11: 'water'}
 

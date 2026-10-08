@@ -22,3 +22,7 @@ tools/texture_catalog.json
 .wine-app/
 .wine-prefix/
 play.command.new
+.bo2lib
+.bo2oat
+.bo2scripts
+tools/third_party/

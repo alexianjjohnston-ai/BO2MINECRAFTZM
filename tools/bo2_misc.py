@@ -27,7 +27,7 @@ def find_named(c, S, struct_name, name, test=None):
 
 def extract(zone, ff, bo2, out_root):
 	S = Structs(); t0 = time.time()
-	kinds = {k: E.listed(ff, k) for k in ('glasses', 'destructibledef', 'fximpacttable', 'font', 'xglobals')}
+	kinds = {k: E.listed(ff, k) for k in ('glasses', 'destructibledef', 'fximpacttable', 'font', 'xglobals', 'skinnedverts', 'ddl', 'snddriverglobals', 'soundpatch', 'slug', 'keyvaluepairs', 'addonmapents')}
 	if not any(kinds.values()): return False
 	res = {}
 	with Capture(ff, G.OAT, bo2) as c:
@@ -95,6 +95,51 @@ def extract(zone, ff, bo2, out_root):
 				res['xglobals'] = {'xanimStreamBufferSize': t['xanimStreamBufferSize'], 'cinematicMax': [t['cinematicMaxWidth'], t['cinematicMaxHeight']], 'extracamResolution': t['extracamResolution'],
 					'screenClearColor': t['screenClearColor'], 'gumps': [{'name': w.s(g['name']), 'size': g['size']} for g in t['gumps'][:t['gumpsCount']]], 'bigestGumpSize': t['bigestGumpSize'],
 					'overlayCount': t['overlayCount']}
+		# minor types
+		for nm in kinds['skinnedverts']:
+			q, t = find_named(c, S, 'SkinnedVertsDef', nm)
+			if t: res.setdefault('skinnedverts', {})[nm] = {'maxSkinnedVerts': t['maxSkinnedVerts']}
+		for nm in kinds['ddl']:
+			q, t = find_named(c, S, 'ddlRoot_t', nm)
+			if not t: continue
+			defs, p = [], t['ddlDef']
+			while p and len(defs) < 16:
+				d = Z.struct('ddlDef_t', p)
+				structs = []
+				for sd in w.arr('ddlStructDef_t', d['structList'], d['structCount'], 5000):
+					structs.append({'name': w.s(sd['name']), 'size': sd['size'], 'members': [{'name': w.s(m['name']), 'size': m['size'], 'offset': m['offset'], 'type': m['type'], 'externalIndex': m['externalIndex'],
+						'rangeLimit': m['rangeLimit'], 'serverDelta': m['serverDelta'], 'clientDelta': m['clientDelta'], 'arraySize': m['arraySize'], 'enumIndex': m['enumIndex'], 'permission': m['permission']}
+						for m in w.arr('ddlMemberDef_t', sd['members'], sd['memberCount'], 20000)]})
+				enums = []
+				for en in w.arr('ddlEnumDef_t', d['enumList'], d['enumCount'], 5000):
+					ptrs = struct.unpack('<%dI' % en['memberCount'], c.read(en['members'], en['memberCount'] * 4)) if en['members'] and 0 < en['memberCount'] < 100000 else []
+					enums.append({'name': w.s(en['name']), 'members': [w.s(x) for x in ptrs]})
+				defs.append({'version': d['version'], 'size': d['size'], 'structs': structs, 'enums': enums}); p = d['next']
+			res.setdefault('ddl', {})[nm] = defs
+		for nm in kinds['snddriverglobals']:
+			q, t = find_named(c, S, 'SndDriverGlobals', nm)
+			if not t: continue
+			res['snddriverglobals'] = {'volumeGroups': w.arr('SndVolumeGroup', t['groups'], t['groupCount'], 5000), 'curves': w.arr('SndCurve', t['curves'], t['curveCount'], 5000),
+				'pans': w.arr('SndPan', t['pans'], t['panCount'], 5000), 'duckGroups': w.arr('SndDuckGroup', t['duckGroups'], t['duckGroupCount'], 5000),
+				'contexts': w.arr('SndContext', t['contexts'], t['contextCount'], 5000), 'masters': w.arr('SndMaster', t['masters'], t['masterCount'], 5000),
+				'voiceDucks': w.arr('SndSidechainDuck', t['voiceDucks'], t['voiceDuckCount'], 5000), 'futzes': w.arr('SndFutz', t['futzes'], t['futzCount'], 5000)}
+		for nm in kinds['soundpatch']:
+			q, t = find_named(c, S, 'SndPatch', nm)
+			if t and t['elements'] and t['elementCount'] < 1_000_000: res.setdefault('soundpatch', {})[nm] = list(struct.unpack('<%dI' % t['elementCount'], c.read(t['elements'], t['elementCount'] * 4)))
+		for nm in kinds['slug']:
+			q, t = find_named(c, S, 'Slug', nm)
+			if t and t['buffer'] and 0 < t['len'] < 64 << 20:
+				os.makedirs(out_root, exist_ok=True)
+				open(os.path.join(out_root, '%s.slug_%s.bin' % (zone, re.sub(r'[^A-Za-z0-9_.-]', '_', nm))), 'wb').write(c.read(t['buffer'], t['len']))
+				res.setdefault('slug', {})[nm] = {'len': t['len']}
+		for nm in kinds['keyvaluepairs']:
+			q, t = find_named(c, S, 'KeyValuePairs', nm)
+			if t: res.setdefault('keyvaluepairs', {})[nm] = [[kv['keyHash'], kv['namespaceHash'], w.s(kv['value'])] for kv in w.arr('KeyValuePair', t['keyValuePairs'], t['numVariables'], 100000)]
+		for nm in kinds['addonmapents']:
+			q, t = find_named(c, S, 'AddonMapEnts', nm)
+			if t:
+				txt = c.read(t['entityString'], t['numEntityChars']).split(b'\0')[0].decode('latin1') if t['entityString'] and 0 < t['numEntityChars'] < 32 << 20 else ''
+				res.setdefault('addonmapents', {})[nm] = {'entities': txt, 'subModels': t['numSubModels']}
 	if not res: return False
 	os.makedirs(out_root, exist_ok=True)
 	json.dump(clean(res), open(os.path.join(out_root, zone + '.json'), 'w'))

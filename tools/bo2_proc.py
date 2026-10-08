@@ -29,6 +29,7 @@ class Capture:
 		self.args.append(zone_ff)
 		self.cwd = os.path.dirname(oat)
 		self.lines = []
+		self.tiny = False
 
 	def cpu(self):
 		c, e, k, u = FT(), FT(), FT(), FT()
@@ -36,7 +37,22 @@ class Capture:
 		return (k.hi << 32 | k.lo) + (u.hi << 32 | u.lo)
 
 	def __enter__(self):
-		self.p = subprocess.Popen(self.args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=self.cwd)
+		try: return self._start(self.args)
+		except RuntimeError:  # a tiny zone lists in less than the pipe holds: ask for much more output so the process still blocks
+			try: self.p.kill()
+			except Exception: pass
+			self.tiny = True
+			return self._start(self.args)
+
+	def _start(self, args):
+		if self.tiny:  # a pipe with a 1 byte buffer: the very first line the process prints blocks it
+			import _winapi, msvcrt
+			r, w = _winapi.CreatePipe(None, 1)
+			fd = msvcrt.open_osfhandle(int(w), 0)
+			self.p = subprocess.Popen(args, stdout=fd, stderr=fd, cwd=self.cwd)
+			os.close(fd); self._r = r
+		else:
+			self.p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=self.cwd)
 		self.h = k32.OpenProcess(PROCESS_ALL, False, self.p.pid)
 		last, still, t0 = -1, 0, time.time()
 		while time.time() - t0 < 300:

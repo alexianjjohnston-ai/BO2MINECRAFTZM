@@ -9,9 +9,9 @@
     <lib>/ai/zombie_assets.json       zombie xmodels, animations, weapons and sounds present in the library
     <lib>/scripts/                    the decompiled GSC/CSC of every map and the zombies core (copied from SCRIPTS_SRC), plus ai/README.md with where each AI rule lives"""
 import collections, glob, json, os, re, shutil, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from bo2_paths import LIB, SCRIPTS as SCRIPTS_SRC
 
-LIB = os.environ.get('BO2_LIB', r'C:\Users\alexi\bo2-dump\library')
-SCRIPTS_SRC = os.environ.get('BO2_SCRIPTS', r'C:\Users\alexi\Downloads\t6-scripts-main\t6-scripts-main')
 
 
 def parse_ents(path):

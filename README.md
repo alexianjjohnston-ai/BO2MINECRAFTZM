@@ -32,3 +32,6 @@ Check the design before building: `python tools/preflight.py --bo2 "<BO2 folder>
 
 ## Licence
 Code and sheets: MIT. Not included: Black Ops II assets, Minecraft, Prism Launcher (GPL-3.0, only bundled in release zips), Fabric (Apache-2.0).
+
+## Building maps from Black Ops II data
+The tools in `tools/` can extract textures, models, animations, sounds, map geometry, collision, path nodes, spawns and more from your own Black Ops II install into a local library; see [docs/BO2_LIBRARY.md](docs/BO2_LIBRARY.md). Nothing from the game is stored in this repository.

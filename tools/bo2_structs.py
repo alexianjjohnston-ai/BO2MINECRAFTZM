@@ -1,9 +1,10 @@
-"""Struct layouts of Black Ops II zone assets, read from OpenAssetTools' T6_Assets.h (MIT, kept in the library, not in the repo).
+"""Struct layouts of Black Ops II zone assets, read from OpenAssetTools' T6_Assets.h (GPL-3.0, so it is not in this repo: `python tools/bo2_setup.py --fetch-header` downloads it into the library).
 Gives sizeof/offsets as the 32-bit Windows build lays them out, plus a reader that follows 32-bit pointers inside a memory image.
   s = Structs(); s.sizeof('GfxWorld'); s.offsetof('GfxWorld', 'dpvs'); s.read(mem, 'GfxSurface', addr) -> dict"""
-import os, re, struct
+import sys, os, re, struct
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from bo2_paths import HEADER
 
-HEADER = os.environ.get('BO2_T6_HEADER', r'C:\Users\alexi\bo2-dump\library\tools\T6_Assets.h')
 PRIM = {'char': (1, 'b'), 'signed char': (1, 'b'), 'unsigned char': (1, 'B'), 'bool': (1, 'B'), 'byte': (1, 'B'), 'short': (2, 'h'), 'unsigned short': (2, 'H'),
 	'uint16_t': (2, 'H'), 'int16_t': (2, 'h'), 'int': (4, 'i'), 'unsigned int': (4, 'I'), 'unsigned': (4, 'I'), 'uint32_t': (4, 'I'), 'int32_t': (4, 'i'), 'float': (4, 'f'),
 	'long': (4, 'i'), 'unsigned long': (4, 'I'), 'int64_t': (8, 'q'), 'uint64_t': (8, 'Q'), 'double': (8, 'd'), 'void': (1, 'B'), 'size_t': (4, 'I'), 'uint8_t': (1, 'B'), 'int8_t': (1, 'b')}

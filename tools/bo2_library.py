@@ -12,29 +12,21 @@ Layout:  <lib>/zones/<zone>/{images,model_export,xmodel,xanim,materials,techsets
 Identical files across zones are hard-linked through <lib>/_pool, so the same texture dumped by 30 zones costs its size once.
 What OAT v0.33 cannot dump (BSP: gfxworld/clipmap/comworld, fx) is listed in INDEX.md under "Not extractable"."""
 import argparse, collections, concurrent.futures as cf, csv, glob, hashlib, json, os, re, shutil, sqlite3, struct, subprocess, sys, tempfile, threading, time
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from bo2_paths import LIB, OAT
 
-LIB = os.environ.get('BO2_LIB', r'C:\Users\alexi\bo2-dump\library')
-OAT = os.environ.get('BO2_OAT', r'C:\Users\alexi\bo2-dump\oat\Unlinker.exe')
 RATES = [8000, 12000, 16000, 24000, 32000, 44100, 48000, 96000, 192000]
 POOL_MIN = 16 * 1024  # smaller files are not worth a hard link
 lock = threading.Lock()
 
 
 def find_bo2(explicit=None):
-	"""The install with the most zone files (a partial copy next to the full one must lose)."""
-	cands = [explicit, os.environ.get('BO2_DIR'), os.environ.get('ZOMBIECRAFT_BO2_DIR')]
-	memo = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '.bo2dir')
-	if os.path.exists(memo): cands.append(open(memo).read().strip())
-	for d in 'CDEFGH':
-		for base in (d + ':\\SteamLibrary', d + ':\\Steam', d + ':\\Program Files (x86)\\Steam', d + ':\\New folder (2)', d + ':\\Games'):
-			cands.append(os.path.join(base, 'steamapps', 'common', 'Call of Duty Black Ops II'))
-	best, score = None, -1
-	for c in cands:
-		if not c or not os.path.isfile(os.path.join(c, 'sound', 'zmb_common.all.sabl')): continue
-		n = sum(len(os.listdir(os.path.join(c, s))) for s in ('zone\\all', 'zone\\english', 'sound') if os.path.isdir(os.path.join(c, s)))
-		if n > score: best, score = c, n
-	if not best: sys.exit('Black Ops II install not found: pass --bo2 <dir> or set BO2_DIR')
-	return best
+	"""The install with the most files (a partial copy next to the full one must lose)."""
+	import bo2_paths
+	if explicit and os.path.isfile(os.path.join(explicit, 'sound', 'zmb_common.all.sabl')): return explicit
+	found = bo2_paths.bo2_dirs()
+	if not found: sys.exit('Black Ops II install not found: pass --bo2 <dir>, set BO2_DIR or write the path into .bo2dir in the repo root')
+	return found[0]
 
 
 def tier_of(zone):
@@ -46,7 +38,7 @@ def tier_of(zone):
 
 def zones_of(bo2):
 	out = {}
-	for sub, pre in (('zone\\all', ''), ('zone\\english', '')):
+	for sub in (os.path.join('zone', 'all'), os.path.join('zone', 'english')):
 		for f in sorted(os.listdir(os.path.join(bo2, sub))):
 			if f.endswith('.ff'): out[f[:-3]] = os.path.join(bo2, sub, f)
 	return out
