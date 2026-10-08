@@ -114,8 +114,8 @@ public final class Interactions {
 				WeaponDef w = Sheets.weapon(t.wallbuy.weaponId());
 				int slot = WeaponSystem.slotHolding(pg, w.id());
 				pg.prompt = slot >= 0
-						? "Hold F for " + w.name() + " ammo [Cost: " + ammoCost(w, pg.guns[slot]) + "]"
-						: "Hold F for " + w.name() + " [Cost: " + w.wallCost() + "]";
+						? "Hold F to buy ammo for " + w.name() + " [Cost: " + ammoCost(w, pg.guns[slot]) + "]"
+						: "Hold F to buy " + w.name() + " [Cost: " + w.wallCost() + "]";
 				if (edge) buyWall(g, p, pg, w);
 			}
 			case BOX -> {
@@ -135,7 +135,7 @@ public final class Interactions {
 				if (edge) g.machines.use(t.machine, p, pg);
 			}
 			case BARRIER -> {
-				pg.prompt = "Hold F to repair the window";
+				pg.prompt = "Hold F to rebuild Barrier";
 				if (pg.interactHeld && g.tick - pg.lastBoardRepair >= Sheets.sysInt("board_repair_ticks") && t.barrier.repair()) {
 					pg.lastBoardRepair = g.tick;
 					Cue.at("zmb_repair_boards", g.level, t.barrier.center);

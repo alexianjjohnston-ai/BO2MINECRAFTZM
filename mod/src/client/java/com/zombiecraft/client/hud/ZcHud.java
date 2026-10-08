@@ -250,7 +250,17 @@ public final class ZcHud {
 		UiFont.draw(g, s, px, y, height, color, true);
 	}
 
-	/** BO2's tab screen: one row per player (just the local one for now) with score, kills, downs, revives, headshots and ping. */
+	/** An interact prompt: BO2 draws the key in yellow ("Hold F to buy ..."), the rest white. */
+	private static void prompt(GuiGraphics g, String p, int cx, int y) {
+		float hh = 9f * 1.2f * 1.3f;
+		int x = cx - UiFont.width(p, hh) / 2;
+		if (!p.startsWith("Hold F ")) { UiFont.draw(g, p, x, y, hh, 0xFFFFFFFF, true); return; }
+		UiFont.draw(g, "Hold ", x, y, hh, 0xFFFFFFFF, true);
+		UiFont.draw(g, "F", x + UiFont.width("Hold ", hh), y, hh, 0xFFF5D547, true);
+		UiFont.draw(g, p.substring(6), x + UiFont.width("Hold F", hh), y, hh, 0xFFFFFFFF, true);
+	}
+
+	/** BO2's tab screen: one row per player with score, kills, downs, revives, headshots and ping. */
 	private static void scoreboard(GuiGraphics g, Minecraft mc, Payloads.StateSync s) {
 		if (s.phase() != Payloads.PHASE_GAMEOVER && !mc.options.keyPlayerList.isDown()) return;
 		Font font = mc.font;
@@ -367,6 +377,6 @@ public final class ZcHud {
 		scoreboard(g, mc, s);
 
 		// prompt (lower middle)
-		if (!s.prompt().isEmpty()) text(g, font, s.prompt(), w / 2, h / 2 + 46, 1.2f, 0xFFFFFFFF, true);
+		if (!s.prompt().isEmpty()) prompt(g, s.prompt(), w / 2, h / 2 + 46);
 	}
 }
