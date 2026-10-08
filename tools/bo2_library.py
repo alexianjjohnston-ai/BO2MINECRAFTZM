@@ -239,6 +239,18 @@ def cmd_index(a):
 					rel = os.path.relpath(os.path.join(root, f), LIB).replace('\\', '/')
 					rows.append(('sound', os.path.splitext(f)[0], rel.split('/')[1], rel, os.path.getsize(os.path.join(root, f))))
 					counts['sound'][rel.split('/')[1]] += 1
+	mr = os.path.join(LIB, 'maps')  # written by bo2_geometry.py: world mesh, static models, lights, collision per zone
+	if os.path.isdir(mr):
+		for zone in sorted(os.listdir(mr)):
+			for f in sorted(os.listdir(os.path.join(mr, zone))):
+				rows.append(('worldmap', f, zone, 'maps/%s/%s' % (zone, f), os.path.getsize(os.path.join(mr, zone, f))))
+				counts['worldmap'][zone] += 1
+	fr = os.path.join(LIB, 'fx')  # written by bo2_fx.py: effect definitions per zone
+	if os.path.isdir(fr):
+		for f in sorted(os.listdir(fr)):
+			zone = f[:-5]
+			for name in json.load(open(os.path.join(fr, f))):
+				rows.append(('fx', name, zone, 'fx/' + f, 0)); counts['fx'][zone] += 1
 	af = os.path.join(ar, 'aliases.json')  # sound alias name (what the game scripts play) -> first file
 	if os.path.isfile(af):
 		for alias, fl in json.load(open(af)).items():
@@ -251,8 +263,9 @@ def cmd_index(a):
 		'| kind | files | zones |', '|---|---|---|']
 	for k in sorted(counts, key=lambda k: -sum(counts[k].values())):
 		lines.append('| %s | %d | %d |' % (k, sum(counts[k].values()), len(counts[k])))
-	lines += ['', '## Not extractable with OpenAssetTools v0.33', '- map geometry (gfxworld = BSP surfaces, clipmap = collision, comworld = lights): the dumper does not write these. Entity placement is in `maps/` (mapents) of each map zone.',
-		'- fx (particle effects) and footstep tables: listed in the zones but not dumped.', '', '## Zones', '| zone | tier | images | models | anims | sounds |', '|---|---|---|---|---|---|']
+	lines += ['', '## Beyond what OpenAssetTools v0.33 writes', '- `maps/<zone>/` (tools/bo2_geometry.py): the BSP world mesh (world.obj/.npz, materials with their images), every placed static model, lights, collision triangles and brush boxes. Read out of the memory of the Unlinker.',
+		'- `fx/<zone>.json` (tools/bo2_fx.py): effect definitions (elements, spawn, lifespan, velocity, colour/size over time, materials, models, sounds). Same method.',
+		'- Entity placement is in `zones/<zone>/maps/` (mapents). Footstep tables are still not dumped.', '', '## Zones', '| zone | tier | images | models | anims | sounds |', '|---|---|---|---|---|---|']
 	for zone in sorted({z for k in counts for z in counts[k]}):
 		lines.append('| %s | %s | %d | %d | %d | %d |' % (zone, tier_of(zone), counts['image'][zone], counts['model'][zone], counts['xanim'][zone], counts['sound'][zone]))
 	open(os.path.join(LIB, 'INDEX.md'), 'w', encoding='utf-8').write('\n'.join(lines) + '\n')
@@ -269,7 +282,7 @@ def cmd_find(a):
 	if a.zone: q += ' and zone=?'; args.append(a.zone)
 	n = 0
 	for kind, zone, name, rel, size in con.execute(q + ' order by kind, zone, name limit ?', args + [a.limit]):
-		print('%-9s %-28s %s  (%d B)' % (kind, zone, os.path.join(LIB, rel if kind in ('sound', 'alias') else 'zones/' + zone + '/' + rel), size)); n += 1
+		print('%-9s %-28s %s  (%d B)' % (kind, zone, os.path.join(LIB, rel if kind in ('sound', 'alias', 'worldmap', 'fx') else 'zones/' + zone + '/' + rel), size)); n += 1
 	print(n, 'hits')
 
 
