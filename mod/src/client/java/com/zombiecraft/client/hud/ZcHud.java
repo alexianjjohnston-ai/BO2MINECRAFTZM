@@ -292,9 +292,12 @@ public final class ZcHud {
 		else if (audio == com.zombiecraft.client.audio.AudioCache.Status.NO_BO2) text(g, font, "Black Ops II not found: using Minecraft sounds (see config/zombiecraft.properties)", 8, 6, 1f, 0xFFCC9944, false);
 
 		if (s.phase() == Payloads.PHASE_GAMEOVER) {
-			// BO2: white, upper centre, over the red death tint
-			text(g, font, "GAME OVER", w / 2, h / 8, 3f, 0xFFFFFFFF, true);
-			text(g, font, "You Survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " Round" : " Rounds"), w / 2, h / 8 + 42, 1.5f, 0xFFFFFFFF, true);
+			// BO2: the world goes red (darker at the edges), white text in the upper centre
+			g.fill(0, 0, w, h, 0x60A01010);
+			g.fillGradient(0, 0, w, h / 3, 0x60300000, 0x00000000);
+			g.fillGradient(0, h * 2 / 3, w, h, 0x00000000, 0x80300000);
+			text(g, font, "GAME OVER", w / 2, (int) (h * 0.16), 1.9f, 0xFFFFFFFF, true);
+			text(g, font, "You Survived " + s.roundsSurvived() + (s.roundsSurvived() == 1 ? " Round" : " Rounds"), w / 2, (int) (h * 0.16) + 26, 1.1f, 0xFFFFFFFF, true);
 			scoreboard(g, mc, s);
 			return;
 		}

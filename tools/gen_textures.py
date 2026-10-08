@@ -47,7 +47,7 @@ t('minecraft:lava_flow', 'rock_lava_cooling_c')
 
 # ---- custom blocks (zombiecraft:*): placeholders ship in the jar, these override them
 t('zombiecraft:glass_brick', 'cub_art_glass_brick_d')
-t('zombiecraft:cinder_block', 'ug_wall_brick_blue_col', tint='#D8B898')
+t('zombiecraft:cinder_block', 'decal_grunge_painted04_c', tint='#B8AC94', note='stained grey plaster walls (the brick was too dark to read next to BO2)')
 t('zombiecraft:asphalt', 'asphalt_road_single_lane01_c')
 t('zombiecraft:concrete_wall', 'metal_aluminum01_painted_dirty_col')
 t('zombiecraft:metal_panel', 'eb_art_wall_metal_panels_c')

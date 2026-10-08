@@ -59,8 +59,9 @@ public final class UiFont {
 			java.awt.Font f = base().deriveFont((float) (height * scale * 0.95));
 			BufferedImage probe = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 			var pg = probe.createGraphics();
+			pg.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON); // measure the way it is drawn, or the last letter gets cut
 			var fm = pg.getFontMetrics(f);
-			int w = Math.max(1, fm.stringWidth(s) + 4), h = fm.getAscent() + fm.getDescent() + 2, asc = fm.getAscent();
+			int w = Math.max(1, (int) Math.ceil(fm.getStringBounds(s, pg).getWidth()) + 8), h = fm.getAscent() + fm.getDescent() + 2, asc = fm.getAscent();
 			pg.dispose();
 			BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 			var g2 = bi.createGraphics();
@@ -89,7 +90,7 @@ public final class UiFont {
 	public static int width(String s, float height) {
 		double gs = gui();
 		Tex t = tex(s, height, gs);
-		return t == null ? (int) (Minecraft.getInstance().font.width(s) * height / 9f) : (int) Math.round((t.w - 4) / gs);
+		return t == null ? (int) (Minecraft.getInstance().font.width(s) * height / 9f) : (int) Math.round((t.w - 8) / gs);
 	}
 
 	/** Draws {@code s} with its top-left at (x, y). {@code height} is the font size in GUI pixels (9 is Minecraft's own size). */

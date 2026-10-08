@@ -273,7 +273,7 @@ public final class Bo2Menus {
 	static final class Title extends MenuScreen {
 		Title() { super("Block Ops 2"); items = new String[] {"PLAY", "OPTIONS", "QUIT"}; }
 
-		@Override protected void init() { x = (int) (width * 0.16); y0 = (int) (height * 0.58); }
+		@Override protected void init() { x = (int) (width * 0.06); y0 = (int) (height * 0.6); }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
@@ -287,7 +287,7 @@ public final class Bo2Menus {
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			MenuAudio.music();
 			background(g, width, height);
-			int lx = (int) (width * 0.16), ly = (int) (height * 0.2), lw = (int) (width * 0.42);
+			int lw = (int) (width * 0.42), lx = (int) (width * 0.055) + lw / 14, ly = (int) (height * 0.22) + lw / 5;
 			if (!UiArt.draw(g, "menu_zm_title_screen", lx - lw / 14, ly - lw / 5, lw, lw / 2)) {
 				text(g, "BLACK OPS II", lx, ly, 3.0f, WHITE);
 				text(g, "ZOMBIES", lx, ly + 36, 4.0f, 0xFFB9B2A6);
@@ -295,7 +295,6 @@ public final class Bo2Menus {
 			drawItems(g, mx, my);
 			text(g, "BLOCK OPS 2  0.1", width - 14 - tw("BLOCK OPS 2  0.1", 0.8f), 8, 0.8f, GREY);
 			if (UiArt.busy()) text(g, "Preparing Black Ops II art...", 14, height - 26 - (int) H(1.0f) - (int) H(0.8f) - 10, 0.8f, GREY);
-			hint(g, "ENTER", "Select", 14, height - 26);
 		}
 	}
 

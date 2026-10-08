@@ -172,9 +172,10 @@
   "id": "*:zombiecraft:cinder_block",
   "map": "*",
   "texture": "zombiecraft:cinder_block",
-  "bo2": "ug_wall_brick_blue_col",
+  "bo2": "decal_grunge_painted04_c",
   "opaque": true,
-  "tint": "#D8B898"
+  "tint": "#B8AC94",
+  "note": "stained grey plaster walls (the brick was too dark to read next to BO2)"
  },
  {
   "id": "*:zombiecraft:asphalt",
