@@ -310,11 +310,31 @@ public final class Game {
 		p.setGameMode(GameType.ADVENTURE);
 		p.setInvulnerable(false);
 		p.getAttribute(Attributes.MAX_HEALTH).setBaseValue(Sheets.sys("player_max_health"));
+		applyMovement(p);
 		p.setHealth(p.getMaxHealth());
 		p.getFoodData().setFoodLevel(20);
 		WeaponSystem.give(p, pg, 0, Sheets.startWeapon().id(), false);
 		PlayerSpawn sp = Sheets.PLAYER_SPAWNS.get(0);
 		p.teleportTo(level, origin.getX() + sp.x() + 0.5, origin.getY() + sp.y(), origin.getZ() + sp.z() + 0.5, Set.of(), (float) sp.yaw(), 0f, true);
+	}
+
+	private static final net.minecraft.resources.ResourceLocation SPRINT_BOOST = Payloads.id("sprint_boost");
+
+	/** BO2's run speed, jump and gravity (sheets/systems.json player_*) instead of Minecraft's. */
+	private static void applyMovement(ServerPlayer p) {
+		p.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(Sheets.sys("player_walk_speed_attr"));
+		p.getAttribute(Attributes.JUMP_STRENGTH).setBaseValue(Sheets.sys("player_jump_strength"));
+		p.getAttribute(Attributes.GRAVITY).setBaseValue(Sheets.sys("player_gravity"));
+	}
+
+	/** Sprinting is 1.5 times running in BO2; Minecraft's own sprint bonus is 1.3, so the rest is added while the sprint lasts. */
+	private static void sprintBoost(ServerPlayer p) {
+		var speed = p.getAttribute(Attributes.MOVEMENT_SPEED);
+		boolean on = p.isSprinting();
+		if (on == (speed.getModifier(SPRINT_BOOST) != null)) return;
+		if (on) speed.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(SPRINT_BOOST, Sheets.sys("player_sprint_scale") / 1.3 - 1.0,
+				net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+		else speed.removeModifier(SPRINT_BOOST);
 	}
 
 	private void placeWallBuys() {
@@ -615,6 +635,7 @@ public final class Game {
 
 	private void tickPlayer(ServerPlayer p) {
 		PlayerGame pg = pg(p);
+		sprintBoost(p);
 		if (pg.downed || pg.dead || phase == Payloads.PHASE_LOBBY) pg.prompt = "";
 		else if (phase != Payloads.PHASE_GAMEOVER) {
 			WeaponSystem.tick(this, p, pg);
