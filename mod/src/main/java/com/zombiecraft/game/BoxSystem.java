@@ -1,6 +1,5 @@
 package com.zombiecraft.game;
 
-import com.zombiecraft.item.ModItems;
 import com.zombiecraft.sheet.Rows.BoxDef;
 import com.zombiecraft.sheet.Rows.BoxPoolRow;
 import com.zombiecraft.sheet.Rows.BoxRule;

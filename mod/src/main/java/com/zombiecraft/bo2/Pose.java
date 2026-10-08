@@ -100,17 +100,6 @@ public final class Pose {
 		localQ[o] = x / len; localQ[o + 1] = y / len; localQ[o + 2] = z / len; localQ[o + 3] = ww / len;
 	}
 
-	/** Rotates bone {@code i} further by an extra rotation about its own local axes (procedural tweaks). */
-	public void addLocalRotation(int i, float ax, float ay, float az, float radians) {
-		if (i < 0) return;
-		float s = (float) Math.sin(radians / 2), c = (float) Math.cos(radians / 2);
-		float[] r = {ax * s, ay * s, az * s, c};
-		int o = i * 4;
-		float[] q = {localQ[o], localQ[o + 1], localQ[o + 2], localQ[o + 3]};
-		float[] m = qmul(q, r);
-		System.arraycopy(m, 0, localQ, o, 4);
-	}
-
 	/** Computes world and skinning matrices from the local pose. Parents always come before children in an export. */
 	public void build() {
 		float[] r = new float[9];
@@ -199,9 +188,6 @@ public final class Pose {
 		}
 	}
 
-	/** World position of a bone (for attaching heads, guns, effects). */
-	public void bonePos(int i, float[] out) { out[0] = world[i * 12 + 3]; out[1] = world[i * 12 + 7]; out[2] = world[i * 12 + 11]; }
-
 	// ---- small maths ----
 	static void mul34(float[] a, int ao, float[] b, int bo, float[] out, int oo) {
 		for (int r = 0; r < 3; r++) {
@@ -267,13 +253,5 @@ public final class Pose {
 		r[0] = 1 - 2 * (y * y + z * z); r[1] = 2 * (x * y - z * w); r[2] = 2 * (x * z + y * w);
 		r[3] = 2 * (x * y + z * w); r[4] = 1 - 2 * (x * x + z * z); r[5] = 2 * (y * z - x * w);
 		r[6] = 2 * (x * z - y * w); r[7] = 2 * (y * z + x * w); r[8] = 1 - 2 * (x * x + y * y);
-	}
-
-	static float[] qmul(float[] a, float[] b) {
-		return new float[]{
-				a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1],
-				a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
-				a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3],
-				a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]};
 	}
 }

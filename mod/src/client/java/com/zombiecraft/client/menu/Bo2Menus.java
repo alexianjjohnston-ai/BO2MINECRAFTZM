@@ -1,6 +1,5 @@
 package com.zombiecraft.client.menu;
 
-import com.zombiecraft.client.AutoWorld;
 import com.zombiecraft.client.audio.MenuAudio;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.ChatFormatting;
@@ -10,7 +9,6 @@ import net.minecraft.client.gui.screens.GenericMessageScreen;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.gui.screens.options.OptionsScreen;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 

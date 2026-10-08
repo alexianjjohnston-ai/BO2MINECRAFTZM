@@ -83,7 +83,7 @@ public class ZcBoxRenderer extends EntityRenderer<ZcBox, ZcBoxRenderer.State> {
 		glowQuad(ps, buf, 2.6f, 1.7f, 0.03f, 255, 190, 40, (int) (40 + 40 * pu));
 		ps.pushPose();
 		ps.translate(0f, FEET, 0f);
-		Bo2Mesh.drawGlowing(l, pose, ps, buf, light, s.scale, 3);
+		Bo2Mesh.draw(l, pose, ps, buf, light, s.scale, 3);
 		// and a soft halo hanging over the lid, around the question marks
 		glowQuad(ps, buf, 1.5f, 0.75f, 19.7f * s.scale, 255, 200, 60, (int) (50 + 70 * pu));
 		ps.popPose();

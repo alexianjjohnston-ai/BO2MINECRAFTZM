@@ -4,8 +4,6 @@ import com.zombiecraft.sheet.Rows.DoorDef;
 import com.zombiecraft.sheet.Rows.WindowDef;
 import com.zombiecraft.sheet.Sheets;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Block;

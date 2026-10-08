@@ -108,11 +108,6 @@ public final class Bo2Mesh {
 		return white;
 	}
 
-	/** Kept for callers that draw glowing props: glowing surfaces are handled inside {@link #draw}. */
-	public static void drawGlowing(Loaded l, Pose pose, PoseStack ps, MultiBufferSource buf, int light, float scale, int axes) {
-		draw(l, pose, ps, buf, light, scale, axes);
-	}
-
 	static ResourceLocation texture(String dds) {
 		if (dds == null || dds.isEmpty()) return null;
 		if (TEXTURES.containsKey(dds)) return TEXTURES.get(dds);

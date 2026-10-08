@@ -9,7 +9,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Power-up drops. Rules follow the BO2 scripts: a drop is queued each time the team's total earned points pass a threshold

@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**

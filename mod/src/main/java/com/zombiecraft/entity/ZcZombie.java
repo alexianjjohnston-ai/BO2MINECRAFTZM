@@ -43,8 +43,6 @@ public class ZcZombie extends Zombie {
 		b.define(DATA_ANIM, (byte) 3);
 	}
 
-	public int animStage() { return entityData.get(DATA_ANIM) & 3; }
-	public int animTier() { return entityData.get(DATA_ANIM) >> 2; }
 
 	public ZcZombie(EntityType<? extends Zombie> type, Level level) {
 		super(type, level);

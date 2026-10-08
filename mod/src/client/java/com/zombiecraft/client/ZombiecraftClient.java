@@ -22,7 +22,6 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.world.InteractionResult;
 import org.lwjgl.glfw.GLFW;
 
