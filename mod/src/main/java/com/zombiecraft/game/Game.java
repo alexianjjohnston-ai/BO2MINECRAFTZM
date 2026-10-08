@@ -264,7 +264,9 @@ public final class Game {
 		phase = Payloads.PHASE_COUNTDOWN;
 		Cue.all("mus_zombie_splash_screen", level);
 		countdown = Sheets.sysInt("first_round_delay_s") * 20;
-		for (String c : AMBIENCE) { Cue.stopAll(c, level); Cue.all(c, level); }
+		stopAmbience();
+		playing = ambience();
+		for (String c : playing) Cue.all(c, level);
 		ambientTimer = 200;
 	}
 
@@ -402,7 +404,7 @@ public final class Game {
 		Cue.ui("evt_player_final_hit", p);
 		Cue.ui("evt_player_death", p);
 		Cue.ui("mus_zombie_game_over", p);
-		for (String c : AMBIENCE) Cue.stopAll(c, level);
+		stopAmbience();
 		machines.shutdown();
 		if (pap != null) pap.shutdown();
 		powerups.shutdown();
@@ -421,12 +423,24 @@ public final class Game {
 	}
 
 	// ------------------------------------------------------------------ the tick
-	/** The diner's looping bed (wind left/right, light hum) and the odd creak or rustle near a player. */
-	private static final String[] AMBIENCE = {"amb_depot_l", "amb_depot_r", "amb_depot_map_light", "amb_flourescent_light", "amb_wind_howl", "amb_crickets", "amb_neon_stdy"};
+	/** The looping beds of a place (its indoor hum, wind, crickets); the odd creak or rustle near a player comes on top. Places without beds of their own get the outdoor ones. */
+	private static String[] ambience() {
+		return switch (Sheets.place()) {
+			case "depot" -> new String[] {"amb_depot_l", "amb_depot_r", "amb_depot_map_light", "amb_flourescent_light", "amb_wind_howl", "amb_crickets", "amb_neon_stdy"};
+			case "diner" -> new String[] {"amb_diner_l", "amb_diner_r", "amb_wind_howl", "amb_crickets"};
+			default -> new String[] {"amb_wind_howl", "amb_crickets"};
+		};
+	}
+	private String[] playing = new String[0];
 	private static final String[] ONE_SHOTS = {"amb_diner_metal_creak", "amb_metal_creak_lgt", "amb_paper_rustle", "amb_wood_creak", "amb_sign_creak", "amb_metal_groan",
 			"amb_crows", "amb_wolves", "amb_church_bell", "amb_screams"}; // the last four are far away
 	private static final int NEAR_ONE_SHOTS = 6;
 	private int ambientTimer;
+
+	private void stopAmbience() {
+		for (String c : playing) Cue.stopAll(c, level);
+		playing = new String[0];
+	}
 
 	public void tick() {
 		tick++;

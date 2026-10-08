@@ -38,8 +38,8 @@ public final class Rows {
 
 	public record PapDef(String id, int x1, int y1, int z1, int x2, int y2, int z2, String facing, String room) {}
 
-	/** A Black Ops II model standing in the map (x, y, z in blocks from the origin; yaw 0 = front towards south; hide = decor cells it replaces: x1,y1,z1,x2,y2,z2). */
 	/**
+	 * A Black Ops II model standing in the map (x, y, z in blocks from the origin; yaw 0 = front towards south; hide = decor cells it replaces: x1,y1,z1,x2,y2,z2).
 	 * pitch/roll (degrees, BO2 sense) and exact: the model is placed by its own origin with BO2's yaw, pitch and roll (a wrecked truck on its side), not centred on the spot.
 	 * fallback: the block id that stands in for the model without a BO2 install; only those cells of hide turn into barriers (or air) when the model is drawn.
 	 */
@@ -53,14 +53,12 @@ public final class Rows {
 
 	public record CueFile(String id, String cue, String bank, long entryId, long size, String format, int channels, int rateHz, long frames) {}
 
-	/** A Black Ops II model the game converts from the player's own install (see tools/gen_bo2_models.py). */
 	/** One block texture drawn from a BO2 image (see tools/gen_textures.py). */
 	public record TextureDef(String id, String map, String texture, String bo2, boolean opaque, String tint, boolean mask, String note) {}
 
 	/** Fog, sky and clock for a map; "*" is the default. */
 	public record AtmosphereDef(String id, String fogColor, double fogStart, double fogEnd, String skyColor, String cloudColor, double stars, int timeOfDay, String note) {}
 
+	/** A Black Ops II model the game converts from the player's own install (see tools/gen_bo2_models.py). */
 	public record Bo2Model(String id, String group, String xmodel, String world, String note, String anim) {}
-
-	public record HookRow(String id, String system, String kind, String target, String handler, String status, String note) {}
 }

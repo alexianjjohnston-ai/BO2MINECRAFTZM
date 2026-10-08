@@ -171,7 +171,7 @@ public final class Revive {
 			ServerPlayer t = reviveTarget(g, p);
 			if (me == null || t == null || !me.interactHeld) continue;
 			PlayerGame tp = g.players.get(t.getUUID());
-			int need = (int) Math.round(Sheets.sys((me.perks & QUICK_BIT) != 0 ? "revive_time_quick_s" : "revive_time_s") * 20);
+			int need = (int) Math.round(((me.perks & QUICK_BIT) != 0 ? Sheets.sys("revive_time_quick_s") : Sheets.sys("revive_time_s")) * 20);
 			tp.reviveTicks++;
 			advanced.add(t.getUUID());
 			int pct = Math.min(100, tp.reviveTicks * 100 / Math.max(1, need));

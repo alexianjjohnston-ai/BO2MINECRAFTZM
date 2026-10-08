@@ -372,7 +372,6 @@ final class Bo2Options {
 		}
 
 		private void assign(InputConstants.Key k) {
-			var o = Minecraft.getInstance().options;
 			listening.setKey(k);
 			KeyMapping.resetMapping();
 			listening = null;

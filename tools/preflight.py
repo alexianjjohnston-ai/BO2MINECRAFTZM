@@ -64,13 +64,15 @@ for name, sc in schema.items():
 # keys the Java code asks for
 sysKeys = {r['id'] for r in data.get('systems', [])}
 used = collections.defaultdict(set)
-pat = re.compile(r'Sheets\.sys(?:Int)?\(\s*"([a-z0-9_]+)"')
+pat = re.compile(r'(?:Sheets\.)?\bsys(?:Int)?\(\s*"([a-z0-9_]+)"')  # Sheets.java itself calls sys(...) unqualified
 if os.path.isdir(args.code):
     for root, _, fs in os.walk(args.code):
         for f in fs:
             if f.endswith('.java'):
                 txt = open(os.path.join(root, f), encoding='utf-8').read()
                 for m in pat.finditer(txt): used[m.group(1)].add(f)
+    for z in data.get('zombies', []):  # the zombie tiers name their hit-damage row
+        if z.get('hitDamageKey'): used[z['hitDamageKey']].add('zombies.json')
     for k, fs in sorted(used.items()):
         if k not in sysKeys: err(f"[code] {sorted(fs)} ask for systems key {k!r} which is not in systems.json")
     for k in sorted(sysKeys - set(used)):
