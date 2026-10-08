@@ -103,8 +103,8 @@ public final class Bo2Menus {
 
 	private static float seconds() { return (System.nanoTime() - T0) / 1e9f; }
 
-	/** {@code scale} 1 is about Minecraft's text size; the BO2 font is drawn a little bigger to read the same. */
-	static float H(float scale) { return 9f * scale * 1.3f; }
+	/** {@code scale} 1 is about Minecraft's text size; BO2's menu text is small next to the screen, so nothing here is drawn larger than that. */
+	static float H(float scale) { return 9f * scale * 1.0f; }
 	static void raw(GuiGraphics g, String s, int x, int y, float scale, int color) { UiFont.draw(g, s, x, y, H(scale), color, true); }
 
 	/** Small grey gradient behind light text so it stays readable over bright art: solid on the left, fading out to the right. */
@@ -231,7 +231,7 @@ public final class Bo2Menus {
 	abstract static class MenuScreen extends Screen {
 		String[] items;
 		int sel, x, y0, lastSel = -1;
-		float scale = 1.7f;
+		float scale = 1.2f;
 		/** The grey plate behind light text keeps it readable over the bright planet art; dark screens turn it off. */
 		boolean plates = true;
 
@@ -306,7 +306,7 @@ public final class Bo2Menus {
 			items = new String[] {"PLAY", "JOIN GAME", "OPTIONS"};
 		}
 
-		@Override protected void init() { x = (int) (width * 0.16); y0 = (int) (height * 0.07) + (int) H(2.6f) + 12; }
+		@Override protected void init() { x = (int) (width * 0.16); y0 = (int) (height * 0.07) + (int) H(1.8f) + 12; }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
@@ -323,8 +323,8 @@ public final class Bo2Menus {
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			MenuAudio.music();
 			background(g, width, height);
-			planet(g, -(int) (width * 0.06), (int) (height * 0.82), (int) (height * 0.5), seconds() / 90f);
-			text(g, "ZOMBIES", x, (int) (height * 0.07), 2.6f, WHITE);
+			planet(g, (int) (width * 0.22), (int) (height * 0.62), (int) (height * 0.36), seconds() / 90f);
+			text(g, "ZOMBIES", x, (int) (height * 0.07), 1.8f, WHITE);
 			drawItems(g, mx, my);
 			String desc = switch (sel) {
 				case 0 -> "Survive unending waves of the undead, alone or with friends online. Pick a place, then start the match.";
@@ -398,7 +398,7 @@ public final class Bo2Menus {
 				if (i == sel) g.renderOutline(x - 3, y - 3, s + 6, s + 6, ORANGE);
 			}
 			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("zmb_ui_map_level_switch"); lastSel = sel; }
-			text(g, NAMES[sel], 24, height - 78, 2.2f, sel == 0 ? WHITE : GREY);
+			text(g, NAMES[sel], 24, height - 70, 1.6f, sel == 0 ? WHITE : GREY);
 			if (sel != 0) text(g, "COMING SOON", 24, height - 46, 1.0f, GREY);
 			hint(g, "ESC", "Back", 24, height - 26);
 			if (sel == 0) hint(g, "ENTER", "Select", width - 24 - tw("ENTER", 1.0f) - tw("Select", 1.0f) - 10, height - 26);
@@ -411,12 +411,12 @@ public final class Bo2Menus {
 			super("Zombies");
 			Minecraft mc = Minecraft.getInstance();
 			plates = false;
-			scale = 1.1f;
+			scale = 1.0f;
 			items = Bo2Online.hosting(mc) ? new String[] {"RESUME GAME", "INVITE INFO", "OPTIONS", "END GAME"}
 					: new String[] {"RESUME GAME", "OPTIONS", mc.isLocalServer() ? "END GAME" : "LEAVE GAME"};
 		}
 
-		@Override protected void init() { x = (int) (width * 0.05); y0 = (int) (height * 0.07) + (int) H(1.9f) + 8; MenuAudio.play("uin_main_pause"); }
+		@Override protected void init() { x = (int) (width * 0.05); y0 = (int) (height * 0.07) + (int) H(1.5f) + 8; MenuAudio.play("uin_main_pause"); }
 
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
@@ -433,7 +433,7 @@ public final class Bo2Menus {
 
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			g.fillGradient(0, 0, width, height, 0xB0000000, 0xD0000000);
-			raw(g, "ZOMBIES", x, (int) (height * 0.07), 1.9f, WHITE);
+			raw(g, "ZOMBIES", x, (int) (height * 0.07), 1.5f, WHITE);
 			drawItems(g, mx, my);
 			hint(g, "ESC", "Back", x, height - 26);
 		}

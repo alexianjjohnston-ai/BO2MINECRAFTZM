@@ -117,8 +117,8 @@ public final class Bo2Online {
 		Bo2Menus.background(g, w, h);
 		g.fillGradient(0, 0, w, h, 0x80000000, 0xB0000000);
 		int x = (int) (w * 0.16), y = (int) (h * 0.2);
-		Bo2Menus.text(g, "CONNECTING", x, y, 2.6f, Bo2Menus.WHITE);
-		y += (int) Bo2Menus.H(2.6f) + 24;
+		Bo2Menus.text(g, "CONNECTING", x, y, 1.8f, Bo2Menus.WHITE);
+		y += (int) Bo2Menus.H(1.8f) + 24;
 		Bo2Menus.raw(g, lastAddress.isEmpty() ? "Host" : lastAddress, x, y, 1.3f, Bo2Menus.ORANGE);
 		y += (int) Bo2Menus.H(1.3f) + 14;
 		int left = (int) Math.max(0, (TIMEOUT_MS - ms + 999) / 1000);
@@ -206,8 +206,8 @@ public final class Bo2Online {
 			boolean moved = seenX >= 0 && (mx != seenX || my != seenY);
 			seenX = mx; seenY = my;
 			int x = (int) (width * 0.05), y = (int) (height * 0.07);
-			Bo2Menus.raw(g, "INVITE FRIENDS", x, y, 2.0f, Bo2Menus.WHITE);
-			y += (int) Bo2Menus.H(2.0f) + 6;
+			Bo2Menus.raw(g, "INVITE FRIENDS", x, y, 1.5f, Bo2Menus.WHITE);
+			y += (int) Bo2Menus.H(1.5f) + 6;
 			String code = Relay.code;
 			Bo2Menus.raw(g, "JOIN CODE", x, y, 0.85f, Bo2Menus.GREY);
 			y += (int) Bo2Menus.H(0.85f) + 4;
@@ -224,7 +224,6 @@ public final class Bo2Online {
 				int iy = y + i * step, w = Bo2Menus.tw(items[i], 1.1f);
 				if (moved && mx >= x - 6 && mx <= x + w + 6 && my >= iy - 3 && my <= iy + step - 3) sel = i;
 				boolean on = i == sel;
-				if (on) g.renderOutline(x - 6, iy - 3, w + 12, step - 2, Bo2Menus.ORANGE);
 				Bo2Menus.raw(g, items[i], x, iy, 1.1f, code == null && i < 2 ? Bo2Menus.GREY : on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
 			}
 			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("uin_main_nav"); lastSel = sel; }
@@ -278,8 +277,8 @@ public final class Bo2Online {
 			MenuAudio.music();
 			Bo2Menus.background(g, width, height);
 			int x = (int) (width * 0.16);
-			Bo2Menus.text(g, "JOIN GAME", x, (int) (height * 0.07), 2.6f, Bo2Menus.WHITE);
-			int y = (int) (height * 0.07) + (int) Bo2Menus.H(2.6f) + 30;
+			Bo2Menus.text(g, "JOIN GAME", x, (int) (height * 0.07), 1.8f, Bo2Menus.WHITE);
+			int y = (int) (height * 0.07) + (int) Bo2Menus.H(1.8f) + 30;
 			Bo2Menus.text(g, "Join code, or host address", x, y, 1.0f, Bo2Menus.GREY);
 			y += (int) Bo2Menus.H(1.0f) + 10;
 			int bw = (int) (width * 0.5), bh = (int) Bo2Menus.H(1.3f) + 10;

@@ -152,8 +152,8 @@ final class Bo2Options {
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			Bo2Menus.background(g, width, height);
 			g.fill(0, 0, width, height, 0xB8000000);
-			int tw = Bo2Menus.tw(title.getString(), 2.2f);
-			Bo2Menus.raw(g, title.getString(), (width - tw) / 2, (int) (height * 0.04), 2.2f, Bo2Menus.WHITE);
+			int tw = Bo2Menus.tw(title.getString(), 1.5f);
+			Bo2Menus.raw(g, title.getString(), (width - tw) / 2, (int) (height * 0.04), 1.5f, Bo2Menus.WHITE);
 			if (tabs.length > 1) {
 				// BO2 tab bar: an arrow at each end, the open tab orange, the others dim
 				int x = (int) (width * 0.5 - totalTabsWidth() / 2.0), ty = (int) (height * 0.13);
@@ -195,8 +195,8 @@ final class Bo2Options {
 			return r;
 		}
 
-		private int entryY(int i) { return (int) (height * 0.38) + i * (int) (Bo2Menus.H(2.0f) * 1.5f); }
-		private float entryScale(int i) { return i == sel ? 2.0f : 1.2f; }
+		private int entryY(int i) { return (int) (height * 0.38) + i * (int) (Bo2Menus.H(1.7f) * 1.5f); }
+		private float entryScale(int i) { return i == sel ? 1.7f : 1.1f; }
 
 		@Override public boolean mouseClicked(double mx, double my, int button) {
 			for (int i = 0; i < rows.size(); i++) {
@@ -209,7 +209,7 @@ final class Bo2Options {
 		@Override public void render(GuiGraphics g, int mx, int my, float dt) {
 			Bo2Menus.background(g, width, height);
 			g.fill(0, 0, width, height, 0xB8000000);
-			Bo2Menus.raw(g, "OPTIONS", (width - Bo2Menus.tw("OPTIONS", 2.2f)) / 2, (int) (height * 0.04), 2.2f, Bo2Menus.WHITE);
+			Bo2Menus.raw(g, "OPTIONS", (width - Bo2Menus.tw("OPTIONS", 1.5f)) / 2, (int) (height * 0.04), 1.5f, Bo2Menus.WHITE);
 			for (int i = 0; i < rows.size(); i++) {
 				float sc = entryScale(i);
 				String l = rows.get(i).label();

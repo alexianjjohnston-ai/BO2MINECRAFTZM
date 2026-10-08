@@ -205,7 +205,6 @@ final class Bo2Locations {
 					int w = Bo2Menus.tw(nm, 1.2f), hh = (int) Bo2Menus.H(1.2f);
 					rows[i][0] = tx; rows[i][1] = y - 3; rows[i][2] = w + 12; rows[i][3] = hh + 6;
 					if (moved && mouseX >= tx && mouseX <= tx + w + 12 && mouseY >= y - 3 && mouseY <= y + hh + 3) mode = i;
-					if (on) g.renderOutline(tx, y - 3, w + 12, hh + 6, Bo2Menus.ORANGE);
 					Bo2Menus.raw(g, nm, tx + 6, y, 1.2f, on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
 					if (!m.playable()) UiArt.draw(g, "pc_lock", tx + w + 18, y, hh, hh, 0xB0FFFFFF);
 					y += hh + 8;
@@ -287,7 +286,7 @@ final class Bo2Locations {
 			int x = x(), hintY = height - 26;
 			// the title shrinks to fit half the window so it can never run into the player list
 			String title = loc.name() + " / " + mode.name();
-			float ts = 2.0f;
+			float ts = 1.5f;
 			while (ts > 1.0f && Bo2Menus.tw(title, ts) > width * 0.5) ts -= 0.1f;
 			Bo2Menus.raw(g, title, x, (int) (height * 0.07), ts, Bo2Menus.WHITE);
 			int y0 = (int) (height * 0.07) + (int) Bo2Menus.H(ts) + 14, step = step();
@@ -295,7 +294,6 @@ final class Bo2Locations {
 				int y = y0 + i * step, w = Bo2Menus.tw(label(i), 1.25f);
 				if (moved && startAt == 0 && mx >= x - 6 && mx <= x + w + 6 && my >= y - 3 && my <= y + step - 3) sel = i;
 				boolean on = i == sel;
-				if (on) g.renderOutline(x - 6, y - 3, w + 12, step - 2, Bo2Menus.ORANGE);
 				Bo2Menus.raw(g, label(i), x, y, 1.25f, on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
 			}
 			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("uin_main_nav"); lastSel = sel; }
@@ -357,7 +355,7 @@ final class Bo2Locations {
 		topDown(g, w, h, true);
 		Loc loc = LOCS[0];
 		String title = loc.name() + " / " + loc.modes().get(loc.modes().size() - 1).name();
-		float ts = 2.0f;
+		float ts = 1.5f;
 		while (ts > 1.0f && Bo2Menus.tw(title, ts) > w * 0.5) ts -= 0.1f;
 		int x = (int) (w * 0.05), y = (int) (h * 0.07);
 		Bo2Menus.raw(g, title, x, y, ts, Bo2Menus.WHITE);
@@ -431,7 +429,7 @@ final class Bo2Locations {
 			seenX = mx; seenY = my;
 			int x = (int) (width * 0.05), hintY = height - 26, step = (int) (Bo2Menus.H(1.25f) * 1.25f);
 			String title = loc.name() + " / " + mode.name();
-			float ts = 2.0f;
+			float ts = 1.5f;
 			while (ts > 1.0f && Bo2Menus.tw(title, ts) > width * 0.5) ts -= 0.1f;
 			Bo2Menus.raw(g, title, x, (int) (height * 0.07), ts, Bo2Menus.WHITE);
 			int y0 = (int) (height * 0.07) + (int) Bo2Menus.H(ts) + 14;
@@ -440,7 +438,6 @@ final class Bo2Locations {
 				int y = y0 + i * step, w = Bo2Menus.tw(items[i], 1.25f);
 				if (moved && secs == 0 && mx >= x - 6 && mx <= x + w + 6 && my >= y - 3 && my <= y + step - 3) sel = i;
 				boolean on = i == sel;
-				if (on) g.renderOutline(x - 6, y - 3, w + 12, step - 2, Bo2Menus.ORANGE);
 				Bo2Menus.raw(g, items[i], x, y, 1.25f, items[i].startsWith("START") && secs > 0 ? Bo2Menus.GREY : on ? Bo2Menus.ORANGE : Bo2Menus.WHITE);
 			}
 			if (sel != lastSel) { if (lastSel >= 0) MenuAudio.play("uin_main_nav"); lastSel = sel; }
