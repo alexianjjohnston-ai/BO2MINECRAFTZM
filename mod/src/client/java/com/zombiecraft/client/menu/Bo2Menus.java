@@ -275,6 +275,9 @@ public final class Bo2Menus {
 
 		@Override protected void init() { x = (int) (width * 0.06); y0 = (int) (height * 0.6); }
 
+		/** When the title first drew after the game started: BO2 fades up from black on launch. */
+		private static long introStart;
+
 		@Override void activate(int i) {
 			Minecraft mc = Minecraft.getInstance();
 			switch (i) {
@@ -294,6 +297,9 @@ public final class Bo2Menus {
 			}
 			drawItems(g, mx, my);
 			text(g, "BLOCK OPS 2  0.1", width - 14 - tw("BLOCK OPS 2  0.1", 0.8f), 8, 0.8f, GREY);
+			if (introStart == 0) introStart = System.nanoTime();
+			float fade = 1f - (System.nanoTime() - introStart) / 1e9f / 2.2f;
+			if (fade > 0f) g.fill(0, 0, width, height, ((int) (Math.min(1f, fade * 1.3f) * 255) << 24));
 			if (UiArt.busy()) text(g, "Preparing Black Ops II art...", 14, height - 26 - (int) H(1.0f) - (int) H(0.8f) - 10, 0.8f, GREY);
 		}
 	}
@@ -340,7 +346,7 @@ public final class Bo2Menus {
 				ty += (int) (H(0.9f) * 1.15f);
 			}
 			int rx = (int) (width * 0.56), ry = (int) (height * 0.12);
-			text(g, "Players (4 Max)", rx, ry, 1.0f, WHITE);
+			text(g, "1 Player (4 Max)", rx, ry, 1.0f, WHITE);
 			g.fill(rx - 4, ry + 20, width - 40, ry + 21, 0x50FFFFFF);
 			g.fill(rx, ry + 26, rx + 10, ry + 36, 0xFF55606A);
 			text(g, Minecraft.getInstance().getUser().getName(), rx + 16, ry + 24, 1.0f, YELLOW);
