@@ -19,3 +19,6 @@ maps_local/*
 !maps_local/power.json.gz
 tools/texture_catalog.json
 .bo2dir
+.wine-app/
+.wine-prefix/
+play.command.new

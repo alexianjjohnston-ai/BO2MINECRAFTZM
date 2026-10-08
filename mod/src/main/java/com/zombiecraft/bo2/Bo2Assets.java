@@ -142,6 +142,8 @@ public final class Bo2Assets {
 
 	private static Optional<Path> findWine() {
 		List<Path> c = new ArrayList<>();
+		String set = System.getenv("ZOMBIECRAFT_WINE"); // play.command installs one beside the game
+		if (set != null && !set.isBlank()) c.add(Path.of(set));
 		String path = System.getenv("PATH");
 		if (path != null) for (String d : path.split(java.io.File.pathSeparator)) { c.add(Path.of(d, "wine64")); c.add(Path.of(d, "wine")); }
 		for (String d : new String[]{"/opt/homebrew/bin", "/usr/local/bin", "/Applications/Wine Stable.app/Contents/Resources/wine/bin", "/Applications/Wine Staging.app/Contents/Resources/wine/bin"}) { c.add(Path.of(d, "wine64")); c.add(Path.of(d, "wine")); }

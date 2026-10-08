@@ -43,6 +43,17 @@ main() {
   if [ -n "$ZOMBIECRAFT_BO2_DIR" ]; then echo "[bo2] Found Black Ops II: $ZOMBIECRAFT_BO2_DIR"
   else echo "[bo2] Not set; the game will use Minecraft sounds. Set ZOMBIECRAFT_BO2_DIR to force a path."; fi
 
+  # Models, menu art and block textures are made from the BO2 files by the Unlinker, which has no Mac build: run the Windows one through
+  # Wine. Fetched only when BO2 is found and the finished files are not there yet (a copy of them from a PC also works).
+  if [ "$(uname -s)" = "Darwin" ] && [ -n "$ZOMBIECRAFT_BO2_DIR" ] && [ -f "$ZOMBIECRAFT_BO2_DIR/zone/all/zm_transit.ff" ]      && { [ ! -f mod/run/zombiecraft/bo2/manifest.properties ] || [ ! -f mod/run/resourcepacks/BlockOps2/pack.mcmeta ]; }; then
+    echo "[wine] First run: the Black Ops II models and textures need to be converted."
+    ZOMBIECRAFT_WINE="$(bash tools/wine.sh)"
+    if [ -n "$ZOMBIECRAFT_WINE" ]; then
+      export ZOMBIECRAFT_WINE WINEPREFIX="$PWD/.wine-prefix" WINEDEBUG=-all WINEDLLOVERRIDES="mscoree,mshtml="
+      echo "[wine] Using $ZOMBIECRAFT_WINE. The conversion runs inside the game on first start and takes several minutes."
+    fi
+  fi
+
   cd mod && sh ./gradlew runClient --console=plain
 }
 
