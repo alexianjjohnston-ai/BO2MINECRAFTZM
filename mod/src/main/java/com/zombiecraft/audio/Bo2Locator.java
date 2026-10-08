@@ -42,6 +42,7 @@ public final class Bo2Locator {
 			for (String rel : new String[]{"SteamLibrary", "Steam", "Games/Steam", "Program Files (x86)/Steam", "Program Files/Steam", "Games/SteamLibrary"})
 				candidates.add(root.resolve(rel).resolve("steamapps").resolve("common").resolve(FOLDER));
 		}
+		candidates.addAll(unixCandidates());
 		// several installs may exist (a partial copy next to the full one): take the one that has the most of the sound banks the cues need
 		Path best = null; int bestScore = -1;
 		java.util.Set<String> banks = new java.util.HashSet<>();
@@ -57,10 +58,58 @@ public final class Bo2Locator {
 		return Optional.ofNullable(best);
 	}
 
+	private static boolean windows() { return System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win"); }
+
+	/**
+	 * macOS and Linux: Black Ops II has no native version there, so the files come from a Steam library copied from a PC, a Windows Steam
+	 * inside a Wine bottle (CrossOver, Whisky, Heroic, Bottles), or a copy on an external drive.
+	 */
+	private static List<Path> unixCandidates() {
+		List<Path> out = new ArrayList<>();
+		if (windows()) return out;
+		Path home = Path.of(System.getProperty("user.home", "."));
+		List<Path> libs = new ArrayList<>();
+		for (String rel : new String[]{"Library/Application Support/Steam", ".steam/steam", ".local/share/Steam", ".var/app/com.valvesoftware.Steam/.local/share/Steam", "Games", "SteamLibrary", "Steam"})
+			libs.add(home.resolve(rel));
+		// every Wine prefix we know of: a bottle's drive_c holds a normal Windows layout
+		List<Path> prefixes = new ArrayList<>();
+		for (String rel : new String[]{"Library/Application Support/CrossOver/Bottles", "Library/Containers/com.isaacmarovitz.Whisky/Bottles", ".wine", "Games/Heroic/Prefixes", ".local/share/bottles/bottles"}) {
+			Path b = home.resolve(rel);
+			prefixes.add(b);
+			try (var kids = Files.isDirectory(b) ? Files.list(b) : java.util.stream.Stream.<Path>empty()) { kids.forEach(prefixes::add); } catch (IOException | RuntimeException ignored) {}
+		}
+		for (Path pre : prefixes)
+			for (String rel : new String[]{"drive_c/Program Files (x86)/Steam", "drive_c/Program Files/Steam", "drive_c/GOG Games", "drive_c/Program Files (x86)/GOG Galaxy/Games"}) libs.add(pre.resolve(rel));
+		// external drives (macOS /Volumes, Linux /media, /mnt)
+		for (String mount : new String[]{"/Volumes", "/media", "/mnt", "/run/media/" + System.getProperty("user.name", "")}) {
+			try (var kids = Files.isDirectory(Path.of(mount)) ? Files.list(Path.of(mount)) : java.util.stream.Stream.<Path>empty()) {
+				kids.forEach(k -> { libs.add(k); libs.add(k.resolve("SteamLibrary")); libs.add(k.resolve("Steam")); libs.add(k.resolve("Games")); });
+			} catch (IOException | RuntimeException ignored) {}
+		}
+		for (Path lib : libs) {
+			out.add(lib.resolve(FOLDER));
+			out.add(lib.resolve("steamapps").resolve("common").resolve(FOLDER));
+		}
+		// the library list inside a Unix Steam install names further library folders
+		for (Path lib : new ArrayList<>(libs)) out.addAll(vdfLibraries(lib));
+		return out;
+	}
+
+	private static List<Path> vdfLibraries(Path steamRoot) {
+		List<Path> out = new ArrayList<>();
+		try {
+			Path vdf = steamRoot.resolve("steamapps").resolve("libraryfolders.vdf");
+			if (!Files.isRegularFile(vdf)) return out;
+			Matcher m = Pattern.compile("\"path\"\\s+\"([^\"]+)\"").matcher(Files.readString(vdf));
+			while (m.find()) out.add(Path.of(m.group(1)).resolve("steamapps").resolve("common").resolve(FOLDER));
+		} catch (IOException | RuntimeException ignored) {}
+		return out;
+	}
+
 	private static List<Path> steamLibraries() {
 		List<Path> libs = new ArrayList<>();
 		try {
-			if (!System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win")) return libs;
+			if (!windows()) return libs;
 			Process pr = new ProcessBuilder("reg", "query", "HKCU\\Software\\Valve\\Steam", "/v", "SteamPath").redirectErrorStream(true).start();
 			String steam = null;
 			try (BufferedReader r = new BufferedReader(new InputStreamReader(pr.getInputStream()))) {

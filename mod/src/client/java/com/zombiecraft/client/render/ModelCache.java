@@ -25,10 +25,10 @@ public final class ModelCache {
 			Path game = Minecraft.getInstance().gameDirectory.toPath();
 			try {
 				Optional<Path> bo2 = Bo2Locator.find(game);
-				if (bo2.isEmpty()) return;
+				if (bo2.isEmpty() && !Bo2Assets.cached(game)) return;
 				var dumps = Bo2Config.dumps(game);
 				boolean rebuilt = false;
-				if (!Bo2Assets.ready(game, bo2.get())) {
+				if (bo2.isPresent() && !Bo2Assets.ready(game, bo2.get())) {
 					int n = Bo2Assets.prepare(game, bo2.get(), dumps, m -> ZombiecraftMod.LOG.info("Block Ops 2 models: {}", m));
 					ZombiecraftMod.LOG.info("Block Ops 2 models: {} ready", n);
 					rebuilt = true;

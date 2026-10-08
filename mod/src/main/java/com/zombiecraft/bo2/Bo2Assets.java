@@ -59,8 +59,14 @@ public final class Bo2Assets {
 
 	public static boolean ready(Path gameDir, Path bo2Dir) {
 		Properties p = manifest(cacheDir(gameDir));
-		return p != null && p.getProperty("version", "").equals(String.valueOf(VERSION)) && p.getProperty("fingerprint", "").equals(fingerprint(bo2Dir))
+		return p != null && p.getProperty("version", "").equals(String.valueOf(VERSION)) && sameInstall(p.getProperty("fingerprint", ""), fingerprint(bo2Dir))
 				&& p.getProperty("textures-sheet", "").equals(sheetsHash());
+	}
+
+	/** A finished cache of this version, whatever install built it: lets a machine that cannot run the Unlinker (a Mac) use a cache copied from a PC. */
+	public static boolean cached(Path gameDir) {
+		Properties p = manifest(cacheDir(gameDir));
+		return p != null && p.getProperty("version", "").equals(String.valueOf(VERSION)) && p.getProperty("textures-sheet", "").equals(sheetsHash());
 	}
 
 	private static Properties manifest(Path cache) {
@@ -69,6 +75,9 @@ public final class Bo2Assets {
 		try (var in = Files.newInputStream(f)) { Properties p = new Properties(); p.load(in); return p; }
 		catch (IOException e) { return null; }
 	}
+
+	/** Size must match; the modification time is only a hint, because it changes when the install or this cache is copied to another machine. */
+	private static boolean sameInstall(String a, String b) { return a.split("-")[0].equals(b.split("-")[0]); }
 
 	/** Cheap identity of the install's model zone: size and modification time of zm_transit.ff. */
 	static String fingerprint(Path bo2Dir) {
@@ -95,8 +104,10 @@ public final class Bo2Assets {
 			}
 		} catch (IOException | RuntimeException ignored) {}
 		for (Path d : dirs) {
-			Path exe = d.resolve("Unlinker.exe");
-			if (Files.isRegularFile(exe)) return Optional.of(exe);
+			for (String n : new String[]{"Unlinker.exe", "Unlinker"}) {
+				Path exe = d.resolve(n);
+				if (Files.isRegularFile(exe)) return Optional.of(exe);
+			}
 		}
 		return Optional.empty();
 	}
@@ -112,7 +123,7 @@ public final class Bo2Assets {
 		Path temp = cache.resolve("_dump");
 		boolean ownDump = false;
 		if (dumpRoots.isEmpty()) {
-			Path exe = findUnlinker(gameDir).orElseThrow(() -> new IOException("OpenAssetTools Unlinker.exe not found (put it in zombiecraft/tools/oat or set ZOMBIECRAFT_OAT_DIR)"));
+			Path exe = findUnlinker(gameDir).orElseThrow(() -> new IOException("OpenAssetTools Unlinker not found (put it in zombiecraft/tools/oat or set ZOMBIECRAFT_OAT_DIR)"));
 			log.accept("Reading Black Ops II models (first run only, about a minute)...");
 			unlink(exe, bo2Dir, temp, log, ZONES, ASSET_TYPES);
 			dumpRoots.add(temp);
@@ -125,22 +136,38 @@ public final class Bo2Assets {
 		}
 	}
 
+	private static final boolean IS_WINDOWS = System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
+
+	private static String arg(Path p, boolean wine) { return wine ? "Z:" + p.toAbsolutePath().toString().replace('\\', '/') : p.toString(); }
+
+	private static Optional<Path> findWine() {
+		List<Path> c = new ArrayList<>();
+		String path = System.getenv("PATH");
+		if (path != null) for (String d : path.split(java.io.File.pathSeparator)) { c.add(Path.of(d, "wine64")); c.add(Path.of(d, "wine")); }
+		for (String d : new String[]{"/opt/homebrew/bin", "/usr/local/bin", "/Applications/Wine Stable.app/Contents/Resources/wine/bin", "/Applications/Wine Staging.app/Contents/Resources/wine/bin"}) { c.add(Path.of(d, "wine64")); c.add(Path.of(d, "wine")); }
+		return c.stream().filter(Files::isExecutable).findFirst();
+	}
+
 	static void unlink(Path exe, Path bo2Dir, Path out, Consumer<String> log, String[] zones, String[] types) throws IOException {
 		Files.createDirectories(out);
 		Path zoneDir = bo2Dir.resolve("zone").resolve("all");
-		List<String> cmd = new ArrayList<>(List.of(exe.toString(), "--no-color", "--model-format", "XMODEL_EXPORT", "--image-format", "DDS",
-				"--include-assets", String.join(",", types), "-o", out.toString() + "/?zone?"));
+		// only Windows and Linux builds of the Unlinker exist: a .exe anywhere else runs through Wine, which sees the host disk as drive Z:
+		boolean wine = exe.getFileName().toString().endsWith(".exe") && !IS_WINDOWS;
+		List<String> cmd = new ArrayList<>();
+		if (wine) cmd.add(findWine().orElseThrow(() -> new IOException("The Unlinker is a Windows program and Wine was not found. Copy the zombiecraft/bo2 folder from a PC that already ran the game instead (see the README).")).toString());
+		cmd.addAll(List.of(exe.toString(), "--no-color", "--model-format", "XMODEL_EXPORT", "--image-format", "DDS",
+				"--include-assets", String.join(",", types), "-o", arg(out, wine) + "/?zone?"));
 		// the survivors' body/head images are streamed from zm.ipak, which the tool only loads for zones named zm_*: hand it a copy under the character zone's own name
 		Path zm = zoneDir.resolve("zm.ipak");
 		if (Files.isRegularFile(zm) && Files.isRegularFile(zoneDir.resolve("so_zclassic_zm_transit.ff"))) {
 			Path ipakDir = out.resolve("_ipak");
 			Files.createDirectories(ipakDir);
 			Files.copy(zm, ipakDir.resolve("so_zclassic_zm_transit.ipak"), StandardCopyOption.REPLACE_EXISTING);
-			cmd.add("--search-path"); cmd.add(ipakDir + ";" + zoneDir);
+			cmd.add("--search-path"); cmd.add(arg(ipakDir, wine) + ";" + arg(zoneDir, wine));
 		}
 		for (String z : zones) {
 			Path ff = zoneDir.resolve(z + ".ff");
-			if (Files.isRegularFile(ff)) cmd.add(ff.toString());
+			if (Files.isRegularFile(ff)) cmd.add(arg(ff, wine));
 		}
 		Process pr = new ProcessBuilder(cmd).directory(exe.getParent().toFile()).redirectErrorStream(true).start();
 		Path logFile = out.resolve("unlinker.log");

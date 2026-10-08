@@ -65,7 +65,7 @@ public final class PapSystem {
 	/** The visible machine's bounds, used by F targeting instead of its old oversized placeholder. */
 	public AABB targetBounds() {
 		PapDef d = def(); BlockPos o = game.origin;
-		if (!modeled) return new AABB(o.getX() + Math.min(d.x1(), d.x2()), o.getY() + Math.min(d.y1(), d.y2()), o.getZ() + Math.min(d.z1(), d.z2()),
+		if (!modeled || prop == null) return new AABB(o.getX() + Math.min(d.x1(), d.x2()), o.getY() + Math.min(d.y1(), d.y2()), o.getZ() + Math.min(d.z1(), d.z2()),
 				o.getX() + Math.max(d.x1(), d.x2()) + 1, o.getY() + Math.max(d.y1(), d.y2()) + 1, o.getZ() + Math.max(d.z1(), d.z2()) + 1);
 		var f = net.minecraft.core.Direction.valueOf(d.facing().toUpperCase(java.util.Locale.ROOT));
 		double cx = prop.getX() + f.getStepX() * PapVisual.DEPTH / 2, cz = prop.getZ() + f.getStepZ() * PapVisual.DEPTH / 2;
