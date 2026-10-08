@@ -239,6 +239,11 @@ def cmd_index(a):
 					rel = os.path.relpath(os.path.join(root, f), LIB).replace('\\', '/')
 					rows.append(('sound', os.path.splitext(f)[0], rel.split('/')[1], rel, os.path.getsize(os.path.join(root, f))))
 					counts['sound'][rel.split('/')[1]] += 1
+	af = os.path.join(ar, 'aliases.json')  # sound alias name (what the game scripts play) -> first file
+	if os.path.isfile(af):
+		for alias, fl in json.load(open(af)).items():
+			rows.append(('alias', alias, fl[0].split('/')[0], 'audio/' + fl[0], os.path.getsize(os.path.join(ar, fl[0]))))
+			counts['alias'][fl[0].split('/')[0]] += 1
 	con.executemany('insert into assets values(?,?,?,?,?)', rows)
 	con.execute('create index i_name on assets(name)'); con.execute('create index i_kind on assets(kind)')
 	con.commit()
@@ -264,7 +269,7 @@ def cmd_find(a):
 	if a.zone: q += ' and zone=?'; args.append(a.zone)
 	n = 0
 	for kind, zone, name, rel, size in con.execute(q + ' order by kind, zone, name limit ?', args + [a.limit]):
-		print('%-9s %-28s %s  (%d B)' % (kind, zone, os.path.join(LIB, rel if kind == 'sound' else 'zones/' + zone + '/' + rel), size)); n += 1
+		print('%-9s %-28s %s  (%d B)' % (kind, zone, os.path.join(LIB, rel if kind in ('sound', 'alias') else 'zones/' + zone + '/' + rel), size)); n += 1
 	print(n, 'hits')
 
 
