@@ -284,3 +284,8 @@ Known gaps (B): no readable text signs (BUS DEPOT, Employees only, Fire regulati
 ## Online lobby flow polish (2026-10-07)
 - ONLINE GAME no longer shows the loading screen or stops the menu music: Bo2Menus.quietLoad makes the world-loading screens draw the lobby backdrop (Bo2Locations.quietLoading, Opening the lobby...) and keeps mus_fe_main playing; joiners (Join Game) get the same. When the host presses START MATCH, every client at once stops the menu music and shows the BO2 loading picture with its music for 5 s (Bo2Locations.Starting), the server cue mus_zombie_splash_screen plays as before.
 - INVITE FRIENDS is now a BO2 screen on the lobby backdrop: big JOIN CODE, three plain steps, COPY CODE, COPY INVITE MESSAGE (a ready sentence with the code), BACK; the playit instructions are gone. Dev: -PdevProps=debugOptions=match,debugSel=0,debugToggleOnline walks press -> loading -> lobby -> invite -> START MATCH -> countdown -> start screen and saves zc-flow-*.png. Checked by screenshots; the music itself was not listened to.
+
+## Stable release check (2026-10-08)
+- Commit 6b24475 verified on a clean worktree: `gradlew build` OK, `tools/preflight.py` 0 errors, scripted bench (`-Pbench`) 49 passed / 0 failed (rounds, wall buys, box, Pack-a-Punch, window entry, perks, power-ups, downed/bleedout, restart). Tagged `v1.0-stable`.
+- Run the bench on a quiet checkout: a window quit/focus loss or another game holding the integrated server derails later steps (seen once, a false window-entry / bench-crash).
+- Not covered by the bench: a real second-player join through the tunnel and a match with a joiner, audio by ear, BO2 viewmodel clips on a fresh install.
